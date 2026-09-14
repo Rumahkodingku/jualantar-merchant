@@ -3,10 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "react-router build",
+    "build": "react-router build && bun run build:sw",
+    "build:sw": "esbuild app/pwa/sw.ts --bundle --format=iife --target=es2020 --outfile=build/client/sw.js",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc",
+    "typecheck": "react-router typegen && tsc && tsc -p tsconfig.sw.json",
+    "test": "vitest",
+    "test:run": "vitest run",
     "format": "prettier --write \"**/*.{ts,tsx}\""
   },
   "dependencies": {

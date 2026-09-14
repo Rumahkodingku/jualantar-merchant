@@ -1,18 +1,20 @@
 # AGENTS.md
 
-React Router **v7.15.1 framework mode** (SSR) + React 19 + TypeScript + Tailwind v4 + shadcn/ui.
+React Router **v7.15.1 framework mode** (SSR) + React 19 + TypeScript + Tailwind v4 + shadcn/ui. PWA.
 
 ## Commands
 
 Package manager is **bun** (`bun.lock` is the only lockfile). Do not use npm/yarn/pnpm.
 
-- `bun run dev` — dev server
-- `bun run build` — production build to `build/`
-- `bun run typecheck` — runs `react-router typegen` **then** `tsc`. The typegen step is required: route files import generated `./+types/*` types that do not exist until it runs.
+- `bun run dev` — dev server (exposed on LAN via `host: true`; `/api` proxied to `API_PROXY_TARGET`, default `http://127.0.0.1:8001` — copy `.env.example` to `.env`)
+- `bun run build` — `react-router build` then esbuild bundles the service worker to `build/client/sw.js`
+- `bun run build:sw` — bundle only the service worker
+- `bun run typecheck` — runs `react-router typegen` **then** `tsc` **then** `tsc -p tsconfig.sw.json`. The typegen step is required: route files import generated `./+types/*` types that do not exist until it runs.
+- `bun run test` / `bun run test:run` — Vitest (jsdom, globals, setup file)
 - `bun run format` — Prettier (only `.ts`/`.tsx`)
 - `bun run start` — serve built app (`react-router-serve`)
 
-There is **no lint script** and **no test script**. `vitest` + Testing Library are installed but not configured (no config file, no jsdom setup); co-located tests are the intended convention per `docs/ARCHITECTURE.md`.
+There is **no lint script**. Verification order: `bun run typecheck` then `bun run test:run`.
 
 ## Gotchas
 
@@ -20,6 +22,7 @@ There is **no lint script** and **no test script**. `vitest` + Testing Library a
 - **Import alias is `~/*` → `app/*`** (tsconfig + `components.json`). `docs/ARCHITECTURE.md` examples use `@/...`, which does **not** resolve. Use `~/`.
 - `docs/ARCHITECTURE.md` header says "v8" and its routing section says "Data Mode", but the installed/actual setup is **v7 framework mode** with a `routes.ts` registry and `ssr: true`. Trust the installed version.
 - `cn` is re-exported from the `cn` package in `app/lib/utils.ts`, not a local `clsx`+`twMerge`.
+- The service worker (`app/pwa/sw.ts`) is excluded from `tsconfig.json` and typechecked separately via `tsconfig.sw.json`; it is bundled by esbuild to `build/client/sw.js` and only registers in production (`import.meta.env.PROD`). To test the PWA, run `bun run build && bun run start` and access via `localhost` (a LAN HTTP origin is not a secure context, so the SW will not register there).
 
 ## Conventions (from `docs/ARCHITECTURE.md`)
 

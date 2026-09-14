@@ -1,7 +1,6 @@
 import { useSearchParams } from "react-router"
 
-import { Brand } from "~/components/brand"
-import { MobileScreen } from "~/components/layouts/mobile-screen"
+import { AuthLayout } from "~/components/layouts/auth-layout"
 
 import { CheckEmailScreen } from "../components/check-email-screen"
 
@@ -10,11 +9,20 @@ export function CheckEmailPage() {
     const email = searchParams.get("email") ?? ""
 
     return (
-        <MobileScreen>
-            <div className="flex flex-col items-start px-6 pt-[max(2rem,env(safe-area-inset-top))]">
-                <Brand size={28} />
-            </div>
+        <AuthLayout
+            title="Cek email Anda"
+            description={
+                email !== "" ? (
+                    <>
+                        Kami mengirim tautan verifikasi ke <span className="font-medium text-foreground">{email}</span>.
+                        Buka tautan tersebut untuk mengaktifkan akun.
+                    </>
+                ) : (
+                    "Kami mengirim tautan verifikasi ke email Anda. Buka tautan tersebut untuk mengaktifkan akun."
+                )
+            }
+        >
             <CheckEmailScreen initialEmail={email} />
-        </MobileScreen>
+        </AuthLayout>
     )
 }

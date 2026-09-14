@@ -1,23 +1,23 @@
-import { useEffect, useState } from "react"
-import { Navigate, Outlet } from "react-router"
+import { useEffect, useState, type ReactNode } from "react"
+import { Navigate } from "react-router"
 
-import { FullScreenLoader } from "~/components/full-screen-loader"
+import { SplashScreen } from "~/components/splash-screen"
 
 import { useSession } from "../hooks/use-session"
 
-export function ProtectedRoute() {
+export function ProtectedRoute({ children }: { children: ReactNode }) {
     const [mounted, setMounted] = useState(false)
     const { hasToken, isUnauthorized, isLoading } = useSession()
 
     useEffect(() => setMounted(true), [])
 
     if (!mounted || isLoading) {
-        return <FullScreenLoader label="Menyiapkan akun…" />
+        return <SplashScreen label="Menyiapkan akun…" />
     }
 
     if (!hasToken || isUnauthorized) {
         return <Navigate to="/login" replace />
     }
 
-    return <Outlet />
+    return <>{children}</>
 }

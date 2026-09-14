@@ -1,3 +1,4 @@
+import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
 
 import { useRegistrationContext } from "./registration-context"
@@ -8,16 +9,16 @@ export function RegistrationProgress() {
     const progress = stepProgress(registration)
 
     return (
-        <div className="px-4 pb-3">
-            <div className="flex items-center justify-between text-xs">
-                <span className="font-medium text-foreground">
+        <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+                <Text as="span" variant="xs" weight="medium">
                     Langkah {navigation.activeIndex + 1} dari {navigation.steps.length}
-                </span>
-                <span className="text-muted-foreground">
+                </Text>
+                <Text as="span" variant="xs" className="text-muted-foreground">
                     {progress.completed}/{progress.total} selesai
-                </span>
+                </Text>
             </div>
-            <div className="mt-2 flex gap-1" aria-hidden="true">
+            <div className="flex gap-1" aria-hidden="true">
                 {navigation.steps.map((step, index) => (
                     <span
                         key={step.id}

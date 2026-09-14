@@ -3,6 +3,7 @@ import { useState } from "react"
 
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
+import { Text } from "~/components/ui/text"
 
 import type { MerchantOutlet } from "../types/merchant-registration.types"
 
@@ -39,7 +40,9 @@ export function OutletList({
                         <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
                                 <div className="flex items-center gap-2">
-                                    <h3 className="truncate text-sm font-semibold">{outlet.name}</h3>
+                                    <Text as="h3" variant="sm" weight="semibold" truncate>
+                                        {outlet.name}
+                                    </Text>
                                     <Badge variant={outlet.status === "active" ? "default" : "secondary"}>
                                         {outlet.status === "active" ? "Aktif" : "Nonaktif"}
                                     </Badge>

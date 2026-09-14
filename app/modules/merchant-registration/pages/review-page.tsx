@@ -1,9 +1,9 @@
 import { useState } from "react"
 
-import { ActionBar } from "~/components/layouts/action-bar"
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
 import { Spinner } from "~/components/ui/spinner"
+import { Text } from "~/components/ui/text"
 import { ApiError } from "~/lib/api"
 
 import { RegistrationReview } from "../components/registration-review"
@@ -39,7 +39,7 @@ export function ReviewPage() {
 
     return (
         <div className="flex flex-1 flex-col">
-            <div className="flex flex-1 flex-col gap-4 px-4 py-5">
+            <div className="flex flex-1 flex-col gap-4">
                 {error !== null ? (
                     <Alert variant="destructive">
                         <AlertTitle>Pendaftaran belum bisa dikirim</AlertTitle>
@@ -70,7 +70,7 @@ export function ReviewPage() {
                 <RegistrationReview registration={registration} />
             </div>
 
-            <ActionBar>
+            <div className="mt-auto flex flex-col gap-2 pt-6">
                 <Button
                     type="button"
                     size="lg"
@@ -86,10 +86,10 @@ export function ReviewPage() {
                         "Kirim pendaftaran"
                     )}
                 </Button>
-                <p className="mt-2 text-center text-xs text-muted-foreground">
+                <Text variant="xs" align="center" className="text-muted-foreground">
                     Setelah dikirim, data tidak dapat diubah sampai proses peninjauan selesai.
-                </p>
-            </ActionBar>
+                </Text>
+            </div>
         </div>
     )
 }

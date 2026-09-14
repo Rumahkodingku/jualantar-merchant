@@ -1,6 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 
+import { Text } from "~/components/ui/text"
+
 import { DocumentList } from "../components/document-list"
 import { DocumentUploader } from "../components/document-uploader"
 import { FileUpload } from "../components/file-upload"
@@ -21,11 +23,15 @@ export function DocumentsPage() {
 
     return (
         <div className="flex flex-1 flex-col">
-            <div className="flex flex-1 flex-col gap-6 px-4 py-5">
+            <div className="flex flex-1 flex-col gap-6">
                 <section className="flex flex-col gap-3">
                     <div className="flex flex-col gap-0.5">
-                        <h2 className="text-sm font-semibold">Logo usaha</h2>
-                        <p className="text-xs text-muted-foreground">Gunakan gambar persegi agar logo tampil rapi.</p>
+                        <Text as="h2" variant="sm" weight="semibold">
+                            Logo usaha
+                        </Text>
+                        <Text variant="xs" className="text-muted-foreground">
+                            Gunakan gambar persegi agar logo tampil rapi.
+                        </Text>
                     </div>
                     <FileUpload
                         purpose="logo"
@@ -40,10 +46,12 @@ export function DocumentsPage() {
 
                 <section className="flex flex-col gap-3">
                     <div className="flex flex-col gap-0.5">
-                        <h2 className="text-sm font-semibold">Dokumen pendukung</h2>
-                        <p className="text-xs text-muted-foreground">
+                        <Text as="h2" variant="sm" weight="semibold">
+                            Dokumen pendukung
+                        </Text>
+                        <Text variant="xs" className="text-muted-foreground">
                             Opsional. Unggah KTP, NPWP, NIB, atau dokumen lain bila tersedia.
-                        </p>
+                        </Text>
                     </div>
                     <DocumentList documents={registration.documents} />
                     <DocumentUploader />

@@ -1,8 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Mail } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useNavigate, useSearchParams } from "react-router"
 
+import { PasswordInput } from "~/components/password-input"
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
@@ -26,9 +28,10 @@ export function LoginForm() {
     } = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
         defaultValues: { email: "", password: "" },
+        mode: "onBlur",
     })
 
-    const redirectTo = searchParams.get("redirect") ?? "/merchant/registration"
+    const redirectTo = searchParams.get("redirect") ?? "/app"
 
     function onSubmit(values: LoginFormValues) {
         setFormError(null)
@@ -63,26 +66,31 @@ export function LoginForm() {
                 </Alert>
             ) : null}
 
-            <Field>
+            <Field data-invalid={errors.email !== undefined}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                    id="email"
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    placeholder="nama@usaha.id"
-                    className="h-11"
-                    aria-invalid={errors.email !== undefined}
-                    {...register("email")}
-                />
+                <div className="relative">
+                    <Mail
+                        aria-hidden="true"
+                        className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <Input
+                        id="email"
+                        type="email"
+                        inputMode="email"
+                        autoComplete="email"
+                        placeholder="nama@usaha.id"
+                        className="h-11 pl-10"
+                        aria-invalid={errors.email !== undefined}
+                        {...register("email")}
+                    />
+                </div>
                 <FieldError errors={errors.email ? [errors.email] : undefined} />
             </Field>
 
-            <Field>
+            <Field data-invalid={errors.password !== undefined}>
                 <FieldLabel htmlFor="password">Kata sandi</FieldLabel>
-                <Input
+                <PasswordInput
                     id="password"
-                    type="password"
                     autoComplete="current-password"
                     placeholder="••••••••"
                     className="h-11"

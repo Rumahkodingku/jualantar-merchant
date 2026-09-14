@@ -1,6 +1,7 @@
 import { AlertTriangleIcon, RotateCcwIcon } from "lucide-react"
 
 import { Button } from "~/components/ui/button"
+import { Text } from "~/components/ui/text"
 
 export function ErrorState({
     title = "Terjadi kesalahan",
@@ -19,9 +20,13 @@ export function ErrorState({
                 <AlertTriangleIcon className="size-6" />
             </div>
             <div className="flex flex-col gap-1.5">
-                <h2 className="font-heading text-base font-semibold">{title}</h2>
+                <Text as="h2" variant="base" weight="semibold">
+                    {title}
+                </Text>
                 {description !== undefined ? (
-                    <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
+                    <Text variant="sm" className="leading-relaxed text-muted-foreground">
+                        {description}
+                    </Text>
                 ) : null}
             </div>
             {onRetry !== undefined ? (

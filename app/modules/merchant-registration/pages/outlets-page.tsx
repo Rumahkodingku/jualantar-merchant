@@ -36,7 +36,7 @@ export function OutletsPage() {
 
     return (
         <div className="flex flex-1 flex-col">
-            <div className="flex flex-1 flex-col gap-4 px-4 py-5">
+            <div className="flex flex-1 flex-col gap-4">
                 {outlets.length === 0 ? (
                     <p className="text-sm leading-relaxed text-muted-foreground">
                         Belum ada outlet. Tambahkan minimal satu outlet aktif agar merchant Anda dapat menerima pesanan.

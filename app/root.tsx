@@ -6,6 +6,7 @@ import { InstallPrompt } from "~/components/install-prompt"
 import { OfflineBanner } from "~/components/offline-banner"
 import { Providers } from "~/components/providers"
 import { Toaster } from "~/components/ui/toast"
+import { Text } from "~/components/ui/text"
 import { useServiceWorker } from "~/hooks/use-service-worker"
 import { setUnauthorizedHandler } from "~/lib/auth-token"
 import "./app.css"
@@ -74,8 +75,12 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
     return (
         <main className="container mx-auto p-4 pt-16">
-            <h1>{message}</h1>
-            <p>{details}</p>
+            <Text as="h1" variant="2xl" weight="semibold">
+                {message}
+            </Text>
+            <Text variant="sm" className="text-muted-foreground">
+                {details}
+            </Text>
             {stack && (
                 <pre className="w-full overflow-x-auto p-4">
                     <code>{stack}</code>

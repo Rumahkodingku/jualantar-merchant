@@ -5,6 +5,7 @@ export { useRegistrationContext } from "./components/registration-context"
 export { useRegistrationNavigation } from "./hooks/use-registration-navigation"
 export { useRegistration, useRegistrationReview } from "./services/merchant-registration.queries"
 export { merchantRegistrationKeys } from "./services/merchant-registration.keys"
+export { statusPresentationFor, type StatusPresentation } from "./utils/status-presentation"
 export {
     applicableSteps,
     firstIncompleteStep,

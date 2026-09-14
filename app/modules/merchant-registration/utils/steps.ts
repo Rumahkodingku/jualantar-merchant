@@ -11,7 +11,7 @@ export type RegistrationStep = {
     description: string
 }
 
-export const REGISTRATION_BASE = "/merchant/registration"
+export const REGISTRATION_BASE = "/app/registration"
 
 export const REGISTRATION_STEPS: RegistrationStep[] = [
     {

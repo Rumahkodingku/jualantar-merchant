@@ -1,7 +1,7 @@
 import { redirect } from "react-router"
 
 export function loader() {
-    return redirect("/merchant/registration")
+    return redirect("/app")
 }
 
 export default function Home() {

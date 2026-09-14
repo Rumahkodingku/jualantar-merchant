@@ -2,11 +2,11 @@ import { useEffect, useRef } from "react"
 import { Outlet } from "react-router"
 
 import { ErrorState } from "~/components/error-state"
-import { FullScreenLoader } from "~/components/full-screen-loader"
+import { SplashScreen } from "~/components/splash-screen"
 import { ApiError } from "~/lib/api"
 
 import { RegistrationProvider } from "./registration-context"
-import { RegistrationShell } from "./registration-shell"
+import { RegistrationScreen } from "./registration-screen"
 import { RegistrationStatusScreen } from "./registration-status-screen"
 import { useCreateRegistration } from "../services/merchant-registration.mutations"
 import { useRegistration } from "../services/merchant-registration.queries"
@@ -35,12 +35,12 @@ export function RegistrationLayout() {
     }, [isNotFound, isConflict, createDraft, refetch])
 
     if (isLoading || createDraft.isPending) {
-        return <FullScreenLoader label="Menyiapkan pendaftaran…" />
+        return <SplashScreen label="Menyiapkan pendaftaran…" />
     }
 
     if (isError && !isNotFound && !isConflict) {
         return (
-            <div className="flex min-h-[100dvh] items-center justify-center">
+            <div className="flex min-h-svh items-center justify-center">
                 <ErrorState
                     title="Gagal memuat pendaftaran"
                     description={error instanceof ApiError ? error.detail : "Silakan coba beberapa saat lagi."}
@@ -51,7 +51,7 @@ export function RegistrationLayout() {
     }
 
     if (data === undefined) {
-        return <FullScreenLoader label="Menyiapkan pendaftaran…" />
+        return <SplashScreen label="Menyiapkan pendaftaran…" />
     }
 
     if (data.status !== "draft") {
@@ -60,9 +60,9 @@ export function RegistrationLayout() {
 
     return (
         <RegistrationProvider registration={data}>
-            <RegistrationShell>
+            <RegistrationScreen>
                 <Outlet />
-            </RegistrationShell>
+            </RegistrationScreen>
         </RegistrationProvider>
     )
 }

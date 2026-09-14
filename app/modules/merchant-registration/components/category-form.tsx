@@ -62,7 +62,7 @@ export function CategoryForm() {
             className="flex flex-1 flex-col"
             noValidate
         >
-            <div className="flex flex-1 flex-col gap-4 px-4 py-5">
+            <div className="flex flex-1 flex-col gap-4">
                 {error !== null ? (
                     <Alert variant="destructive">
                         <AlertTitle>Periksa pilihan Anda</AlertTitle>

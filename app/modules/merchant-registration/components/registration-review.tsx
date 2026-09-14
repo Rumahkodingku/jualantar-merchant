@@ -2,6 +2,7 @@ import { ImageIcon } from "lucide-react"
 
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
+import { Text } from "~/components/ui/text"
 
 import { useRegistrationContext } from "./registration-context"
 import { documentTypeLabel } from "../schemas/document.schema"
@@ -23,7 +24,9 @@ function ReviewSection({ title, stepId, children }: { title: string; stepId: Ste
     return (
         <section className="overflow-hidden rounded-xl border bg-card">
             <div className="flex items-center justify-between border-b bg-muted/30 px-4 py-2.5">
-                <h2 className="text-sm font-semibold">{title}</h2>
+                <Text as="h2" variant="sm" weight="semibold">
+                    {title}
+                </Text>
                 <Button type="button" variant="ghost" size="sm" onClick={() => navigation.goToStep(stepId)}>
                     Ubah
                 </Button>

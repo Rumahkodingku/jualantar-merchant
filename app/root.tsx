@@ -1,10 +1,13 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse } from "react-router"
+import { useEffect } from "react"
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse, useNavigate } from "react-router"
 
 import type { Route } from "./+types/root"
 import { InstallPrompt } from "~/components/install-prompt"
 import { OfflineBanner } from "~/components/offline-banner"
+import { Providers } from "~/components/providers"
 import { Toaster } from "~/components/ui/toast"
 import { useServiceWorker } from "~/hooks/use-service-worker"
+import { setUnauthorizedHandler } from "~/lib/auth-token"
 import "./app.css"
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -36,14 +39,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
     useServiceWorker()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        setUnauthorizedHandler(() => {
+            navigate("/login", { replace: true })
+        })
+
+        return () => setUnauthorizedHandler(null)
+    }, [navigate])
 
     return (
-        <>
+        <Providers>
             <OfflineBanner />
             <Outlet />
             <InstallPrompt />
             <Toaster />
-        </>
+        </Providers>
     )
 }
 

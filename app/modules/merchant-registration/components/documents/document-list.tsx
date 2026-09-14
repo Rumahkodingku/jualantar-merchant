@@ -1,11 +1,9 @@
 import { FileTextIcon, ExternalLinkIcon } from "lucide-react"
-
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
-
-import { documentTypeLabel } from "../schemas/document.schema"
-import { formatFileSize } from "../schemas/upload.schema"
-import type { MerchantDocument } from "../types/merchant-registration.types"
+import { documentTypeLabel } from "../../schemas/document.schema"
+import { formatFileSize } from "../../schemas/upload.schema"
+import type { MerchantDocument } from "../../types/merchant-registration.types"
 
 export function DocumentList({ documents }: { documents: MerchantDocument[] }) {
     if (documents.length === 0) {

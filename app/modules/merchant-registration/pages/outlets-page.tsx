@@ -2,9 +2,9 @@ import { useState } from "react"
 
 import { Alert, AlertDescription } from "~/components/ui/alert"
 
-import { OutletForm } from "../components/outlet-form"
-import { OutletList } from "../components/outlet-list"
-import { RegistrationActions } from "../components/registration-actions"
+import { OutletForm } from "../components/outlets/outlet-form"
+import { OutletList } from "../components/outlets/outlet-list"
+import { RegistrationActions } from "../components/ui/registration-actions"
 import { useRegistrationContext } from "../components/registration-context"
 import { useDeleteOutlet } from "../services/merchant-registration.mutations"
 import type { MerchantOutlet } from "../types/merchant-registration.types"

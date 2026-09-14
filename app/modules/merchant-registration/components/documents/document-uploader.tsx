@@ -1,13 +1,11 @@
 import { useState } from "react"
-
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { NativeSelect, NativeSelectOption } from "~/components/ui/native-select"
-
-import { FileUpload } from "./file-upload"
-import { DOCUMENT_TYPE_OPTIONS } from "../schemas/document.schema"
-import { useAttachDocument } from "../services/merchant-registration.mutations"
-import type { MerchantDocumentType } from "../types/merchant-registration.types"
-import { getApiErrorMessage } from "../utils/api-error"
+import { FileUpload } from "../ui/file-upload"
+import { DOCUMENT_TYPE_OPTIONS } from "../../schemas/document.schema"
+import { useAttachDocument } from "../../services/merchant-registration.mutations"
+import type { MerchantDocumentType } from "../../types/merchant-registration.types"
+import { getApiErrorMessage } from "../../utils/api-error"
 
 export function DocumentUploader() {
     const attach = useAttachDocument()

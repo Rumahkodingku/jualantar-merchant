@@ -5,9 +5,9 @@ import { Button } from "~/components/ui/button"
 import { Progress } from "~/components/ui/progress"
 import { cn } from "~/lib/utils"
 
-import { useRegistrationUpload, type UploadState } from "../hooks/use-registration-upload"
-import { formatFileSize, MAX_UPLOAD_SIZE_LABEL } from "../schemas/upload.schema"
-import type { PresignedUpload, UploadPurpose } from "../types/merchant-registration.types"
+import { useRegistrationUpload, type UploadState } from "../../hooks/use-registration-upload"
+import { formatFileSize, MAX_UPLOAD_SIZE_LABEL } from "../../schemas/upload.schema"
+import type { PresignedUpload, UploadPurpose } from "../../types/merchant-registration.types"
 
 export function FileUpload({
     purpose,

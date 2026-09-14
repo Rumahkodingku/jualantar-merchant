@@ -1,22 +1,20 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, FormProvider, useForm, type Resolver } from "react-hook-form"
-
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "~/components/ui/native-select"
 import { Textarea } from "~/components/ui/textarea"
-
-import { GeographyFields } from "./geography-fields"
-import { RegistrationActions } from "./registration-actions"
-import { useRegistrationContext } from "./registration-context"
+import { GeographyFields } from "../outlets/geography-fields"
+import { RegistrationActions } from "../ui/registration-actions"
+import { useRegistrationContext } from "../registration-context"
 import {
     LEGAL_ENTITY_TYPE_OPTIONS,
     legalEntitySchema,
     type LegalEntityFormValues,
-} from "../schemas/legal-entity.schema"
-import { useSaveLegalEntity } from "../services/merchant-registration.mutations"
-import { applyApiFieldErrors, getApiErrorMessage } from "../utils/api-error"
+} from "../../schemas/legal-entity.schema"
+import { useSaveLegalEntity } from "../../services/merchant-registration.mutations"
+import { applyApiFieldErrors, getApiErrorMessage } from "../../utils/api-error"
 
 const FIELDS = [
     "entity_type",

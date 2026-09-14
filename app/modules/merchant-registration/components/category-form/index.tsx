@@ -1,15 +1,13 @@
 import { CheckIcon } from "lucide-react"
 import { useState } from "react"
-
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Skeleton } from "~/components/ui/skeleton"
 import { cn } from "~/lib/utils"
 import { useCategories } from "~/modules/service-catalog"
-
-import { RegistrationActions } from "./registration-actions"
-import { useRegistrationContext } from "./registration-context"
-import { useSaveCategories } from "../services/merchant-registration.mutations"
-import { getApiErrorMessage } from "../utils/api-error"
+import { RegistrationActions } from "../ui/registration-actions"
+import { useRegistrationContext } from "../registration-context"
+import { useSaveCategories } from "../../services/merchant-registration.mutations"
+import { getApiErrorMessage } from "../../utils/api-error"
 
 const MAX_CATEGORIES = 3
 
@@ -22,9 +20,8 @@ export function CategoryForm() {
     const [selected, setSelected] = useState<string[]>(registration.categories.map((category) => category.category_id))
     const [error, setError] = useState<string | null>(null)
 
-    function toggle(categoryId: string) {
+    const toggle = (categoryId: string) => {
         setError(null)
-
         setSelected((previous) => {
             if (previous.includes(categoryId)) {
                 return previous.filter((id) => id !== categoryId)
@@ -39,7 +36,7 @@ export function CategoryForm() {
         })
     }
 
-    function onSubmit() {
+    const onSubmit = () => {
         if (selected.length < 1) {
             setError("Pilih minimal 1 kategori.")
             return
@@ -71,7 +68,7 @@ export function CategoryForm() {
                 ) : null}
 
                 <div className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                         Pilih 1–{MAX_CATEGORIES} kategori yang paling sesuai.
                     </p>
                     <span className="text-xs font-medium text-muted-foreground">

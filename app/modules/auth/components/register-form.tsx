@@ -15,6 +15,7 @@ import { applyApiFieldErrors, getApiErrorMessage } from "~/lib/api-form"
 
 import { registerSchema, type RegisterFormValues } from "../schemas/register.schema"
 import { useRegisterMerchant } from "../services/auth.mutations"
+import { Mail, Phone } from "lucide-react"
 
 const FIELDS = ["email", "phone", "password", "password_confirmation", "terms_accepted"] as const
 
@@ -49,7 +50,6 @@ export function RegisterForm() {
             },
             onError: (error) => {
                 const applied = applyApiFieldErrors(error, setError, FIELDS)
-
                 if (!applied) {
                     setFormError(
                         error instanceof ApiError && error.status === 429
@@ -72,31 +72,45 @@ export function RegisterForm() {
 
             <Field data-invalid={errors.email !== undefined}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                    id="email"
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    placeholder="nama@usaha.id"
-                    className="h-11"
-                    aria-invalid={errors.email !== undefined}
-                    {...register("email")}
-                />
+                <div className="relative">
+                    <Mail
+                        aria-hidden="true"
+                        className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <Input
+                        id="email"
+                        type="email"
+                        inputMode="email"
+                        autoComplete="email"
+                        placeholder="nama@usaha.id"
+                        className="h-11 pl-10"
+                        aria-invalid={errors.email !== undefined}
+                        {...register("email")}
+                    />
+                </div>
                 <FieldDescription>Kami akan mengirim tautan verifikasi ke email ini.</FieldDescription>
                 <FieldError errors={errors.email ? [errors.email] : undefined} />
             </Field>
 
             <Field data-invalid={errors.phone !== undefined}>
                 <FieldLabel htmlFor="phone">Nomor telepon</FieldLabel>
-                <Input
-                    id="phone"
-                    inputMode="tel"
-                    autoComplete="tel"
-                    placeholder="081234567890"
-                    className="h-11"
-                    aria-invalid={errors.phone !== undefined}
-                    {...register("phone")}
-                />
+                <div className="relative">
+                    <Phone
+                        aria-hidden="true"
+                        className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+                    />
+
+                    <Input
+                        id="phone"
+                        inputMode="tel"
+                        autoComplete="tel"
+                        placeholder="081234567890"
+                        className="h-11 pl-10"
+                        aria-invalid={errors.phone !== undefined}
+                        {...register("phone")}
+                    />
+                </div>
+
                 <FieldError errors={errors.phone ? [errors.phone] : undefined} />
             </Field>
 
@@ -151,7 +165,12 @@ export function RegisterForm() {
                 <FieldError errors={errors.terms_accepted ? [errors.terms_accepted] : undefined} />
             </div>
 
-            <Button type="submit" size="lg" className="mt-1 h-11 w-full text-sm" disabled={mutation.isPending}>
+            <Button
+                type="submit"
+                size="lg"
+                className="mt-1 h-11 w-full text-sm font-semibold"
+                disabled={mutation.isPending}
+            >
                 {mutation.isPending ? (
                     <>
                         <Spinner /> Mendaftar…

@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
+import { CategoryForm } from "./index"
 
 const { mutate, goNext, categories } = vi.hoisted(() => ({
     mutate: vi.fn(),
@@ -33,8 +34,6 @@ vi.mock("~/modules/service-catalog", () => ({
 vi.mock("../services/merchant-registration.mutations", () => ({
     useSaveCategories: () => ({ mutate, isPending: false }),
 }))
-
-import { CategoryForm } from "./category-form"
 
 describe("CategoryForm", () => {
     it("enforces a maximum of three categories", async () => {

@@ -1,16 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
-
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Field, FieldDescription, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
-
-import { ChoiceCards } from "./choice-cards"
-import { RegistrationActions } from "./registration-actions"
-import { useRegistrationContext } from "./registration-context"
-import { IDENTITY_TYPE_OPTIONS, identitySchema, type IdentityFormValues } from "../schemas/identity.schema"
-import { useSaveIdentity } from "../services/merchant-registration.mutations"
-import { applyApiFieldErrors, getApiErrorMessage } from "../utils/api-error"
+import { ChoiceCards } from "../ui/choice-cards"
+import { RegistrationActions } from "../ui/registration-actions"
+import { useRegistrationContext } from "../registration-context"
+import { IDENTITY_TYPE_OPTIONS, identitySchema, type IdentityFormValues } from "../../schemas/identity.schema"
+import { useSaveIdentity } from "../../services/merchant-registration.mutations"
+import { applyApiFieldErrors, getApiErrorMessage } from "../../utils/api-error"
+import { IdCard, User } from "lucide-react"
 
 const FIELDS = ["id_type", "id_number", "full_name", "birth_date"] as const
 
@@ -45,7 +44,6 @@ export function IdentityForm() {
                 onSuccess: () => navigation.goNext(),
                 onError: (error) => {
                     const applied = applyApiFieldErrors(error, setError, FIELDS)
-
                     if (!applied) {
                         setError("root", { message: getApiErrorMessage(error) })
                     }
@@ -65,7 +63,9 @@ export function IdentityForm() {
                 ) : null}
 
                 <Field>
-                    <FieldLabel>Jenis identitas</FieldLabel>
+                    <FieldLabel>
+                        Jenis identitas <span className="text-red-600">*</span>
+                    </FieldLabel>
                     <Controller
                         control={control}
                         name="id_type"
@@ -81,27 +81,45 @@ export function IdentityForm() {
                 </Field>
 
                 <Field>
-                    <FieldLabel htmlFor="id_number">Nomor identitas</FieldLabel>
-                    <Input
-                        id="id_number"
-                        className="h-11"
-                        inputMode="numeric"
-                        placeholder="Sesuai dokumen"
-                        aria-invalid={errors.id_number !== undefined}
-                        {...register("id_number")}
-                    />
+                    <FieldLabel htmlFor="id_number">
+                        Nomor identitas <span className="text-red-600">*</span>
+                    </FieldLabel>
+                    <div className="relative">
+                        <IdCard
+                            aria-hidden="true"
+                            className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+                        />
+
+                        <Input
+                            id="id_number"
+                            className="h-11 pl-10"
+                            inputMode="numeric"
+                            placeholder="Sesuai dokumen"
+                            aria-invalid={errors.id_number !== undefined}
+                            {...register("id_number")}
+                        />
+                    </div>
                     <FieldError errors={errors.id_number ? [errors.id_number] : undefined} />
                 </Field>
 
                 <Field>
-                    <FieldLabel htmlFor="full_name">Nama lengkap</FieldLabel>
-                    <Input
-                        id="full_name"
-                        className="h-11"
-                        placeholder="Sesuai dokumen identitas"
-                        aria-invalid={errors.full_name !== undefined}
-                        {...register("full_name")}
-                    />
+                    <FieldLabel htmlFor="full_name">
+                        Nama lengkap <span className="text-red-600">*</span>
+                    </FieldLabel>
+                    <div className="relative">
+                        <User
+                            aria-hidden="true"
+                            className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+                        />
+
+                        <Input
+                            id="full_name"
+                            className="h-11 pl-10"
+                            placeholder="Sesuai dokumen identitas"
+                            aria-invalid={errors.full_name !== undefined}
+                            {...register("full_name")}
+                        />
+                    </div>
                     <FieldError errors={errors.full_name ? [errors.full_name] : undefined} />
                 </Field>
 

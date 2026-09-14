@@ -1,13 +1,11 @@
 import { MapPinIcon, PencilIcon, PlusIcon, Trash2Icon } from "lucide-react"
 import { useState } from "react"
-
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Text } from "~/components/ui/text"
+import type { MerchantOutlet } from "../../types/merchant-registration.types"
 
-import type { MerchantOutlet } from "../types/merchant-registration.types"
-
-function areaLabel(outlet: MerchantOutlet): string {
+const areaLabel = (outlet: MerchantOutlet): string => {
     if (outlet.service_area_type === "radius") {
         return `Radius ${outlet.service_radius_km ?? "-"} km`
     }

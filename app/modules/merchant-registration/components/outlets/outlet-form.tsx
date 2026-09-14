@@ -1,28 +1,25 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { CrosshairIcon } from "lucide-react"
+import { CrosshairIcon, Mail, Phone, Store } from "lucide-react"
 import { useState } from "react"
 import { Controller, FormProvider, useForm, type Resolver } from "react-hook-form"
-
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
-import { NativeSelect, NativeSelectOption } from "~/components/ui/native-select"
 import { Textarea } from "~/components/ui/textarea"
-
-import { ChoiceCards } from "./choice-cards"
+import { ChoiceCards } from "../ui/choice-cards"
 import { GeographyFields } from "./geography-fields"
 import { OperatingHoursField } from "./operating-hours-field"
-import { RegistrationActions } from "./registration-actions"
+import { RegistrationActions } from "../ui/registration-actions"
 import {
     hoursToPayload,
     outletSchema,
     SERVICE_AREA_TYPE_OPTIONS,
     type OutletFormValues,
-} from "../schemas/outlet.schema"
-import { useCreateOutlet, useUpdateOutlet } from "../services/merchant-registration.mutations"
-import type { DayKey, MerchantOutlet } from "../types/merchant-registration.types"
-import { applyApiFieldErrors, getApiErrorMessage } from "../utils/api-error"
+} from "../../schemas/outlet.schema"
+import { useCreateOutlet, useUpdateOutlet } from "../../services/merchant-registration.mutations"
+import type { MerchantOutlet } from "../../types/merchant-registration.types"
+import { applyApiFieldErrors, getApiErrorMessage } from "../../utils/api-error"
 
 const FIELDS = [
     "name",
@@ -49,11 +46,11 @@ function defaultHours(outlet: MerchantOutlet | null | undefined): OutletFormValu
     }
 
     for (const [day, slots] of Object.entries(outlet.operating_hours)) {
-        const first = slots?.[0]
-
-        if (first !== undefined) {
-            hours[day] = { open: first.open, close: first.close }
+        if (slots === undefined || slots.length === 0) {
+            continue
         }
+
+        hours[day] = slots.map((slot) => ({ open: slot.open, close: slot.close }))
     }
 
     return hours
@@ -164,52 +161,80 @@ export function OutletForm({
                         </Alert>
                     ) : null}
 
+                    {/* Nama Outlet */}
                     <Field>
-                        <FieldLabel htmlFor="outlet-name">Nama outlet</FieldLabel>
-                        <Input
-                            id="outlet-name"
-                            className="h-11"
-                            placeholder="Contoh: Outlet Utama"
-                            aria-invalid={form.formState.errors.name !== undefined}
-                            {...form.register("name")}
-                        />
+                        <FieldLabel htmlFor="outlet-name">
+                            Nama outlet <span className="text-red-600">*</span>
+                        </FieldLabel>
+                        <div className="relative">
+                            <Store
+                                aria-hidden="true"
+                                className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+                            />
+
+                            <Input
+                                id="outlet-name"
+                                className="h-11 pl-10"
+                                placeholder="Contoh: Outlet Utama"
+                                aria-invalid={form.formState.errors.name !== undefined}
+                                {...form.register("name")}
+                            />
+                        </div>
                         <FieldError errors={form.formState.errors.name ? [form.formState.errors.name] : undefined} />
                     </Field>
 
+                    {/* Telepon & Email */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <Field>
                             <FieldLabel htmlFor="outlet-phone">
                                 Telepon <span className="font-normal text-muted-foreground">(opsional)</span>
                             </FieldLabel>
-                            <Input
-                                id="outlet-phone"
-                                className="h-11"
-                                inputMode="tel"
-                                placeholder="08xxxxxxxxxx"
-                                {...form.register("phone")}
-                            />
+                            <div className="relative">
+                                <Phone
+                                    aria-hidden="true"
+                                    className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+                                />
+
+                                <Input
+                                    id="outlet-phone"
+                                    className="h-11 pl-10"
+                                    inputMode="tel"
+                                    placeholder="08xxxxxxxxxx"
+                                    {...form.register("phone")}
+                                />
+                            </div>
                         </Field>
 
                         <Field>
                             <FieldLabel htmlFor="outlet-email">
                                 Email <span className="font-normal text-muted-foreground">(opsional)</span>
                             </FieldLabel>
-                            <Input
-                                id="outlet-email"
-                                type="email"
-                                className="h-11"
-                                placeholder="outlet@usaha.id"
-                                aria-invalid={form.formState.errors.email !== undefined}
-                                {...form.register("email")}
-                            />
+                            <div className="relative">
+                                <Mail
+                                    aria-hidden="true"
+                                    className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+                                />
+
+                                <Input
+                                    id="outlet-email"
+                                    type="email"
+                                    className="h-11 pl-10"
+                                    placeholder="outlet@usaha.id"
+                                    aria-invalid={form.formState.errors.email !== undefined}
+                                    {...form.register("email")}
+                                />
+                            </div>
                             <FieldError
                                 errors={form.formState.errors.email ? [form.formState.errors.email] : undefined}
                             />
                         </Field>
                     </div>
 
+                    {/* Alamat Lengkap */}
                     <Field>
-                        <FieldLabel htmlFor="outlet-address">Alamat</FieldLabel>
+                        <FieldLabel htmlFor="outlet-address">
+                            Alamat Lengkap <span className="text-red-600">*</span>
+                        </FieldLabel>
                         <Textarea
                             id="outlet-address"
                             rows={3}
@@ -222,10 +247,14 @@ export function OutletForm({
                         />
                     </Field>
 
+                    {/* Geografi */}
                     <GeographyFields disabled={mutation.isPending} />
 
+                    {/* Kode Pos */}
                     <Field>
-                        <FieldLabel htmlFor="outlet-postal">Kode pos</FieldLabel>
+                        <FieldLabel htmlFor="outlet-postal">
+                            Kode pos <span className="text-red-600">*</span>
+                        </FieldLabel>
                         <Input
                             id="outlet-postal"
                             className="h-11"
@@ -239,10 +268,13 @@ export function OutletForm({
                         />
                     </Field>
 
+                    {/* Koordinat */}
                     <div className="flex flex-col gap-2">
                         <div className="grid grid-cols-2 gap-4">
                             <Field>
-                                <FieldLabel htmlFor="outlet-latitude">Latitude</FieldLabel>
+                                <FieldLabel htmlFor="outlet-latitude">
+                                    Latitude <span className="text-red-600">*</span>
+                                </FieldLabel>
                                 <Input
                                     id="outlet-latitude"
                                     className="h-11"
@@ -257,8 +289,11 @@ export function OutletForm({
                                     }
                                 />
                             </Field>
+
                             <Field>
-                                <FieldLabel htmlFor="outlet-longitude">Longitude</FieldLabel>
+                                <FieldLabel htmlFor="outlet-longitude">
+                                    Longitude <span className="text-red-600">*</span>
+                                </FieldLabel>
                                 <Input
                                     id="outlet-longitude"
                                     className="h-11"
@@ -287,7 +322,9 @@ export function OutletForm({
                     </div>
 
                     <Field>
-                        <FieldLabel>Area layanan</FieldLabel>
+                        <FieldLabel>
+                            Area layanan <span className="text-red-600">*</span>
+                        </FieldLabel>
                         <Controller
                             control={form.control}
                             name="service_area_type"
@@ -303,7 +340,9 @@ export function OutletForm({
 
                     {serviceAreaType === "radius" ? (
                         <Field>
-                            <FieldLabel htmlFor="outlet-radius">Radius (km)</FieldLabel>
+                            <FieldLabel htmlFor="outlet-radius">
+                                Radius (km) <span className="text-red-600">*</span>
+                            </FieldLabel>
                             <Input
                                 id="outlet-radius"
                                 className="h-11"

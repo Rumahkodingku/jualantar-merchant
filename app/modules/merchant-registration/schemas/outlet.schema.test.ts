@@ -16,7 +16,7 @@ const baseOutlet = {
     longitude: 117.1,
     service_area_type: "radius" as const,
     service_radius_km: 5,
-    hours: { monday: { open: "08:00", close: "17:00" } },
+    hours: { monday: [{ open: "08:00", close: "17:00" }] },
 }
 
 describe("outletSchema", () => {
@@ -55,7 +55,45 @@ describe("outletSchema", () => {
     it("rejects malformed operating hours", () => {
         const result = outletSchema.safeParse({
             ...baseOutlet,
-            hours: { monday: { open: "8am", close: "17:00" } },
+            hours: { monday: [{ open: "8am", close: "17:00" }] },
+        })
+
+        expect(result.success).toBe(false)
+    })
+
+    it("accepts multiple slots per day", () => {
+        const result = outletSchema.safeParse({
+            ...baseOutlet,
+            hours: {
+                monday: [
+                    { open: "08:00", close: "12:00" },
+                    { open: "13:00", close: "17:00" },
+                ],
+            },
+        })
+
+        expect(result.success).toBe(true)
+    })
+
+    it("rejects a slot whose close time is not after the open time", () => {
+        const result = outletSchema.safeParse({
+            ...baseOutlet,
+            hours: { monday: [{ open: "17:00", close: "08:00" }] },
+        })
+
+        expect(result.success).toBe(false)
+
+        if (!result.success) {
+            expect(result.error.issues.some((issue) => issue.message === "Jam tutup harus setelah jam buka.")).toBe(
+                true
+            )
+        }
+    })
+
+    it("rejects a day without any slot", () => {
+        const result = outletSchema.safeParse({
+            ...baseOutlet,
+            hours: { monday: [] },
         })
 
         expect(result.success).toBe(false)

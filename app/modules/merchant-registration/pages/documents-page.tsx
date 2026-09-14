@@ -3,10 +3,10 @@ import { useState } from "react"
 
 import { Text } from "~/components/ui/text"
 
-import { DocumentList } from "../components/document-list"
-import { DocumentUploader } from "../components/document-uploader"
-import { FileUpload } from "../components/file-upload"
-import { RegistrationActions } from "../components/registration-actions"
+import { DocumentList } from "../components/documents/document-list"
+import { DocumentUploader } from "../components/documents/document-uploader"
+import { FileUpload } from "../components/ui/file-upload"
+import { RegistrationActions } from "../components/ui/registration-actions"
 import { useRegistrationContext } from "../components/registration-context"
 import { merchantRegistrationKeys } from "../services/merchant-registration.keys"
 

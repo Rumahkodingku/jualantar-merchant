@@ -19,13 +19,13 @@ export function RegistrationActions({
     form?: string
 }) {
     return (
-        <div className="mt-auto flex gap-2 pt-6">
+        <div className="mt-auto flex w-auto gap-2 pt-6">
             {onBack !== undefined ? (
                 <Button
                     type="button"
                     variant="outline"
                     size="lg"
-                    className="h-11 flex-1"
+                    className="h-11 w-full flex-1 text-sm font-semibold"
                     onClick={onBack}
                     disabled={isSubmitting}
                 >
@@ -36,7 +36,7 @@ export function RegistrationActions({
                 type={type}
                 form={form}
                 size="lg"
-                className="h-11 flex-[2] text-sm"
+                className="h-11 w-full flex-1 text-sm font-semibold"
                 disabled={disabled || isSubmitting}
                 onClick={type === "button" ? onSubmit : undefined}
             >

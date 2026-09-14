@@ -1,17 +1,17 @@
 import { Controller, useForm } from "react-hook-form"
-
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { Skeleton } from "~/components/ui/skeleton"
 import { useServices } from "~/modules/service-catalog"
+import { ChoiceCards } from "../ui/choice-cards"
+import { RegistrationActions } from "../ui/registration-actions"
+import { useRegistrationContext } from "../registration-context"
+import { useSaveService } from "../../services/merchant-registration.mutations"
+import { getApiErrorMessage } from "../../utils/api-error"
 
-import { ChoiceCards } from "./choice-cards"
-import { RegistrationActions } from "./registration-actions"
-import { useRegistrationContext } from "./registration-context"
-import { useSaveService } from "../services/merchant-registration.mutations"
-import { getApiErrorMessage } from "../utils/api-error"
-
-type ServiceFormValues = { service_id: string }
+type ServiceFormValues = {
+    service_id: string
+}
 
 export function ServiceForm() {
     const { registration, navigation } = useRegistrationContext()
@@ -29,7 +29,9 @@ export function ServiceForm() {
 
     const onSubmit = handleSubmit((values) => {
         if (values.service_id === "") {
-            setError("service_id", { message: "Pilih salah satu layanan." })
+            setError("service_id", {
+                message: "Pilih salah satu layanan.",
+            })
             return
         }
 
@@ -52,7 +54,9 @@ export function ServiceForm() {
                 ) : null}
 
                 <Field>
-                    <FieldLabel>Layanan JualAntar</FieldLabel>
+                    <FieldLabel>
+                        Layanan JualAntar <span className="text-red-600">*</span>
+                    </FieldLabel>
                     {services.isPending ? (
                         <div className="flex flex-col gap-2">
                             <Skeleton className="h-16 w-full rounded-xl" />

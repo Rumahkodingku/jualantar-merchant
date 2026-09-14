@@ -26,7 +26,7 @@ vi.mock("../services/merchant-registration.mutations", () => ({
     useUpdateBusinessProfile: () => ({ mutate, isPending: false }),
 }))
 
-import { BusinessForm } from "./business-form"
+import { BusinessForm } from "."
 
 describe("BusinessForm", () => {
     it("blocks submission when the business name is empty", async () => {

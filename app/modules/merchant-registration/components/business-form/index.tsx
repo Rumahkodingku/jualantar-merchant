@@ -1,17 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
-
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Field, FieldDescription, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
 import { Textarea } from "~/components/ui/textarea"
-
-import { ChoiceCards } from "./choice-cards"
-import { RegistrationActions } from "./registration-actions"
-import { useRegistrationContext } from "./registration-context"
-import { businessSchema, MERCHANT_TYPE_OPTIONS, type BusinessFormValues } from "../schemas/business.schema"
-import { useUpdateBusinessProfile } from "../services/merchant-registration.mutations"
-import { applyApiFieldErrors, getApiErrorMessage } from "../utils/api-error"
+import { ChoiceCards } from "../ui/choice-cards"
+import { RegistrationActions } from "../ui/registration-actions"
+import { useRegistrationContext } from "../registration-context"
+import { businessSchema, MERCHANT_TYPE_OPTIONS, type BusinessFormValues } from "../../schemas/business.schema"
+import { useUpdateBusinessProfile } from "../../services/merchant-registration.mutations"
+import { applyApiFieldErrors, getApiErrorMessage } from "../../utils/api-error"
+import { BriefcaseBusiness } from "lucide-react"
 
 const FIELDS = ["business_name", "type", "description"] as const
 
@@ -39,9 +38,10 @@ export function BusinessForm() {
             onSuccess: () => navigation.goNext(),
             onError: (error) => {
                 const applied = applyApiFieldErrors(error, setError, FIELDS)
-
                 if (!applied) {
-                    setError("root", { message: getApiErrorMessage(error) })
+                    setError("root", {
+                        message: getApiErrorMessage(error),
+                    })
                 }
             },
         })
@@ -58,19 +58,30 @@ export function BusinessForm() {
                 ) : null}
 
                 <Field>
-                    <FieldLabel htmlFor="business_name">Nama usaha</FieldLabel>
-                    <Input
-                        id="business_name"
-                        className="h-11"
-                        placeholder="Contoh: Warung Sari"
-                        aria-invalid={errors.business_name !== undefined}
-                        {...register("business_name")}
-                    />
+                    <FieldLabel htmlFor="business_name">
+                        Nama usaha <span className="text-red-600">*</span>
+                    </FieldLabel>
+                    <div className="relative">
+                        <BriefcaseBusiness
+                            aria-hidden="true"
+                            className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+                        />
+
+                        <Input
+                            id="business_name"
+                            className="h-11 pl-10"
+                            placeholder="Contoh: Warung Sari"
+                            aria-invalid={errors.business_name !== undefined}
+                            {...register("business_name")}
+                        />
+                    </div>
                     <FieldError errors={errors.business_name ? [errors.business_name] : undefined} />
                 </Field>
 
                 <Field>
-                    <FieldLabel>Jenis usaha</FieldLabel>
+                    <FieldLabel>
+                        Jenis usaha <span className="text-red-600">*</span>
+                    </FieldLabel>
                     <Controller
                         control={control}
                         name="type"

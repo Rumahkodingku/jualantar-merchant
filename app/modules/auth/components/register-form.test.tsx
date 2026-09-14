@@ -26,8 +26,7 @@ describe("RegisterForm", () => {
 
         await user.click(screen.getByRole("button", { name: /^daftar$/i }))
 
-        expect(await screen.findByText("Nama lengkap wajib diisi.")).toBeInTheDocument()
-        expect(screen.getByText("Email wajib diisi.")).toBeInTheDocument()
+        expect(await screen.findByText("Email wajib diisi.")).toBeInTheDocument()
         expect(screen.getByText("Anda harus menyetujui syarat & ketentuan.")).toBeInTheDocument()
         expect(mutate).not.toHaveBeenCalled()
     })
@@ -36,7 +35,6 @@ describe("RegisterForm", () => {
         const user = userEvent.setup()
         renderForm()
 
-        await user.type(screen.getByLabelText("Nama lengkap"), "Merchant Owner")
         await user.type(screen.getByLabelText("Email"), "merchant@example.com")
         await user.type(screen.getByLabelText("Nomor telepon"), "081234567890")
         await user.type(screen.getByLabelText("Kata sandi"), "secret123")

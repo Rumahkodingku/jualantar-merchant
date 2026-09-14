@@ -4,11 +4,6 @@ const phonePattern = /^(\+62|62|0)8[0-9]{7,13}$/
 
 export const registerSchema = z
     .object({
-        full_name: z
-            .string()
-            .trim()
-            .min(1, "Nama lengkap wajib diisi.")
-            .max(150, "Nama lengkap maksimal 150 karakter."),
         email: z
             .string()
             .trim()

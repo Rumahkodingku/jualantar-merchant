@@ -24,7 +24,6 @@ describe("auth api", () => {
         const result = await registerMerchant({
             email: "merchant@example.com",
             phone: "081234567890",
-            full_name: "Merchant Owner",
             password: "secret123",
             password_confirmation: "secret123",
             terms_accepted: true,

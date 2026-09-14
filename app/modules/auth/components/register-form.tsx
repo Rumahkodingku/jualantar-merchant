@@ -16,7 +16,7 @@ import { applyApiFieldErrors, getApiErrorMessage } from "~/lib/api-form"
 import { registerSchema, type RegisterFormValues } from "../schemas/register.schema"
 import { useRegisterMerchant } from "../services/auth.mutations"
 
-const FIELDS = ["email", "phone", "full_name", "password", "password_confirmation", "terms_accepted"] as const
+const FIELDS = ["email", "phone", "password", "password_confirmation", "terms_accepted"] as const
 
 export function RegisterForm() {
     const navigate = useNavigate()
@@ -32,7 +32,6 @@ export function RegisterForm() {
     } = useForm<RegisterFormValues>({
         resolver: zodResolver(registerSchema),
         defaultValues: {
-            full_name: "",
             email: "",
             phone: "",
             password: "",
@@ -70,19 +69,6 @@ export function RegisterForm() {
                     <AlertDescription>{formError}</AlertDescription>
                 </Alert>
             ) : null}
-
-            <Field data-invalid={errors.full_name !== undefined}>
-                <FieldLabel htmlFor="full_name">Nama lengkap</FieldLabel>
-                <Input
-                    id="full_name"
-                    className="h-11"
-                    autoComplete="name"
-                    placeholder="Sesuai identitas"
-                    aria-invalid={errors.full_name !== undefined}
-                    {...register("full_name")}
-                />
-                <FieldError errors={errors.full_name ? [errors.full_name] : undefined} />
-            </Field>
 
             <Field data-invalid={errors.email !== undefined}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>

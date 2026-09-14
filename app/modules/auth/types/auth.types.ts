@@ -21,7 +21,6 @@ export type LoginResult = {
 export type RegisterMerchantInput = {
     email: string
     phone: string
-    full_name: string
     password: string
     password_confirmation: string
     terms_accepted: boolean

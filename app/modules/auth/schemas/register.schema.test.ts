@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest"
 import { registerSchema } from "./register.schema"
 
 const baseValues = {
-    full_name: "Merchant Owner",
     email: "merchant@example.com",
     phone: "081234567890",
     password: "secret123",

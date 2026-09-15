@@ -5,7 +5,7 @@ import { defineConfig, loadEnv } from "vite"
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), "")
     // Local `php artisan serve` runs on 8001; Docker Compose maps the API on 8000.
-    const apiProxyTarget = env.API_PROXY_TARGET || "http://127.0.0.1:8001"
+    const apiProxyTarget = env.API_PROXY_TARGET || "http://127.0.0.1:8000"
 
     return {
         resolve: { tsconfigPaths: true },

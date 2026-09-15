@@ -3,8 +3,7 @@ import { useState } from "react"
 
 import { Text } from "~/components/ui/text"
 
-import { DocumentList } from "../components/documents/document-list"
-import { DocumentUploader } from "../components/documents/document-uploader"
+import { DocumentChecklist } from "../components/documents/document-checklist"
 import { FileUpload } from "../components/ui/file-upload"
 import { RegistrationActions } from "../components/ui/registration-actions"
 import { useRegistrationContext } from "../components/registration-context"
@@ -50,11 +49,10 @@ export function DocumentsPage() {
                             Dokumen pendukung
                         </Text>
                         <Text variant="xs" className="text-muted-foreground">
-                            Opsional. Unggah KTP, NPWP, NIB, atau dokumen lain bila tersedia.
+                            Semua dokumen bersifat opsional. Sesuaikan dengan jenis usaha Anda dan lengkapi kapan saja.
                         </Text>
                     </div>
-                    <DocumentList documents={registration.documents} />
-                    <DocumentUploader />
+                    <DocumentChecklist />
                 </section>
             </div>
 

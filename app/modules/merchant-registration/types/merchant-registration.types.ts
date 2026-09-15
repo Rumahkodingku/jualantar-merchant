@@ -6,7 +6,18 @@ export type MerchantIdentityType = "ktp" | "sim" | "paspor"
 
 export type LegalEntityType = "pt" | "cv" | "ud" | "koperasi" | "yayasan"
 
-export type MerchantDocumentType = "ktp" | "npwp" | "nib" | "siup" | "akta_pendirian" | "lainnya"
+export type MerchantDocumentType =
+    | "ktp"
+    | "swafoto"
+    | "npwp"
+    | "nib"
+    | "siup"
+    | "izin_usaha"
+    | "akta_pendirian"
+    | "identitas_direktur"
+    | "rekening"
+    | "foto_outlet"
+    | "lainnya"
 
 export type OutletServiceAreaType = "radius" | "province" | "regency" | "district" | "village"
 

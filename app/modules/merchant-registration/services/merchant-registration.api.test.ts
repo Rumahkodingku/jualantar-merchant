@@ -7,6 +7,7 @@ import {
     createOutlet,
     createRegistration,
     createRegistrationUpload,
+    deleteDocument,
     deleteOutlet,
     fetchRegistration,
     reopenRegistration,
@@ -149,6 +150,14 @@ describe("merchant registration api", () => {
             mime_type: "image/jpeg",
             file_size: 10,
         })
+    })
+
+    it("deletes a document", async () => {
+        const spy = vi.spyOn(api, "delete").mockResolvedValue({ data: null })
+
+        await deleteDocument("doc-1")
+
+        expect(spy).toHaveBeenCalledWith("/merchants/registration/documents/doc-1")
     })
 
     it("submits the registration", async () => {

@@ -3,7 +3,7 @@ import { Controller, FormProvider, useForm, type Resolver } from "react-hook-for
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
-import { NativeSelect, NativeSelectOption } from "~/components/ui/native-select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Textarea } from "~/components/ui/textarea"
 import { GeographyFields } from "../outlets/geography-fields"
 import { RegistrationActions } from "../ui/registration-actions"
@@ -82,23 +82,34 @@ export function LegalEntityForm() {
                     ) : null}
 
                     <Field>
-                        <FieldLabel htmlFor="entity_type">Bentuk badan usaha</FieldLabel>
+                        <FieldLabel htmlFor="entity_type">
+                            Bentuk badan usaha <span className="text-red-600">*</span>
+                        </FieldLabel>
                         <Controller
                             control={form.control}
                             name="entity_type"
                             render={({ field }) => (
-                                <NativeSelect
+                                <Select
                                     id="entity_type"
-                                    className="w-full"
                                     value={field.value}
-                                    onChange={(event) => field.onChange(event.target.value)}
+                                    onValueChange={field.onChange}
+                                    aria-invalid={form.formState.errors.entity_type !== undefined}
                                 >
-                                    {LEGAL_ENTITY_TYPE_OPTIONS.map((option) => (
-                                        <NativeSelectOption key={option.value} value={option.value}>
-                                            {option.label}
-                                        </NativeSelectOption>
-                                    ))}
-                                </NativeSelect>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Pilih bentuk badan usaha" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {LEGAL_ENTITY_TYPE_OPTIONS.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                                className="h-10 cursor-pointer px-4 text-sm"
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             )}
                         />
                         <FieldError
@@ -107,7 +118,9 @@ export function LegalEntityForm() {
                     </Field>
 
                     <Field>
-                        <FieldLabel htmlFor="name">Nama badan usaha</FieldLabel>
+                        <FieldLabel htmlFor="name">
+                            Nama badan usaha <span className="text-red-600">*</span>
+                        </FieldLabel>
                         <Input
                             id="name"
                             className="h-11"

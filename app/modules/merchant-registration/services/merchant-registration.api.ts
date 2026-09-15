@@ -86,6 +86,10 @@ export async function attachDocument(input: AttachDocumentInput): Promise<Mercha
     return data.data
 }
 
+export async function deleteDocument(documentId: string): Promise<void> {
+    await api.delete(`${BASE}/documents/${documentId}`)
+}
+
 export async function savePayoutAccount(input: PayoutAccountInput): Promise<MerchantRegistration> {
     const { data } = await api.put<{ data: MerchantRegistration }>(`${BASE}/payout-account`, input)
 

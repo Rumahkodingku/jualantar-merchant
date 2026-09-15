@@ -5,6 +5,7 @@ import {
     createOutlet,
     createRegistration,
     createRegistrationUpload,
+    deleteDocument,
     deleteOutlet,
     reopenRegistration,
     saveCategories,
@@ -89,6 +90,19 @@ export function useAttachDocument() {
 
     return useMutation({
         mutationFn: attachDocument,
+        onSuccess: () => {
+            void queryClient.invalidateQueries({
+                queryKey: merchantRegistrationKeys.detail(),
+            })
+        },
+    })
+}
+
+export function useDeleteDocument() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: deleteDocument,
         onSuccess: () => {
             void queryClient.invalidateQueries({
                 queryKey: merchantRegistrationKeys.detail(),

@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CrosshairIcon, Mail, Phone, Store } from "lucide-react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Controller, FormProvider, useForm, type Resolver } from "react-hook-form"
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
@@ -10,6 +10,7 @@ import { Textarea } from "~/components/ui/textarea"
 import { ChoiceCards } from "../ui/choice-cards"
 import { GeographyFields } from "./geography-fields"
 import { OperatingHoursField } from "./operating-hours-field"
+import { OutletPhotosField } from "./outlet-photos-field"
 import { RegistrationActions } from "../ui/registration-actions"
 import {
     hoursToPayload,
@@ -37,6 +38,20 @@ const FIELDS = [
     "service_radius_km",
     "operating_hours",
 ] as const
+
+function outletPhotoUrls(outlet: MerchantOutlet | null | undefined): Record<string, string> {
+    const urls: Record<string, string> = {}
+
+    outlet?.photos?.forEach((key, index) => {
+        const url = outlet.photos_url?.[index]
+
+        if (url !== undefined && url !== null) {
+            urls[key] = url
+        }
+    })
+
+    return urls
+}
 
 function defaultHours(outlet: MerchantOutlet | null | undefined): OutletFormValues["hours"] {
     const hours: OutletFormValues["hours"] = {}
@@ -70,6 +85,9 @@ export function OutletForm({
     const isEditing = outlet !== null && outlet !== undefined
     const mutation = isEditing ? updateMutation : createMutation
     const [geoError, setGeoError] = useState<string | null>(null)
+    const [photos, setPhotos] = useState<string[]>(() => outlet?.photos ?? [])
+    const [photosBusy, setPhotosBusy] = useState(false)
+    const photoUrls = useMemo(() => outletPhotoUrls(outlet), [outlet])
 
     const form = useForm<OutletFormValues>({
         resolver: zodResolver(outletSchema) as unknown as Resolver<OutletFormValues>,
@@ -133,6 +151,7 @@ export function OutletForm({
             service_area_type: values.service_area_type,
             service_radius_km: values.service_area_type === "radius" ? (values.service_radius_km ?? null) : null,
             operating_hours: hoursToPayload(values.hours),
+            photos,
         }
 
         const onError = (error: unknown) => {
@@ -181,6 +200,20 @@ export function OutletForm({
                             />
                         </div>
                         <FieldError errors={form.formState.errors.name ? [form.formState.errors.name] : undefined} />
+                    </Field>
+
+                    {/* Foto Outlet */}
+                    <Field>
+                        <FieldLabel>
+                            Foto outlet <span className="font-normal text-muted-foreground">(opsional)</span>
+                        </FieldLabel>
+                        <OutletPhotosField
+                            photos={photos}
+                            photoUrls={photoUrls}
+                            disabled={mutation.isPending}
+                            onChange={setPhotos}
+                            onStateChange={(state) => setPhotosBusy(state === "requesting" || state === "uploading")}
+                        />
                     </Field>
 
                     {/* Telepon & Email */}
@@ -371,6 +404,7 @@ export function OutletForm({
                     form="outlet-form"
                     submitLabel={isEditing ? "Simpan perubahan" : "Simpan outlet"}
                     isSubmitting={mutation.isPending}
+                    disabled={photosBusy}
                     onBack={onCancel}
                 />
             </form>

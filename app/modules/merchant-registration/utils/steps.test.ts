@@ -76,6 +76,8 @@ const outlet: MerchantOutlet = {
     service_area_type: "radius",
     service_radius_km: 5,
     operating_hours: null,
+    photos: [],
+    photos_url: [],
     status: "active",
     geography: null,
     created_at: null,

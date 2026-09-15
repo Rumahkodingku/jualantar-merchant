@@ -1,11 +1,9 @@
 import { useNavigate } from "react-router"
-
 import { AuthLayout } from "~/components/layouts/auth-layout"
 import { Button } from "~/components/ui/button"
 import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { useLogout } from "~/modules/auth"
-
 import { useReopenRegistration } from "../services/merchant-registration.mutations"
 import { stepForRejectionStage, stepPathById } from "../utils/steps"
 import { statusPresentationFor } from "../utils/status-presentation"
@@ -18,7 +16,7 @@ export function RegistrationStatusScreen({ registration }: { registration: Merch
     const presentation = statusPresentationFor(registration)
     const Icon = presentation.icon
 
-    function handleReopen() {
+    const handleReopen = () => {
         reopen.mutate(undefined, {
             onSuccess: () => {
                 const step = stepForRejectionStage(registration.rejection_stage, registration)

@@ -23,7 +23,7 @@ export type OutletServiceAreaType = "radius" | "province" | "regency" | "distric
 
 export type OutletStatus = "active" | "inactive"
 
-export type UploadPurpose = "logo" | "document"
+export type UploadPurpose = "logo" | "document" | "outlet"
 
 export type DayKey = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
 
@@ -101,6 +101,8 @@ export type MerchantOutlet = {
     service_area_type: OutletServiceAreaType
     service_radius_km: number | null
     operating_hours: OperatingHours | null
+    photos: string[]
+    photos_url: (string | null)[]
     status: OutletStatus
     geography: GeographyLabel | null
     created_at: string | null
@@ -208,6 +210,7 @@ export type OutletInput = {
     service_radius_km?: number | null
     status?: OutletStatus
     operating_hours?: OperatingHours | null
+    photos?: string[]
 }
 
 export type PayoutAccountInput = {

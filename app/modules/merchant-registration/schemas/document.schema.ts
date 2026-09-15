@@ -1,4 +1,4 @@
-import type { MerchantDocumentType, MerchantType } from "../types/merchant-registration.types"
+import type { MerchantDocument, MerchantDocumentType, MerchantType } from "../types/merchant-registration.types"
 
 export const DOCUMENT_TYPE_LABELS: Record<MerchantDocumentType, string> = {
     ktp: "KTP",
@@ -72,16 +72,6 @@ export const DOCUMENT_REQUIREMENTS: Record<MerchantType, DocumentRequirement[]> 
             accept: DOCUMENT_ACCEPT,
             imagesOnly: false,
         },
-        {
-            id: "foto_outlet",
-            title: "Foto Outlet",
-            description: "Foto bagian depan tempat usaha/outlet.",
-            types: ["foto_outlet"],
-            accept: IMAGE_ACCEPT,
-            imagesOnly: true,
-            capture: "environment",
-            actionLabel: "Ambil Foto",
-        },
     ],
     company: [
         {
@@ -130,4 +120,10 @@ export const DOCUMENT_REQUIREMENTS: Record<MerchantType, DocumentRequirement[]> 
 
 export function primaryDocumentType(requirement: DocumentRequirement): MerchantDocumentType {
     return requirement.types[0]
+}
+
+export function areDocumentRequirementsSatisfied(documents: MerchantDocument[], type: MerchantType): boolean {
+    return DOCUMENT_REQUIREMENTS[type].every((requirement) =>
+        documents.some((document) => requirement.types.includes(document.document_type))
+    )
 }

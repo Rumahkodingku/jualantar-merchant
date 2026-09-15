@@ -53,6 +53,18 @@ export function OutletList({
                                     </span>
                                 </p>
                                 <p className="mt-1 text-xs text-muted-foreground">{areaLabel(outlet)}</p>
+                                {outlet.photos_url.length > 0 ? (
+                                    <div className="mt-2 flex gap-1.5">
+                                        {outlet.photos_url.slice(0, 4).map((url, index) => (
+                                            <img
+                                                key={url ?? index}
+                                                src={url ?? undefined}
+                                                alt={`Foto ${outlet.name}`}
+                                                className="size-12 rounded-lg border object-cover"
+                                            />
+                                        ))}
+                                    </div>
+                                ) : null}
                             </div>
                         </div>
 

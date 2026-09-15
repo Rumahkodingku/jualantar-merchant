@@ -4,7 +4,7 @@ import { Button } from "~/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible"
 import { Text } from "~/components/ui/text"
 import { useRegistrationContext } from "./registration-context"
-import { documentTypeLabel } from "../schemas/document.schema"
+import { areDocumentRequirementsSatisfied, documentTypeLabel } from "../schemas/document.schema"
 import { isStepComplete, REGISTRATION_STEPS, type StepId } from "../utils/steps"
 import type { DayKey, MerchantRegistration, OperatingHours } from "../types/merchant-registration.types"
 
@@ -26,11 +26,7 @@ function stepMeta(id: StepId) {
     return REGISTRATION_STEPS.find((step) => step.id === id)
 }
 
-function sectionStatus(id: StepId, registration: MerchantRegistration, optional = false): SectionStatus {
-    if (optional) {
-        return "optional"
-    }
-
+function sectionStatus(id: StepId, registration: MerchantRegistration): SectionStatus {
     const step = stepMeta(id)
 
     if (step === undefined) {
@@ -38,6 +34,17 @@ function sectionStatus(id: StepId, registration: MerchantRegistration, optional 
     }
 
     return isStepComplete(step, registration) ? "complete" : "incomplete"
+}
+
+/**
+ * The documents step is optional, but the badge turns "Lengkap" once the logo
+ * and every document slot for the merchant type have been filled.
+ */
+function documentsSectionStatus(registration: MerchantRegistration): SectionStatus {
+    const type = registration.type ?? "individual"
+    const hasAllDocuments = areDocumentRequirementsSatisfied(registration.documents, type)
+
+    return registration.logo_url !== null && hasAllDocuments ? "complete" : "optional"
 }
 
 function formatTime(value: string): string {
@@ -348,6 +355,20 @@ export function RegistrationReview({ registration }: { registration: MerchantReg
                                       value={operatingHoursSummary(outlet.operating_hours)}
                                   />
                               </div>
+                              {outlet.photos_url.length > 0 ? (
+                                  <div className="flex flex-wrap gap-1.5">
+                                      {outlet.photos_url.map((url, index) =>
+                                          url !== null ? (
+                                              <img
+                                                  key={url ?? index}
+                                                  src={url}
+                                                  alt={`Foto ${outlet.name}`}
+                                                  className="size-12 rounded-lg border object-cover"
+                                              />
+                                          ) : null
+                                      )}
+                                  </div>
+                              ) : null}
                           </div>
                       ))
                     : null}
@@ -356,7 +377,7 @@ export function RegistrationReview({ registration }: { registration: MerchantReg
             <ReviewCollapsible
                 title="Logo & dokumen"
                 stepId="documents"
-                status={sectionStatus("documents", registration, true)}
+                status={documentsSectionStatus(registration)}
                 hasData={registration.logo_url !== null || registration.documents.length > 0}
             >
                 <div className="flex items-center gap-3 px-4 py-3">

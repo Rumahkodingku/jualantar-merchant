@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest"
 
 import { RegistrationProvider } from "./registration-context"
 import { RegistrationReview } from "./registration-review"
-import type { MerchantRegistration } from "../types/merchant-registration.types"
+import type { MerchantDocument, MerchantDocumentType, MerchantRegistration } from "../types/merchant-registration.types"
 
 function makeRegistration(overrides: Partial<MerchantRegistration> = {}): MerchantRegistration {
     return {
@@ -57,6 +57,8 @@ function makeRegistration(overrides: Partial<MerchantRegistration> = {}): Mercha
                 service_area_type: "radius",
                 service_radius_km: 5,
                 operating_hours: { monday: [{ open: "08:00", close: "17:00" }] },
+                photos: [],
+                photos_url: [],
                 status: "active",
                 geography: { village: "Desa A", district: "Kec A", regency: "Kab A", province: "Prov A" },
                 created_at: null,
@@ -81,6 +83,21 @@ function makeRegistration(overrides: Partial<MerchantRegistration> = {}): Mercha
         created_at: null,
         updated_at: null,
         ...overrides,
+    }
+}
+
+function makeDocument(type: MerchantDocumentType, index: number): MerchantDocument {
+    return {
+        id: `d${index}`,
+        merchant_id: "m1",
+        document_type: type,
+        file_name: `${type}.jpg`,
+        object_key: `merchants/m1/documents/${type}.jpg`,
+        mime_type: "image/jpeg",
+        file_size: 1024,
+        url: null,
+        created_at: null,
+        updated_at: null,
     }
 }
 
@@ -153,6 +170,31 @@ describe("RegistrationReview", () => {
         expect(documents.getByText("Belum ada dokumen")).toBeInTheDocument()
         expect(documents.getByText("Opsional")).toBeInTheDocument()
         expect(documents.getByRole("button", { name: "Tambah data" })).toBeInTheDocument()
+    })
+
+    it("marks the documents section complete when the logo and every document slot are filled", () => {
+        renderReview(
+            makeRegistration({
+                logo_url: "https://storage.test/logo.png",
+                documents: (["ktp", "swafoto", "npwp", "rekening"] as MerchantDocumentType[]).map(makeDocument),
+            })
+        )
+
+        const documents = section("Logo & dokumen")
+
+        expect(documents.getByText("Lengkap")).toBeInTheDocument()
+        expect(documents.queryByText("Opsional")).not.toBeInTheDocument()
+    })
+
+    it("keeps the documents section optional while some slots are still empty", () => {
+        renderReview(
+            makeRegistration({
+                logo_url: "https://storage.test/logo.png",
+                documents: (["ktp", "swafoto"] as MerchantDocumentType[]).map(makeDocument),
+            })
+        )
+
+        expect(section("Logo & dokumen").getByText("Opsional")).toBeInTheDocument()
     })
 
     it("renders an outlet sub-card with address and operating hours", () => {

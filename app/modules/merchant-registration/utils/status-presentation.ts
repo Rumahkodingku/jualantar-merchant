@@ -1,4 +1,11 @@
-import { CheckCircle2Icon, ClockIcon, PauseCircleIcon, ShieldAlertIcon, XCircleIcon } from "lucide-react"
+import {
+    CheckCircle2Icon,
+    CircleAlertIcon,
+    ClockIcon,
+    PauseCircleIcon,
+    ShieldAlertIcon,
+    XCircleIcon,
+} from "lucide-react"
 
 import type { MerchantRegistration } from "../types/merchant-registration.types"
 
@@ -10,8 +17,19 @@ export type StatusPresentation = {
 }
 
 export function statusPresentationFor(registration: MerchantRegistration): StatusPresentation {
+    if (registration.merchant_status === "suspended") {
+        return {
+            icon: PauseCircleIcon,
+            tone: "text-orange-600 bg-orange-500/10",
+            title: "Akun merchant dijeda",
+            description:
+                "Sementara ini merchant Anda tidak dapat menerima pesanan. Hubungi tim JualAntar untuk informasi lebih lanjut.",
+        }
+    }
+
     switch (registration.status) {
         case "pending":
+        case "in_review":
             return {
                 icon: ClockIcon,
                 tone: "text-amber-600 bg-amber-500/10",
@@ -19,7 +37,7 @@ export function statusPresentationFor(registration: MerchantRegistration): Statu
                 description:
                     "Data Anda sudah kami terima. Tim JualAntar akan meninjau pendaftaran sebelum usaha Anda aktif.",
             }
-        case "active":
+        case "approved":
             return {
                 icon: CheckCircle2Icon,
                 tone: "text-emerald-600 bg-emerald-500/10",
@@ -27,21 +45,21 @@ export function statusPresentationFor(registration: MerchantRegistration): Statu
                 description:
                     "Selamat! Merchant Anda telah disetujui. Anda dapat mulai mengelola usaha dari dashboard merchant.",
             }
-        case "suspended":
+        case "revision_required":
             return {
-                icon: PauseCircleIcon,
-                tone: "text-orange-600 bg-orange-500/10",
-                title: "Akun merchant dijeda",
+                icon: CircleAlertIcon,
+                tone: "text-amber-600 bg-amber-500/10",
+                title: "Pendaftaran perlu diperbaiki",
                 description:
-                    "Sementara ini merchant Anda tidak dapat menerima pesanan. Hubungi tim JualAntar untuk informasi lebih lanjut.",
+                    "Beberapa data pendaftaran perlu Anda perbaiki. Periksa catatan dari tim JualAntar lalu kirim ulang.",
             }
         case "rejected":
             return {
                 icon: XCircleIcon,
                 tone: "text-destructive bg-destructive/10",
-                title: "Pendaftaran perlu diperbaiki",
+                title: "Pendaftaran belum disetujui",
                 description:
-                    "Beberapa data pendaftaran belum dapat kami setujui. Perbaiki data yang diminta lalu kirim ulang.",
+                    "Mohon maaf, pendaftaran Anda belum dapat kami setujui. Hubungi tim JualAntar untuk informasi lebih lanjut.",
             }
         default:
             return {

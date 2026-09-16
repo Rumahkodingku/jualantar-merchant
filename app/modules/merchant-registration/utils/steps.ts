@@ -149,9 +149,11 @@ export function stepProgress(registration: MerchantRegistration) {
 }
 
 const REJECTION_STAGE_STEPS: Record<string, StepId> = {
-    merchant: "business",
+    business: "business",
     identity: "identity",
     legal_entity: "legal-entity",
+    service: "service",
+    category: "categories",
     outlet: "outlets",
     document: "documents",
     payout: "payout",

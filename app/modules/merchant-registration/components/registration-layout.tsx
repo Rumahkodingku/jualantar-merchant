@@ -54,7 +54,7 @@ export function RegistrationLayout() {
         return <SplashScreen label="Menyiapkan pendaftaran…" />
     }
 
-    if (data.status !== "draft") {
+    if (data.status !== "draft" && data.status !== "revision_required") {
         return <RegistrationStatusScreen registration={data} />
     }
 

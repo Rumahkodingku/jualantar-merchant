@@ -10,7 +10,6 @@ import {
     deleteDocument,
     deleteOutlet,
     fetchRegistration,
-    reopenRegistration,
     saveCategories,
     saveService,
     submitRegistration,
@@ -22,22 +21,44 @@ afterEach(() => {
 })
 
 describe("merchant registration api", () => {
-    it("fetches the registration detail", async () => {
-        const spy = vi.spyOn(api, "get").mockResolvedValue({ data: { data: { id: "merchant-1" } } })
+    it("fetches the registration detail and flattens the overview", async () => {
+        const spy = vi.spyOn(api, "get").mockResolvedValue({
+            data: {
+                data: {
+                    merchant: { id: "merchant-1", status: "inactive", business_name: "Warung" },
+                    application: { id: "app-1", status: "draft" },
+                    revisions: [],
+                },
+            },
+        })
 
         const result = await fetchRegistration()
 
         expect(spy).toHaveBeenCalledWith("/merchants/registration")
-        expect(result).toEqual({ id: "merchant-1" })
+        expect(result).toMatchObject({
+            id: "merchant-1",
+            business_name: "Warung",
+            status: "draft",
+            merchant_status: "inactive",
+        })
     })
 
     it("creates a draft with an empty payload", async () => {
-        const spy = vi.spyOn(api, "post").mockResolvedValue({ data: { data: { merchant_id: "m1", status: "draft" } } })
+        const spy = vi.spyOn(api, "post").mockResolvedValue({
+            data: {
+                data: {
+                    merchant_id: "m1",
+                    merchant_status: "inactive",
+                    application: { id: "app-1", status: "draft" },
+                },
+            },
+        })
 
         const result = await createRegistration()
 
         expect(spy).toHaveBeenCalledWith("/merchants/registration", {})
-        expect(result.status).toBe("draft")
+        expect(result.merchant_status).toBe("inactive")
+        expect(result.application?.status).toBe("draft")
     })
 
     it("patches the business profile", async () => {
@@ -161,22 +182,19 @@ describe("merchant registration api", () => {
     })
 
     it("submits the registration", async () => {
-        const spy = vi
-            .spyOn(api, "post")
-            .mockResolvedValue({ data: { data: { merchant_id: "m1", status: "pending" } } })
+        const spy = vi.spyOn(api, "post").mockResolvedValue({
+            data: {
+                data: {
+                    merchant_id: "m1",
+                    merchant_status: "inactive",
+                    application: { id: "app-1", status: "pending" },
+                },
+            },
+        })
 
         const result = await submitRegistration()
 
         expect(spy).toHaveBeenCalledWith("/merchants/registration/submit")
-        expect(result.status).toBe("pending")
-    })
-
-    it("reopens a rejected registration", async () => {
-        const spy = vi.spyOn(api, "post").mockResolvedValue({ data: { data: { merchant_id: "m1", status: "draft" } } })
-
-        const result = await reopenRegistration()
-
-        expect(spy).toHaveBeenCalledWith("/merchants/registration/reopen")
-        expect(result.status).toBe("draft")
+        expect(result.application?.status).toBe("pending")
     })
 })

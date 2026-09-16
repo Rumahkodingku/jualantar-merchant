@@ -15,6 +15,7 @@ function makeRegistration(overrides: Partial<MerchantRegistration> = {}): Mercha
         description: "Menjual makanan",
         type: "individual",
         status: "draft",
+        merchant_status: "inactive",
         logo: null,
         logo_url: null,
         service: { id: "s1", name: "JualAntar Reguler", slug: "reguler" },

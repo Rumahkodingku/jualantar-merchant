@@ -1,11 +1,12 @@
 import { Brand } from "~/components/brand"
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Text } from "~/components/ui/text"
 
 import { RegistrationProgress } from "./registration-progress"
 import { useRegistrationContext } from "./registration-context"
 
 export function RegistrationScreen({ children }: { children: React.ReactNode }) {
-    const { navigation } = useRegistrationContext()
+    const { registration, navigation } = useRegistrationContext()
     const step = navigation.activeStep
 
     return (
@@ -28,6 +29,16 @@ export function RegistrationScreen({ children }: { children: React.ReactNode }) 
                         ) : null}
                     </div>
                 </div>
+
+                {registration.status === "revision_required" ? (
+                    <Alert variant="destructive">
+                        <AlertTitle>Pendaftaran perlu diperbaiki</AlertTitle>
+                        <AlertDescription>
+                            {registration.rejection_reason ??
+                                "Beberapa data perlu Anda perbaiki sebelum dapat dikirim ulang."}
+                        </AlertDescription>
+                    </Alert>
+                ) : null}
 
                 {children}
             </main>

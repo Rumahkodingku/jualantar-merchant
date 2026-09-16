@@ -137,7 +137,8 @@ export function HomePage() {
                         </Button>
                     </CardContent>
                 </Card>
-            ) : registration.data === undefined ? null : registration.data.status === "draft" ? (
+            ) : registration.data === undefined ? null : registration.data.status === "draft" ||
+              registration.data.status === "revision_required" ? (
                 <DraftCard registration={registration.data} />
             ) : (
                 <StatusCard registration={registration.data} />

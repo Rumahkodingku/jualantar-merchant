@@ -1,5 +1,6 @@
 import { api } from "~/lib/api"
 
+import { normalizeRegistrationOverview } from "../utils/normalize-registration"
 import type {
     AttachDocumentInput,
     BusinessProfileInput,
@@ -8,18 +9,20 @@ import type {
     LegalEntityInput,
     MerchantDocument,
     MerchantRegistration,
+    MerchantResource,
     OutletInput,
     PayoutAccountInput,
     PresignedUpload,
+    RegistrationOverview,
     RegistrationStatusPayload,
 } from "../types/merchant-registration.types"
 
 const BASE = "/merchants/registration"
 
 export async function fetchRegistration(): Promise<MerchantRegistration> {
-    const { data } = await api.get<{ data: MerchantRegistration }>(BASE)
+    const { data } = await api.get<{ data: RegistrationOverview }>(BASE)
 
-    return data.data
+    return normalizeRegistrationOverview(data.data)
 }
 
 export async function createRegistration(): Promise<RegistrationStatusPayload> {
@@ -28,44 +31,44 @@ export async function createRegistration(): Promise<RegistrationStatusPayload> {
     return data.data
 }
 
-export async function updateBusinessProfile(input: BusinessProfileInput): Promise<MerchantRegistration> {
-    const { data } = await api.patch<{ data: MerchantRegistration }>(BASE, input)
+export async function updateBusinessProfile(input: BusinessProfileInput): Promise<MerchantResource> {
+    const { data } = await api.patch<{ data: MerchantResource }>(BASE, input)
 
     return data.data
 }
 
-export async function saveIdentity(input: IdentityInput): Promise<MerchantRegistration> {
-    const { data } = await api.put<{ data: MerchantRegistration }>(`${BASE}/identity`, input)
+export async function saveIdentity(input: IdentityInput): Promise<MerchantResource> {
+    const { data } = await api.put<{ data: MerchantResource }>(`${BASE}/identity`, input)
 
     return data.data
 }
 
-export async function saveLegalEntity(input: LegalEntityInput): Promise<MerchantRegistration> {
-    const { data } = await api.put<{ data: MerchantRegistration }>(`${BASE}/legal-entity`, input)
+export async function saveLegalEntity(input: LegalEntityInput): Promise<MerchantResource> {
+    const { data } = await api.put<{ data: MerchantResource }>(`${BASE}/legal-entity`, input)
 
     return data.data
 }
 
-export async function saveService(serviceId: string): Promise<MerchantRegistration> {
-    const { data } = await api.put<{ data: MerchantRegistration }>(`${BASE}/service`, { service_id: serviceId })
+export async function saveService(serviceId: string): Promise<MerchantResource> {
+    const { data } = await api.put<{ data: MerchantResource }>(`${BASE}/service`, { service_id: serviceId })
 
     return data.data
 }
 
-export async function saveCategories(categoryIds: string[]): Promise<MerchantRegistration> {
-    const { data } = await api.put<{ data: MerchantRegistration }>(`${BASE}/categories`, { category_ids: categoryIds })
+export async function saveCategories(categoryIds: string[]): Promise<MerchantResource> {
+    const { data } = await api.put<{ data: MerchantResource }>(`${BASE}/categories`, { category_ids: categoryIds })
 
     return data.data
 }
 
-export async function createOutlet(input: OutletInput): Promise<MerchantRegistration> {
-    const { data } = await api.post<{ data: MerchantRegistration }>(`${BASE}/outlets`, input)
+export async function createOutlet(input: OutletInput): Promise<MerchantResource> {
+    const { data } = await api.post<{ data: MerchantResource }>(`${BASE}/outlets`, input)
 
     return data.data
 }
 
-export async function updateOutlet(outletId: string, input: Partial<OutletInput>): Promise<MerchantRegistration> {
-    const { data } = await api.patch<{ data: MerchantRegistration }>(`${BASE}/outlets/${outletId}`, input)
+export async function updateOutlet(outletId: string, input: Partial<OutletInput>): Promise<MerchantResource> {
+    const { data } = await api.patch<{ data: MerchantResource }>(`${BASE}/outlets/${outletId}`, input)
 
     return data.data
 }
@@ -90,26 +93,20 @@ export async function deleteDocument(documentId: string): Promise<void> {
     await api.delete(`${BASE}/documents/${documentId}`)
 }
 
-export async function savePayoutAccount(input: PayoutAccountInput): Promise<MerchantRegistration> {
-    const { data } = await api.put<{ data: MerchantRegistration }>(`${BASE}/payout-account`, input)
+export async function savePayoutAccount(input: PayoutAccountInput): Promise<MerchantResource> {
+    const { data } = await api.put<{ data: MerchantResource }>(`${BASE}/payout-account`, input)
 
     return data.data
 }
 
 export async function fetchReview(): Promise<MerchantRegistration> {
-    const { data } = await api.get<{ data: MerchantRegistration }>(`${BASE}/review`)
+    const { data } = await api.get<{ data: RegistrationOverview }>(`${BASE}/review`)
 
-    return data.data
+    return normalizeRegistrationOverview(data.data)
 }
 
 export async function submitRegistration(): Promise<RegistrationStatusPayload> {
     const { data } = await api.post<{ data: RegistrationStatusPayload }>(`${BASE}/submit`)
-
-    return data.data
-}
-
-export async function reopenRegistration(): Promise<RegistrationStatusPayload> {
-    const { data } = await api.post<{ data: RegistrationStatusPayload }>(`${BASE}/reopen`)
 
     return data.data
 }

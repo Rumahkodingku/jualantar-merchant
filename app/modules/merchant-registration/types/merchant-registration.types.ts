@@ -1,4 +1,6 @@
-export type MerchantStatus = "draft" | "pending" | "active" | "suspended" | "rejected"
+export type MerchantStatus = "draft" | "pending" | "in_review" | "revision_required" | "approved" | "rejected"
+
+export type MerchantOperationalStatus = "inactive" | "active" | "suspended"
 
 export type MerchantType = "individual" | "company"
 
@@ -139,7 +141,10 @@ export type MerchantRegistration = {
     slug: string | null
     description: string | null
     type: MerchantType | null
+    /** Lifecycle state, derived from the current application. Drives the wizard. */
     status: MerchantStatus
+    /** Operational merchant state owned by the backend. */
+    merchant_status: MerchantOperationalStatus
     logo: string | null
     logo_url: string | null
     service: MerchantServiceRef | null
@@ -149,16 +154,62 @@ export type MerchantRegistration = {
     outlets: MerchantOutlet[]
     documents: MerchantDocument[]
     payout_accounts: PayoutAccount[]
-    /** Exposed by the API once the backend rejection payload lands. */
+    /** Derived from the latest approval revision's first unresolved item. */
     rejection_stage?: string | null
+    /** Derived from the latest approval revision's note. */
     rejection_reason?: string | null
     created_at: string | null
     updated_at: string | null
 }
 
+export type MerchantApplication = {
+    id: string
+    merchant_id: string
+    application_number: string
+    status: MerchantStatus
+    submitted_at: string | null
+    created_at: string | null
+    updated_at: string | null
+}
+
+export type MerchantApprovalRevisionItem = {
+    id: string
+    revision_id: string
+    component: string
+    subject_type: string
+    subject_id: string
+    reason: string | null
+    resolved_at: string | null
+    created_at: string | null
+}
+
+export type MerchantApprovalRevision = {
+    id: string
+    approval_id: string
+    requested_by: string | null
+    note: string | null
+    status: string
+    requested_at: string | null
+    resolved_at: string | null
+    items: MerchantApprovalRevisionItem[]
+    created_at: string | null
+}
+
+/** Raw merchant payload as returned by the API: `status` is operational. */
+export type MerchantResource = Omit<MerchantRegistration, "status" | "merchant_status"> & {
+    status: MerchantOperationalStatus
+}
+
+export type RegistrationOverview = {
+    merchant: MerchantResource
+    application: MerchantApplication | null
+    revisions: MerchantApprovalRevision[]
+}
+
 export type RegistrationStatusPayload = {
     merchant_id: string
-    status: MerchantStatus
+    merchant_status: MerchantOperationalStatus
+    application: MerchantApplication | null
 }
 
 export type PresignedUpload = {

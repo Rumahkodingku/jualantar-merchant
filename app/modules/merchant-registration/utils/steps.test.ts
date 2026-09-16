@@ -24,6 +24,7 @@ function registration(overrides: Partial<MerchantRegistration> = {}): MerchantRe
         description: null,
         type: null,
         status: "draft",
+        merchant_status: "inactive",
         logo: null,
         logo_url: null,
         service: null,
@@ -233,9 +234,11 @@ describe("stepForRejectionStage", () => {
     it("maps each rejection stage to its wizard step", () => {
         const data = registration()
 
-        expect(stepForRejectionStage("merchant", data)).toBe("business")
+        expect(stepForRejectionStage("business", data)).toBe("business")
         expect(stepForRejectionStage("identity", data)).toBe("identity")
         expect(stepForRejectionStage("legal_entity", data)).toBe("legal-entity")
+        expect(stepForRejectionStage("service", data)).toBe("service")
+        expect(stepForRejectionStage("category", data)).toBe("categories")
         expect(stepForRejectionStage("outlet", data)).toBe("outlets")
         expect(stepForRejectionStage("document", data)).toBe("documents")
         expect(stepForRejectionStage("payout", data)).toBe("payout")

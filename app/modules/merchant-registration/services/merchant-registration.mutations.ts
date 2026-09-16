@@ -7,7 +7,6 @@ import {
     createRegistrationUpload,
     deleteDocument,
     deleteOutlet,
-    reopenRegistration,
     saveCategories,
     saveIdentity,
     saveLegalEntity,
@@ -18,15 +17,17 @@ import {
     updateOutlet,
 } from "./merchant-registration.api"
 import { merchantRegistrationKeys } from "./merchant-registration.keys"
-import type { MerchantRegistration, OutletInput } from "../types/merchant-registration.types"
+import type { MerchantResource, OutletInput } from "../types/merchant-registration.types"
 
-function useRegistrationUpdate<TInput>(mutationFn: (input: TInput) => Promise<MerchantRegistration>) {
+function useRegistrationUpdate<TInput>(mutationFn: (input: TInput) => Promise<MerchantResource>) {
     const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn,
-        onSuccess: (registration) => {
-            queryClient.setQueryData(merchantRegistrationKeys.detail(), registration)
+        onSuccess: () => {
+            void queryClient.invalidateQueries({
+                queryKey: merchantRegistrationKeys.detail(),
+            })
             void queryClient.invalidateQueries({
                 queryKey: merchantRegistrationKeys.review(),
             })
@@ -129,19 +130,6 @@ export function useSubmitRegistration() {
 
     return useMutation({
         mutationFn: submitRegistration,
-        onSuccess: () => {
-            void queryClient.invalidateQueries({
-                queryKey: merchantRegistrationKeys.detail(),
-            })
-        },
-    })
-}
-
-export function useReopenRegistration() {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: reopenRegistration,
         onSuccess: () => {
             void queryClient.invalidateQueries({
                 queryKey: merchantRegistrationKeys.detail(),

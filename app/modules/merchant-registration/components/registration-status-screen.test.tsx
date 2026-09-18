@@ -6,6 +6,10 @@ vi.mock("~/modules/auth", () => ({
     useLogout: () => ({ mutate: vi.fn(), isPending: false }),
 }))
 
+vi.mock("../services/merchant-registration.mutations", () => ({
+    useCreateRegistration: () => ({ mutate: vi.fn(), isPending: false }),
+}))
+
 import { RegistrationStatusScreen } from "./registration-status-screen"
 import type { MerchantRegistration } from "../types/merchant-registration.types"
 
@@ -76,5 +80,25 @@ describe("RegistrationStatusScreen", () => {
 
         expect(screen.getByText("Pendaftaran belum disetujui")).toBeInTheDocument()
         expect(screen.getByText("Foto KTP kurang jelas.")).toBeInTheDocument()
+    })
+
+    it("prefers the decision reason and offers a reapply action when rejected", () => {
+        renderScreen(
+            registration({
+                status: "rejected",
+                decision_reason: "Dokumen tidak valid.",
+                rejection_reason: "Catatan revisi lama.",
+            })
+        )
+
+        expect(screen.getByText("Dokumen tidak valid.")).toBeInTheDocument()
+        expect(screen.queryByText("Catatan revisi lama.")).not.toBeInTheDocument()
+        expect(screen.getByRole("button", { name: "Ajukan Pendaftaran Baru" })).toBeInTheDocument()
+    })
+
+    it("hides the reapply action while the application is under review", () => {
+        renderScreen(registration({ status: "pending" }))
+
+        expect(screen.queryByRole("button", { name: "Ajukan Pendaftaran Baru" })).not.toBeInTheDocument()
     })
 })

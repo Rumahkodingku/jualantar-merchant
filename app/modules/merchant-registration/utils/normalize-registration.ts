@@ -22,7 +22,8 @@ function firstUnresolvedStage(revision: MerchantApprovalRevision | null): string
         return null
     }
 
-    const item = revision.items.find((candidate) => candidate.resolved_at === null) ?? revision.items[0]
+    const items = revision.items ?? []
+    const item = items.find((candidate) => candidate.resolved_at === null) ?? items[0]
 
     return item?.component ?? null
 }
@@ -42,5 +43,6 @@ export function normalizeRegistrationOverview(overview: RegistrationOverview): M
         merchant_status: merchant.status,
         rejection_stage: firstUnresolvedStage(revision),
         rejection_reason: revision?.note ?? null,
+        decision_reason: overview.decision_reason ?? null,
     }
 }

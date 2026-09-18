@@ -158,6 +158,8 @@ export type MerchantRegistration = {
     rejection_stage?: string | null
     /** Derived from the latest approval revision's note. */
     rejection_reason?: string | null
+    /** Final rejection reason set by the admin when the application is rejected. */
+    decision_reason?: string | null
     created_at: string | null
     updated_at: string | null
 }
@@ -191,12 +193,16 @@ export type MerchantApprovalRevision = {
     status: string
     requested_at: string | null
     resolved_at: string | null
-    items: MerchantApprovalRevisionItem[]
+    /** The merchant-facing overview does not include revision items. */
+    items?: MerchantApprovalRevisionItem[] | undefined
     created_at: string | null
 }
 
 /** Raw merchant payload as returned by the API: `status` is operational. */
-export type MerchantResource = Omit<MerchantRegistration, "status" | "merchant_status"> & {
+export type MerchantResource = Omit<
+    MerchantRegistration,
+    "status" | "merchant_status" | "rejection_stage" | "rejection_reason"
+> & {
     status: MerchantOperationalStatus
 }
 
@@ -204,6 +210,7 @@ export type RegistrationOverview = {
     merchant: MerchantResource
     application: MerchantApplication | null
     revisions: MerchantApprovalRevision[]
+    decision_reason?: string | null
 }
 
 export type RegistrationStatusPayload = {

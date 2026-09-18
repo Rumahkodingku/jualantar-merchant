@@ -100,4 +100,33 @@ describe("normalizeRegistrationOverview", () => {
         expect(result.rejection_reason).toBeNull()
         expect(result.rejection_stage).toBeNull()
     })
+
+    it("derives the rejection reason from the note when items are absent", () => {
+        const result = normalizeRegistrationOverview(
+            overview({
+                revisions: [
+                    revision({
+                        requested_at: "2026-01-01T00:00:00Z",
+                        note: "Foto KTP kurang jelas.",
+                        items: undefined,
+                    }),
+                ],
+            })
+        )
+
+        expect(result.rejection_reason).toBe("Foto KTP kurang jelas.")
+        expect(result.rejection_stage).toBeNull()
+    })
+
+    it("passes through the decision reason from the overview", () => {
+        const result = normalizeRegistrationOverview(overview({ decision_reason: "Dokumen tidak valid." }))
+
+        expect(result.decision_reason).toBe("Dokumen tidak valid.")
+    })
+
+    it("defaults the decision reason to null when absent", () => {
+        const result = normalizeRegistrationOverview(overview())
+
+        expect(result.decision_reason).toBeNull()
+    })
 })

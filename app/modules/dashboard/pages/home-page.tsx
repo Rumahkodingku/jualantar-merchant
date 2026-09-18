@@ -9,7 +9,10 @@ import { Text } from "~/components/ui/text"
 import { ApiError } from "~/lib/api"
 import { useSession } from "~/modules/auth"
 import {
+    AdminNote,
     REGISTRATION_BASE,
+    rejectionNote,
+    rejectionStageLabel,
     statusPresentationFor,
     stepProgress,
     useRegistration,
@@ -58,9 +61,36 @@ function DraftCard({ registration }: { registration: MerchantRegistration }) {
     )
 }
 
+function RevisionCard({ registration }: { registration: MerchantRegistration }) {
+    const note = rejectionNote(registration)
+    const stageLabel = rejectionStageLabel(registration)
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Perbaiki pendaftaran</CardTitle>
+                <CardDescription>Pendaftaran Anda perlu diperbaiki sebelum dapat kami tinjau kembali.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+                {note !== null ? <AdminNote note={note} /> : null}
+                {stageLabel !== null ? (
+                    <Text variant="xs" className="text-muted-foreground">
+                        Bagian yang perlu diperbaiki: {stageLabel}.
+                    </Text>
+                ) : null}
+                <Button render={<Link to={REGISTRATION_BASE} />} size="lg" className="h-11 w-full text-sm">
+                    Perbaiki sekarang
+                    <ArrowRightIcon />
+                </Button>
+            </CardContent>
+        </Card>
+    )
+}
+
 function StatusCard({ registration }: { registration: MerchantRegistration }) {
     const presentation = statusPresentationFor(registration)
     const Icon = presentation.icon
+    const note = rejectionNote(registration)
 
     return (
         <Card>
@@ -75,7 +105,8 @@ function StatusCard({ registration }: { registration: MerchantRegistration }) {
                 </div>
                 <CardDescription>{presentation.description}</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-col gap-4">
+                {note !== null ? <AdminNote note={note} /> : null}
                 <Button
                     render={<Link to={REGISTRATION_BASE} />}
                     variant="outline"
@@ -137,9 +168,10 @@ export function HomePage() {
                         </Button>
                     </CardContent>
                 </Card>
-            ) : registration.data === undefined ? null : registration.data.status === "draft" ||
-              registration.data.status === "revision_required" ? (
+            ) : registration.data === undefined ? null : registration.data.status === "draft" ? (
                 <DraftCard registration={registration.data} />
+            ) : registration.data.status === "revision_required" ? (
+                <RevisionCard registration={registration.data} />
             ) : (
                 <StatusCard registration={registration.data} />
             )}

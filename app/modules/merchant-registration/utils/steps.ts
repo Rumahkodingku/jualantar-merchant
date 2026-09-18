@@ -61,7 +61,7 @@ export const REGISTRATION_STEPS: RegistrationStep[] = [
         segment: "documents",
         label: "Logo & dokumen",
         shortLabel: "Dokumen",
-        description: "Logo dan dokumen pendukung (opsional).",
+        description: "Logo dan minimal satu dokumen pendukung usaha Anda.",
     },
     {
         id: "payout",
@@ -110,7 +110,7 @@ export function isStepComplete(step: RegistrationStep, registration: MerchantReg
         case "outlets":
             return registration.outlets.some((outlet) => outlet.status === "active")
         case "documents":
-            return true
+            return registration.documents.length >= 1
         case "payout":
             return registration.payout_accounts.length > 0
         case "review":
@@ -138,7 +138,7 @@ export function firstIncompleteStep(registration: MerchantRegistration): StepId 
 
 export function stepProgress(registration: MerchantRegistration) {
     const steps = applicableSteps(registration.type)
-    const trackable = steps.filter((step) => step.id !== "review" && step.id !== "documents")
+    const trackable = steps.filter((step) => step.id !== "review")
     const completed = trackable.filter((step) => isStepComplete(step, registration)).length
 
     return {
@@ -148,7 +148,7 @@ export function stepProgress(registration: MerchantRegistration) {
     }
 }
 
-const REJECTION_STAGE_STEPS: Record<string, StepId> = {
+export const REJECTION_STAGE_STEPS: Record<string, StepId> = {
     business: "business",
     identity: "identity",
     legal_entity: "legal-entity",

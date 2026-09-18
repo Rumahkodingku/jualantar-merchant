@@ -49,7 +49,7 @@ export function DocumentsPage() {
                             Dokumen pendukung
                         </Text>
                         <Text variant="xs" className="text-muted-foreground">
-                            Semua dokumen bersifat opsional. Sesuaikan dengan jenis usaha Anda dan lengkapi kapan saja.
+                            Unggah minimal satu dokumen pendukung. Sesuaikan dengan jenis usaha Anda.
                         </Text>
                     </div>
                     <DocumentChecklist />

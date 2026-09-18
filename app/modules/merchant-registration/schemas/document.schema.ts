@@ -1,4 +1,4 @@
-import type { MerchantDocument, MerchantDocumentType, MerchantType } from "../types/merchant-registration.types"
+import type { MerchantDocumentType, MerchantType } from "../types/merchant-registration.types"
 
 export const DOCUMENT_TYPE_LABELS: Record<MerchantDocumentType, string> = {
     ktp: "KTP",
@@ -120,10 +120,4 @@ export const DOCUMENT_REQUIREMENTS: Record<MerchantType, DocumentRequirement[]> 
 
 export function primaryDocumentType(requirement: DocumentRequirement): MerchantDocumentType {
     return requirement.types[0]
-}
-
-export function areDocumentRequirementsSatisfied(documents: MerchantDocument[], type: MerchantType): boolean {
-    return DOCUMENT_REQUIREMENTS[type].every((requirement) =>
-        documents.some((document) => requirement.types.includes(document.document_type))
-    )
 }

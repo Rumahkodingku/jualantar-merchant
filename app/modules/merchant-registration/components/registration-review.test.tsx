@@ -163,17 +163,16 @@ describe("RegistrationReview", () => {
         expect(screen.getByText("Outlet Utama")).toBeInTheDocument()
     })
 
-    it("treats an empty documents section as optional", () => {
+    it("treats an empty documents section as incomplete", () => {
         renderReview(makeRegistration({ logo_url: null, documents: [] }))
 
         const documents = section("Logo & dokumen")
 
-        expect(documents.getByText("Belum ada dokumen")).toBeInTheDocument()
-        expect(documents.getByText("Opsional")).toBeInTheDocument()
-        expect(documents.getByRole("button", { name: "Tambah data" })).toBeInTheDocument()
+        expect(documents.getByText("Belum diisi")).toBeInTheDocument()
+        expect(documents.getByRole("button", { name: "Lengkapi data" })).toBeInTheDocument()
     })
 
-    it("marks the documents section complete when the logo and every document slot are filled", () => {
+    it("marks the documents section complete when at least one document is uploaded", () => {
         renderReview(
             makeRegistration({
                 logo_url: "https://storage.test/logo.png",
@@ -187,15 +186,15 @@ describe("RegistrationReview", () => {
         expect(documents.queryByText("Opsional")).not.toBeInTheDocument()
     })
 
-    it("keeps the documents section optional while some slots are still empty", () => {
+    it("marks the documents section complete even when only one document is uploaded", () => {
         renderReview(
             makeRegistration({
-                logo_url: "https://storage.test/logo.png",
-                documents: (["ktp", "swafoto"] as MerchantDocumentType[]).map(makeDocument),
+                logo_url: null,
+                documents: (["ktp"] as MerchantDocumentType[]).map(makeDocument),
             })
         )
 
-        expect(section("Logo & dokumen").getByText("Opsional")).toBeInTheDocument()
+        expect(section("Logo & dokumen").getByText("Lengkap")).toBeInTheDocument()
     })
 
     it("renders an outlet sub-card with address and operating hours", () => {

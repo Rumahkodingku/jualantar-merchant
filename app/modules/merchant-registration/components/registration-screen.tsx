@@ -4,10 +4,13 @@ import { Text } from "~/components/ui/text"
 
 import { RegistrationProgress } from "./registration-progress"
 import { useRegistrationContext } from "./registration-context"
+import { rejectionNote, rejectionStageLabel } from "../utils/rejection-note"
 
 export function RegistrationScreen({ children }: { children: React.ReactNode }) {
     const { registration, navigation } = useRegistrationContext()
     const step = navigation.activeStep
+    const revisionNote = rejectionNote(registration)
+    const stageLabel = rejectionStageLabel(registration)
 
     return (
         <div className="flex min-h-svh flex-col bg-muted/40">
@@ -34,8 +37,14 @@ export function RegistrationScreen({ children }: { children: React.ReactNode }) 
                     <Alert variant="destructive">
                         <AlertTitle>Pendaftaran perlu diperbaiki</AlertTitle>
                         <AlertDescription>
-                            {registration.rejection_reason ??
-                                "Beberapa data perlu Anda perbaiki sebelum dapat dikirim ulang."}
+                            <span>
+                                {revisionNote ?? "Beberapa data perlu Anda perbaiki sebelum dapat dikirim ulang."}
+                            </span>
+                            {stageLabel !== null ? (
+                                <span className="mt-1 block text-xs opacity-80">
+                                    Bagian yang perlu diperbaiki: {stageLabel}.
+                                </span>
+                            ) : null}
                         </AlertDescription>
                     </Alert>
                 ) : null}

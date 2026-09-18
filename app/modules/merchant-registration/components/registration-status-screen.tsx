@@ -1,14 +1,20 @@
 import { AuthLayout } from "~/components/layouts/auth-layout"
 import { Button } from "~/components/ui/button"
-import { Text } from "~/components/ui/text"
+import { Spinner } from "~/components/ui/spinner"
 import { useLogout } from "~/modules/auth"
+import { AdminNote } from "./admin-note"
+import { useCreateRegistration } from "../services/merchant-registration.mutations"
+import { rejectionNote } from "../utils/rejection-note"
 import { statusPresentationFor } from "../utils/status-presentation"
 import type { MerchantRegistration } from "../types/merchant-registration.types"
 
 export function RegistrationStatusScreen({ registration }: { registration: MerchantRegistration }) {
     const logout = useLogout()
+    const createDraft = useCreateRegistration()
     const presentation = statusPresentationFor(registration)
     const Icon = presentation.icon
+    const note = rejectionNote(registration)
+    const canReapply = registration.status === "rejected"
 
     return (
         <AuthLayout title={presentation.title} description={presentation.description}>
@@ -17,18 +23,26 @@ export function RegistrationStatusScreen({ registration }: { registration: Merch
                     <Icon className="size-7" aria-hidden="true" />
                 </div>
 
-                {registration.rejection_reason ? (
-                    <div className="w-full rounded-xl border bg-muted/40 px-4 py-3">
-                        <Text variant="xs" weight="medium" className="text-muted-foreground">
-                            Catatan dari tim JualAntar
-                        </Text>
-                        <Text variant="sm" className="mt-1">
-                            {registration.rejection_reason}
-                        </Text>
-                    </div>
-                ) : null}
+                {note !== null ? <AdminNote note={note} /> : null}
 
                 <div className="flex w-full flex-col gap-2">
+                    {canReapply ? (
+                        <Button
+                            size="lg"
+                            className="h-11 w-full"
+                            onClick={() => createDraft.mutate()}
+                            disabled={createDraft.isPending}
+                        >
+                            {createDraft.isPending ? (
+                                <>
+                                    <Spinner /> Memproses…
+                                </>
+                            ) : (
+                                "Ajukan Pendaftaran Baru"
+                            )}
+                        </Button>
+                    ) : null}
+
                     <Button
                         variant="outline"
                         size="lg"

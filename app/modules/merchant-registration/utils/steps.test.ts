@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import type {
     LegalEntity,
     MerchantCategory,
+    MerchantDocument,
     MerchantIdentity,
     MerchantOutlet,
     MerchantRegistration,
@@ -102,6 +103,19 @@ const legalEntity: LegalEntity = {
     updated_at: null,
 }
 
+const document: MerchantDocument = {
+    id: "doc-1",
+    merchant_id: "merchant-1",
+    document_type: "ktp",
+    file_name: "ktp.jpg",
+    object_key: "merchants/merchant-1/documents/ktp.jpg",
+    mime_type: "image/jpeg",
+    file_size: 1024,
+    url: null,
+    created_at: null,
+    updated_at: null,
+}
+
 describe("applicableSteps", () => {
     it("excludes legal entity for individual merchants", () => {
         const ids = applicableSteps("individual").map((step) => step.id)
@@ -151,6 +165,7 @@ describe("firstIncompleteStep", () => {
             service: { id: "service-1", name: "JAfood", slug: "jafood" },
             categories: [category],
             outlets: [outlet],
+            documents: [document],
             payout_accounts: [
                 {
                     id: "payout-1",
@@ -184,6 +199,7 @@ describe("firstIncompleteStep", () => {
 
 describe("isStepComplete", () => {
     const outletsStep = REGISTRATION_STEPS.find((step) => step.id === "outlets")!
+    const documentsStep = REGISTRATION_STEPS.find((step) => step.id === "documents")!
 
     it("treats inactive-only outlets as incomplete", () => {
         const data = registration({
@@ -193,10 +209,12 @@ describe("isStepComplete", () => {
         expect(isStepComplete(outletsStep, data)).toBe(false)
     })
 
-    it("treats documents as optional", () => {
-        const documentsStep = REGISTRATION_STEPS.find((step) => step.id === "documents")!
+    it("treats documents without any upload as incomplete", () => {
+        expect(isStepComplete(documentsStep, registration())).toBe(false)
+    })
 
-        expect(isStepComplete(documentsStep, registration())).toBe(true)
+    it("treats documents as complete once at least one is uploaded", () => {
+        expect(isStepComplete(documentsStep, registration({ documents: [document] }))).toBe(true)
     })
 })
 
@@ -211,13 +229,13 @@ describe("stepProgress", () => {
         const progress = stepProgress(data)
 
         expect(progress.completed).toBe(2)
-        expect(progress.total).toBe(6)
-        expect(progress.percentage).toBe(33)
+        expect(progress.total).toBe(7)
+        expect(progress.percentage).toBe(29)
     })
 
     it("ignores legal entity for individuals", () => {
-        expect(stepProgress(registration({ type: "individual" })).total).toBe(6)
-        expect(stepProgress(registration({ type: "company" })).total).toBe(7)
+        expect(stepProgress(registration({ type: "individual" })).total).toBe(7)
+        expect(stepProgress(registration({ type: "company" })).total).toBe(8)
     })
 })
 

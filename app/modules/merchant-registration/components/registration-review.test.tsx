@@ -57,7 +57,7 @@ function makeRegistration(overrides: Partial<MerchantRegistration> = {}): Mercha
                 longitude: 0,
                 service_area_type: "radius",
                 service_radius_km: 5,
-                operating_hours: { monday: [{ open: "08:00", close: "17:00" }] },
+                operating_hours: { monday: { is_open: true, open: "08:00", close: "17:00" } },
                 photos: [],
                 photos_url: [],
                 status: "active",

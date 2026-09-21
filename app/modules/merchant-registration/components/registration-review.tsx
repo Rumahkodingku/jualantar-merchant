@@ -46,18 +46,21 @@ function groupHours(hours: OperatingHours): HoursGroup[] {
     const groups: HoursGroup[] = []
 
     DAY_ORDER.forEach((day, index) => {
-        const slot = hours[day]?.[0]
+        const schedule = hours[day]
 
-        if (slot === undefined) {
+        if (schedule === undefined || schedule.is_open !== true) {
             return
         }
 
+        const open = schedule.open ?? ""
+        const close = schedule.close ?? ""
+
         const last = groups[groups.length - 1]
 
-        if (last !== undefined && last.end === index - 1 && last.open === slot.open && last.close === slot.close) {
+        if (last !== undefined && last.end === index - 1 && last.open === open && last.close === close) {
             last.end = index
         } else {
-            groups.push({ start: index, end: index, open: slot.open, close: slot.close })
+            groups.push({ start: index, end: index, open, close })
         }
     })
 

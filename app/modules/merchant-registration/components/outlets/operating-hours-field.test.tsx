@@ -36,7 +36,7 @@ function Harness({ defaultHours = {} }: { defaultHours?: OutletFormValues["hours
 }
 
 describe("OperatingHoursField", () => {
-    it("adds a default slot when a day is switched on", async () => {
+    it("adds a default window when a day is switched on", async () => {
         const user = userEvent.setup()
         render(<Harness />)
 
@@ -61,28 +61,14 @@ describe("OperatingHoursField", () => {
 
     it("closes every day", async () => {
         const user = userEvent.setup()
-        render(<Harness defaultHours={{ monday: [{ open: "08:00", close: "17:00" }] }} />)
+        render(<Harness defaultHours={{ monday: { is_open: true, open: "08:00", close: "17:00" } }} />)
 
         await user.click(screen.getByRole("button", { name: /tutup semua hari/i }))
 
         expect(screen.queryByLabelText("Jam buka")).not.toBeInTheDocument()
     })
 
-    it("adds and removes additional slots", async () => {
-        const user = userEvent.setup()
-        render(<Harness />)
-
-        await user.click(screen.getByRole("switch", { name: "Buka Senin" }))
-        expect(screen.queryByRole("button", { name: /hapus jam/i })).not.toBeInTheDocument()
-
-        await user.click(screen.getByRole("button", { name: /tambah jam/i }))
-        expect(screen.getAllByLabelText("Jam buka")).toHaveLength(2)
-
-        await user.click(screen.getByRole("button", { name: /hapus jam ke-2 hari senin/i }))
-        expect(screen.getAllByLabelText("Jam buka")).toHaveLength(1)
-    })
-
-    it("applies a day's slots to every other day", async () => {
+    it("applies a day's window to every other day", async () => {
         const user = userEvent.setup()
         render(<Harness />)
 

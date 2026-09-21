@@ -36,12 +36,13 @@ export type GeographyLabel = {
     province: string | null
 }
 
-export type OperatingHourSlot = {
-    open: string
-    close: string
+export type OperatingHourDay = {
+    is_open: boolean
+    open?: string
+    close?: string
 }
 
-export type OperatingHours = Partial<Record<DayKey, OperatingHourSlot[]>>
+export type OperatingHours = Partial<Record<DayKey, OperatingHourDay>>
 
 export type MerchantServiceRef = {
     id: string

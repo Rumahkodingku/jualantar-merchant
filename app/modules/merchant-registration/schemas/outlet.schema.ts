@@ -29,12 +29,13 @@ export const DAY_LABELS: Record<DayKey, string> = {
 
 const timeSchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Gunakan format HH:mm.")
 
-export const operatingHourSlotSchema = z
+export const operatingHourDaySchema = z
     .object({
+        is_open: z.literal(true),
         open: timeSchema,
         close: timeSchema,
     })
-    .refine((slot) => slot.close > slot.open, {
+    .refine((day) => day.close > day.open, {
         message: "Jam tutup harus setelah jam buka.",
         path: ["close"],
     })
@@ -60,7 +61,7 @@ export const outletSchema = z
         longitude: coordinate(-180, 180),
         service_area_type: outletServiceAreaTypeSchema,
         service_radius_km: z.preprocess(emptyToUndefined, z.coerce.number().min(0.1).max(999.99).optional()),
-        hours: z.record(z.string(), z.array(operatingHourSlotSchema).min(1, "Tambahkan minimal satu jam.")),
+        hours: z.record(z.string(), operatingHourDaySchema),
     })
     .superRefine((value, ctx) => {
         if (value.service_area_type === "radius" && value.service_radius_km === undefined) {
@@ -83,8 +84,8 @@ export function hoursToPayload(hours: OutletFormValues["hours"]): OperatingHours
 
     const payload: OperatingHours = {}
 
-    for (const [day, slots] of entries) {
-        payload[day as DayKey] = slots.map((slot) => ({ open: slot.open, close: slot.close }))
+    for (const [day, schedule] of entries) {
+        payload[day as DayKey] = { is_open: true, open: schedule.open, close: schedule.close }
     }
 
     return payload

@@ -60,12 +60,14 @@ function defaultHours(outlet: MerchantOutlet | null | undefined): OutletFormValu
         return hours
     }
 
-    for (const [day, slots] of Object.entries(outlet.operating_hours)) {
-        if (slots === undefined || slots.length === 0) {
+    for (const [day, schedule] of Object.entries(outlet.operating_hours)) {
+        if (schedule === undefined || schedule.is_open !== true) {
             continue
         }
 
-        hours[day] = slots.map((slot) => ({ open: slot.open, close: slot.close }))
+        if (typeof schedule.open === "string" && typeof schedule.close === "string") {
+            hours[day] = { is_open: true, open: schedule.open, close: schedule.close }
+        }
     }
 
     return hours

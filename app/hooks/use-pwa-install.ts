@@ -1,9 +1,6 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect } from "react"
 
-interface BeforeInstallPromptEvent extends Event {
-    prompt: () => Promise<void>
-    userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>
-}
+import { usePwaInstallStore, type BeforeInstallPromptEvent } from "~/stores"
 
 function isStandaloneDisplay(): boolean {
     if (typeof window === "undefined") {
@@ -29,22 +26,27 @@ function isIosSafari(): boolean {
 }
 
 export function usePwaInstall() {
-    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-    const [installed, setInstalled] = useState(false)
-    const [isIos, setIsIos] = useState(false)
+    const canInstall = usePwaInstallStore((state) => state.canInstall)
+    const installed = usePwaInstallStore((state) => state.installed)
+    const isIos = usePwaInstallStore((state) => state.isIos)
+    const deferredPrompt = usePwaInstallStore((state) => state.deferredPrompt)
 
     useEffect(() => {
-        setInstalled(isStandaloneDisplay())
+        const { markInstalled, setIsIos, setPromptEvent, clearPrompt } = usePwaInstallStore.getState()
+
+        if (isStandaloneDisplay()) {
+            markInstalled()
+        }
+
         setIsIos(isIosSafari())
 
         const handleBeforeInstallPrompt = (event: Event) => {
             event.preventDefault()
-            setDeferredPrompt(event as BeforeInstallPromptEvent)
+            setPromptEvent(event as BeforeInstallPromptEvent)
         }
 
         const handleInstalled = () => {
-            setInstalled(true)
-            setDeferredPrompt(null)
+            markInstalled()
         }
 
         window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
@@ -53,28 +55,32 @@ export function usePwaInstall() {
         return () => {
             window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
             window.removeEventListener("appinstalled", handleInstalled)
+            clearPrompt()
         }
     }, [])
 
     const promptInstall = useCallback(async () => {
-        if (!deferredPrompt) {
+        const { deferredPrompt: prompt, markInstalled, clearPrompt } = usePwaInstallStore.getState()
+
+        if (!prompt) {
             return
         }
 
-        await deferredPrompt.prompt()
-        const choice = await deferredPrompt.userChoice
+        await prompt.prompt()
+        const choice = await prompt.userChoice
 
         if (choice.outcome === "accepted") {
-            setInstalled(true)
+            markInstalled()
+        } else {
+            clearPrompt()
         }
-
-        setDeferredPrompt(null)
-    }, [deferredPrompt])
+    }, [])
 
     return {
-        canInstall: deferredPrompt !== null,
+        canInstall,
         isIos,
         installed,
         promptInstall,
+        deferredPrompt,
     }
 }

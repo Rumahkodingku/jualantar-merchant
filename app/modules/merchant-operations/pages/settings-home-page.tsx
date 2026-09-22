@@ -4,6 +4,7 @@ import {
     MapPinnedIcon,
     SignalIcon,
     StoreIcon,
+    SunMoonIcon,
     UserCogIcon,
     UsersIcon,
 } from "lucide-react"
@@ -120,6 +121,12 @@ export function SettingsHomePage() {
             </SettingsSection>
 
             <SettingsSection title="Akun">
+                <SettingsMenuItem
+                    to={SETTINGS_PATHS.appearance}
+                    icon={SunMoonIcon}
+                    label="Tampilan"
+                    description="Mode terang, gelap, atau mengikuti sistem"
+                />
                 <SettingsMenuItem
                     to={SETTINGS_PATHS.account}
                     icon={UserCogIcon}

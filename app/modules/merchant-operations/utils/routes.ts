@@ -3,6 +3,7 @@ export const SETTINGS_BASE = "/settings"
 export const SETTINGS_PATHS = {
     home: SETTINGS_BASE,
     account: `${SETTINGS_BASE}/account`,
+    appearance: `${SETTINGS_BASE}/appearance`,
     profile: `${SETTINGS_BASE}/profile`,
     status: `${SETTINGS_BASE}/status`,
     outlets: `${SETTINGS_BASE}/outlets`,

@@ -9,7 +9,10 @@ import { Toaster } from "~/components/ui/toast"
 import { Text } from "~/components/ui/text"
 import { useServiceWorker } from "~/hooks/use-service-worker"
 import { setUnauthorizedHandler } from "~/lib/auth-token"
+import { THEME_STORAGE_KEY } from "~/stores"
 import "./app.css"
+
+const THEME_INIT_SCRIPT = `(function(){try{var raw=localStorage.getItem("${THEME_STORAGE_KEY}");var mode=raw?JSON.parse(raw).state.mode:"system";var dark=mode==="dark"||(mode!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(dark){document.documentElement.classList.add("dark");var meta=document.querySelector('meta[name="theme-color"]');if(meta){meta.setAttribute("content","#23262b");}}}catch(e){}})();`
 
 export function Layout({ children }: { children: React.ReactNode }) {
     return (
@@ -17,11 +20,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <head>
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <meta name="theme-color" content="#E90B22" />
+                <meta name="theme-color" content="#ffffff" />
                 <meta name="mobile-web-app-capable" content="yes" />
                 <meta name="apple-mobile-web-app-capable" content="yes" />
                 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
                 <meta name="apple-mobile-web-app-title" content="JualAntar Merchant" />
+                <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
                 <link rel="manifest" href="/manifest.webmanifest" />
                 <link rel="icon" href="/favicon.ico" sizes="any" />
                 <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />

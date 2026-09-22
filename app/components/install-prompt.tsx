@@ -1,22 +1,13 @@
-import { useEffect, useState } from "react"
 import { DownloadIcon, ShareIcon, XIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Text } from "~/components/ui/text"
 import { usePwaInstall } from "~/hooks/use-pwa-install"
-
-const DISMISS_KEY = "jualantar-merchant.pwa.install-dismissed"
+import { usePwaInstallStore } from "~/stores"
 
 export function InstallPrompt() {
     const { canInstall, isIos, installed, promptInstall } = usePwaInstall()
-    const [dismissed, setDismissed] = useState(true)
-
-    useEffect(() => {
-        try {
-            setDismissed(window.localStorage.getItem(DISMISS_KEY) === "1")
-        } catch {
-            setDismissed(false)
-        }
-    }, [])
+    const dismissed = usePwaInstallStore((state) => state.dismissed)
+    const dismiss = usePwaInstallStore((state) => state.dismiss)
 
     if (installed || dismissed) {
         return null
@@ -24,16 +15,6 @@ export function InstallPrompt() {
 
     if (!canInstall && !isIos) {
         return null
-    }
-
-    const dismiss = () => {
-        setDismissed(true)
-
-        try {
-            window.localStorage.setItem(DISMISS_KEY, "1")
-        } catch {
-            // Storage may be unavailable; dismissal stays in-memory only.
-        }
     }
 
     return (

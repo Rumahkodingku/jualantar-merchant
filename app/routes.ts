@@ -12,6 +12,7 @@ export default [
 
             route("settings", "modules/merchant-operations/routes/index.tsx"),
             route("settings/account", "modules/profile/routes/profile-route.tsx"),
+            route("settings/appearance", "modules/merchant-operations/routes/appearance.tsx"),
             route("settings/profile", "modules/merchant-operations/routes/profile.tsx"),
             route("settings/status", "modules/merchant-operations/routes/status.tsx"),
 

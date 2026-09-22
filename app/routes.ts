@@ -10,6 +10,13 @@ export default [
         layout("components/layouts/app-shell/routes/app-shell-route.tsx", [
             index("modules/dashboard/routes/home-route.tsx"),
 
+            route("orders", "modules/orders/routes/index.tsx"),
+            route("finances", "modules/finances/routes/index.tsx"),
+            route("products", "modules/products/routes/index.tsx"),
+            route("products/new", "modules/products/routes/new.tsx"),
+            route("promotions", "modules/promotions/routes/index.tsx"),
+            route("promotions/new", "modules/promotions/routes/new.tsx"),
+
             route("settings", "modules/merchant-operations/routes/index.tsx"),
             route("settings/account", "modules/profile/routes/profile-route.tsx"),
             route("settings/appearance", "modules/merchant-operations/routes/appearance.tsx"),

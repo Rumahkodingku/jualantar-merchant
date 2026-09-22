@@ -1,5 +1,5 @@
 import { NavLink } from "react-router"
-import { HomeIcon, UserIcon } from "lucide-react"
+import { HomeIcon, SettingsIcon } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { cn } from "~/lib/utils"
 
@@ -12,7 +12,7 @@ export interface AppNavItem {
 
 export const APP_NAV_ITEMS: AppNavItem[] = [
     { to: "/app", label: "Beranda", icon: HomeIcon, end: true },
-    { to: "/app/profile", label: "Profil", icon: UserIcon, end: false },
+    { to: "/app/settings", label: "Pengaturan", icon: SettingsIcon, end: false },
 ]
 
 export function BottomNav() {

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 
 import { Button } from "~/components/ui/button"
 import { Progress } from "~/components/ui/progress"
+import type { PresignedUploadController } from "~/hooks/use-presigned-upload"
 import { cn } from "~/lib/utils"
 
 import { useRegistrationUpload, type UploadState } from "../../hooks/use-registration-upload"
@@ -21,19 +22,24 @@ export function OutletPhotosField({
     onChange,
     disabled = false,
     onStateChange,
+    upload: injectedUpload,
 }: {
     photos: string[]
     photoUrls: Record<string, string>
     onChange: (photos: string[]) => void
     disabled?: boolean
     onStateChange?: (state: UploadState) => void
+    /** Override the upload source (e.g. post-approval merchant operations). */
+    upload?: PresignedUploadController
 }) {
     const inputRef = useRef<HTMLInputElement>(null)
     const localUrls = useRef<string[]>([])
-    const { file, state, progress, error, select, upload, reset, cancel, isUploading } = useRegistrationUpload({
+    const registrationUpload = useRegistrationUpload({
         purpose: "outlet",
         imagesOnly: true,
     })
+    const { file, state, progress, error, select, upload, reset, cancel, isUploading } =
+        injectedUpload ?? registrationUpload
     const [items, setItems] = useState<OutletPhotoItem[]>(() =>
         photos.map((key) => ({ key, url: photoUrls[key] ?? null }))
     )

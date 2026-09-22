@@ -125,7 +125,10 @@ export function OperatingHoursField() {
                                 <div className="flex flex-col gap-2">
                                     <div className="flex items-end gap-2">
                                         <div className="flex flex-1 flex-col gap-1">
-                                            <label htmlFor={`hours-${day}-open`} className="text-xs text-muted-foreground">
+                                            <label
+                                                htmlFor={`hours-${day}-open`}
+                                                className="text-xs text-muted-foreground"
+                                            >
                                                 Jam buka
                                             </label>
                                             <Input
@@ -139,7 +142,10 @@ export function OperatingHoursField() {
                                         </div>
                                         <span className="pb-3 text-xs text-muted-foreground">s/d</span>
                                         <div className="flex flex-1 flex-col gap-1">
-                                            <label htmlFor={`hours-${day}-close`} className="text-xs text-muted-foreground">
+                                            <label
+                                                htmlFor={`hours-${day}-close`}
+                                                className="text-xs text-muted-foreground"
+                                            >
                                                 Jam tutup
                                             </label>
                                             <Input
@@ -160,7 +166,12 @@ export function OperatingHoursField() {
                                     ) : null}
 
                                     <div>
-                                        <Button type="button" variant="ghost" size="sm" onClick={() => applyToAllDays(day)}>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => applyToAllDays(day)}
+                                        >
                                             <CopyIcon /> Terapkan ke semua hari
                                         </Button>
                                     </div>

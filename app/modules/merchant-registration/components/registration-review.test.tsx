@@ -110,7 +110,7 @@ function LocationProbe() {
 
 function renderReview(registration: MerchantRegistration) {
     return render(
-        <MemoryRouter initialEntries={["/app/registration/review"]}>
+        <MemoryRouter initialEntries={["/registration/review"]}>
             <RegistrationProvider registration={registration}>
                 <RegistrationReview registration={registration} />
                 <LocationProbe />
@@ -211,6 +211,6 @@ describe("RegistrationReview", () => {
 
         await user.click(section("Layanan").getByRole("button", { name: "Ubah data" }))
 
-        expect(screen.getByTestId("path")).toHaveTextContent("/app/registration/service")
+        expect(screen.getByTestId("path")).toHaveTextContent("/registration/service")
     })
 })

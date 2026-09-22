@@ -1,13 +1,12 @@
 import { type RouteConfig, index, layout, route } from "@react-router/dev/routes"
 
 export default [
-    index("routes/home.tsx"),
     route("offline", "routes/offline.tsx"),
     route("login", "modules/auth/routes/login.tsx"),
     route("merchant/register", "modules/auth/routes/register.tsx"),
     route("merchant/check-email", "modules/auth/routes/check-email.tsx"),
     route("merchant/verify-email", "modules/auth/routes/verify-email.tsx"),
-    route("app", "modules/auth/routes/protected-layout-route.tsx", [
+    route("", "modules/auth/routes/protected-layout-route.tsx", [
         layout("components/layouts/app-shell/routes/app-shell-route.tsx", [
             index("modules/dashboard/routes/home-route.tsx"),
 

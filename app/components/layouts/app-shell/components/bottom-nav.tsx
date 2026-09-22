@@ -11,8 +11,8 @@ export interface AppNavItem {
 }
 
 export const APP_NAV_ITEMS: AppNavItem[] = [
-    { to: "/app", label: "Beranda", icon: HomeIcon, end: true },
-    { to: "/app/settings", label: "Pengaturan", icon: SettingsIcon, end: false },
+    { to: "/", label: "Beranda", icon: HomeIcon, end: true },
+    { to: "/settings", label: "Pengaturan", icon: SettingsIcon, end: false },
 ]
 
 export function BottomNav() {

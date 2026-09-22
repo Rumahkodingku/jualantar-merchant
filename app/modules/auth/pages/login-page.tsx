@@ -14,7 +14,7 @@ export function LoginPage() {
     }
 
     if (isAuthenticated) {
-        return <Navigate to="/app" replace />
+        return <Navigate to="/" replace />
     }
 
     return (

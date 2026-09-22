@@ -31,7 +31,7 @@ export function LoginForm() {
         mode: "onBlur",
     })
 
-    const redirectTo = searchParams.get("redirect") ?? "/app"
+    const redirectTo = searchParams.get("redirect") ?? "/"
 
     function onSubmit(values: LoginFormValues) {
         setFormError(null)

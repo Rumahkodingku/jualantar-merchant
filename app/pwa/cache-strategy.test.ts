@@ -45,7 +45,7 @@ describe("decideFetchStrategy", () => {
     })
 
     it("uses network-first for document navigations", () => {
-        expect(decide("/app", { mode: "navigate" })).toBe("network-first-page")
+        expect(decide("/", { mode: "navigate" })).toBe("network-first-page")
     })
 
     it("passes through unknown same-origin requests", () => {

@@ -1,4 +1,4 @@
-export const SETTINGS_BASE = "/app/settings"
+export const SETTINGS_BASE = "/settings"
 
 export const SETTINGS_PATHS = {
     home: SETTINGS_BASE,

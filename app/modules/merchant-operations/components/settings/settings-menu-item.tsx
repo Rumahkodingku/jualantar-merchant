@@ -4,7 +4,6 @@ import { Link } from "react-router"
 
 import { Badge } from "~/components/ui/badge"
 import { Text } from "~/components/ui/text"
-import { cn } from "~/lib/utils"
 
 export function SettingsMenuItem({
     to,
@@ -23,12 +22,7 @@ export function SettingsMenuItem({
 }) {
     const content = (
         <>
-            <span
-                className={cn(
-                    "flex size-9 shrink-0 items-center justify-center rounded-xl",
-                    disabled ? "bg-muted text-muted-foreground" : "bg-accent text-accent-foreground"
-                )}
-            >
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                 <Icon className="size-4" aria-hidden="true" />
             </span>
 
@@ -46,13 +40,13 @@ export function SettingsMenuItem({
                 ) : null}
             </span>
 
-            <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground/70" aria-hidden="true" />
         </>
     )
 
     if (disabled) {
         return (
-            <div aria-disabled="true" className="flex min-h-14 w-full items-center gap-3 px-4 py-3 opacity-60">
+            <div aria-disabled="true" className="flex min-h-12 w-full items-center gap-3 px-4 py-3 opacity-60">
                 {content}
             </div>
         )
@@ -61,7 +55,7 @@ export function SettingsMenuItem({
     return (
         <Link
             to={to}
-            className="flex min-h-14 w-full items-center gap-3 px-4 py-3 transition-colors outline-none hover:bg-muted/50 focus-visible:bg-muted/60"
+            className="flex min-h-12 w-full items-center gap-3 px-4 py-3 transition-colors outline-none hover:bg-muted/50 focus-visible:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset"
         >
             {content}
         </Link>

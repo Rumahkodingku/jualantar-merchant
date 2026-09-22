@@ -26,7 +26,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </div>
             </header> */}
 
-            <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-5 pt-6 pb-28">{children}</main>
+            <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-5 pt-6 pb-28 md:max-w-2xl lg:max-w-3xl">
+                {children}
+            </main>
 
             <BottomNav />
         </div>

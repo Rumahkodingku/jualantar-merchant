@@ -28,7 +28,7 @@ import { notifyError, notifySuccess } from "../utils/notify"
 import { outletStatusDescription, outletStatusLabel } from "../utils/outlet-status"
 import { outletServiceAreaSummary } from "../utils/service-area-summary"
 import { useOperationsPermissions } from "../utils/permissions"
-import { SETTINGS_PATHS, outletEditPath, outletPath } from "../utils/routes"
+import { SETTINGS_PATHS, outletEditPath } from "../utils/routes"
 import { formatDecimal } from "../utils/format"
 import type { OperationalOutlet } from "../types/merchant-operations.types"
 
@@ -228,10 +228,7 @@ export function OutletDetailPage() {
 
     return (
         <div className="flex flex-1 flex-col gap-5">
-            <SettingsSubpageHeader
-                title="Detail Outlet"
-                backTo={outletId === undefined ? SETTINGS_PATHS.outlets : outletPath(outletId)}
-            />
+            <SettingsSubpageHeader title="Detail Outlet" backTo={SETTINGS_PATHS.outlets} />
 
             {query.isPending ? (
                 <ListSkeleton rows={3} className="h-28" />

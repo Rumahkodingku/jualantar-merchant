@@ -5,19 +5,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { useLogout, useSession } from "~/modules/auth"
+import { SettingsSubpageHeader, SETTINGS_PATHS } from "~/modules/merchant-operations"
 
 export function ProfilePage() {
     const logout = useLogout()
     const { user } = useSession()
 
     return (
-        <div className="flex flex-1 flex-col gap-6">
+        <div className="flex flex-1 flex-col gap-5">
+            <SettingsSubpageHeader
+                title="Akun"
+                description="Informasi akun dan keluar dari aplikasi."
+                backTo={SETTINGS_PATHS.home}
+            />
+
             <section className="flex items-center gap-3">
                 <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-semibold text-primary">
                     {user?.email?.[0]?.toUpperCase() ?? "M"}
                 </span>
                 <div className="flex min-w-0 flex-col">
-                    <Text as="h1" variant="xl" weight="semibold" truncate>
+                    <Text as="h2" variant="xl" weight="semibold" truncate>
                         {user?.email ?? "Merchant"}
                     </Text>
                     <Text variant="sm" className="truncate text-muted-foreground">

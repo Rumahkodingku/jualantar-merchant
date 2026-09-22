@@ -53,7 +53,7 @@ export function BottomNav() {
             aria-label="Navigasi utama"
             className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
         >
-            <div className="relative mx-auto w-full max-w-md">
+            <div className="relative mx-auto w-full max-w-md md:max-w-2xl lg:max-w-3xl">
                 {/* Quick Actions */}
                 <div
                     className={cn(

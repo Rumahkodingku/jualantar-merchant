@@ -25,19 +25,19 @@ export function SettingsSubpageHeader({
     }
 
     return (
-        <div className="flex items-start gap-2">
+        <div className="flex items-center gap-1">
             <Button
                 type="button"
                 variant="ghost"
                 size="icon"
                 aria-label="Kembali"
-                className="-ml-2 shrink-0"
+                className="-ml-2 size-10 shrink-0"
                 onClick={goBack}
             >
                 <ChevronLeftIcon />
             </Button>
 
-            <div className="flex min-w-0 flex-col gap-0.5 pt-0.5">
+            <div className="flex min-w-0 flex-col gap-0.5">
                 <Text as="h1" variant="xl" weight="semibold" truncate className="tracking-tight">
                     {title}
                 </Text>

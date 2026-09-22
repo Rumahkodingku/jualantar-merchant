@@ -37,11 +37,6 @@ export default [
                 "settings/outlets/:outlet/availability",
                 "modules/merchant-operations/routes/outlet-availability.tsx"
             ),
-
-            route("settings/hours", "modules/merchant-operations/routes/outlet-shortcut-hours.tsx"),
-            route("settings/service-area", "modules/merchant-operations/routes/outlet-shortcut-service-area.tsx"),
-            route("settings/employees", "modules/merchant-operations/routes/outlet-shortcut-employees.tsx"),
-            route("settings/availability", "modules/merchant-operations/routes/outlet-shortcut-availability.tsx"),
         ]),
         route("registration", "modules/merchant-registration/routes/registration-layout.tsx", [
             index("modules/merchant-registration/routes/index.tsx"),

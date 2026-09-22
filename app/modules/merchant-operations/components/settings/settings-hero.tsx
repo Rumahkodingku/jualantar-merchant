@@ -24,27 +24,27 @@ export function SettingsHero({
     const presentation = merchantStatusPresentation(status)
 
     return (
-        <section className="flex items-center gap-4 rounded-2xl border bg-card p-4">
+        <section aria-label="Identitas merchant" className="flex items-center gap-3 rounded-2xl border bg-card p-4">
             {logoUrl !== null ? (
                 <img
                     src={logoUrl}
                     alt={`Logo ${businessName}`}
-                    className="size-16 shrink-0 rounded-2xl border object-cover"
+                    className="size-14 shrink-0 rounded-xl border object-cover"
                 />
             ) : (
                 <span
                     aria-hidden="true"
-                    className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-xl font-semibold text-primary"
+                    className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-lg font-semibold text-primary"
                 >
                     {initials(businessName)}
                 </span>
             )}
 
-            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                <Text as="h1" variant="xl" weight="semibold" truncate className="tracking-tight">
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <Text as="h2" variant="lg" weight="semibold" truncate className="tracking-tight">
                     {businessName}
                 </Text>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <StatusBadge tone={presentation.tone} indicator={presentation.indicator}>
                         {presentation.label}
                     </StatusBadge>

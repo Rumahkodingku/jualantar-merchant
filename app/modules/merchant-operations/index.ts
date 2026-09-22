@@ -4,7 +4,6 @@ export { SettingsSubpageHeader } from "./components/layout/settings-subpage-head
 export { useOperationsPermissions } from "./utils/permissions"
 export { notifyError, notifySuccess } from "./utils/notify"
 export {
-    OUTLET_SHORTCUTS,
     SETTINGS_BASE,
     SETTINGS_PATHS,
     outletAvailabilityPath,
@@ -14,7 +13,6 @@ export {
     outletPath,
     outletServiceAreaPath,
 } from "./utils/routes"
-export type { OutletShortcutKey } from "./utils/routes"
 export { availabilityReasonMessage, availabilityPresentation } from "./utils/availability-reason"
 export { merchantStatusPresentation } from "./utils/merchant-status"
 export { outletStatusLabel, OUTLET_ROLE_LABEL, OUTLET_ROLE_OPTIONS } from "./utils/outlet-status"

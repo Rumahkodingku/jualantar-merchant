@@ -8,7 +8,7 @@ export default [
     route("merchant/verify-email", "modules/auth/routes/verify-email.tsx"),
     route("", "modules/auth/routes/protected-layout-route.tsx", [
         layout("components/layouts/app-shell/routes/app-shell-route.tsx", [
-            index("modules/dashboard/routes/home-route.tsx"),
+            index("modules/home/routes/home-route.tsx"),
 
             route("orders", "modules/orders/routes/index.tsx"),
             route("finances", "modules/finances/routes/index.tsx"),

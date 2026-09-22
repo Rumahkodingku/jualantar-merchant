@@ -19,6 +19,8 @@ import {
     type MerchantRegistration,
 } from "~/modules/merchant-registration"
 
+import { MerchantHome } from "../components/merchant-home"
+
 function StartCard() {
     return (
         <Card>
@@ -172,6 +174,8 @@ export function HomePage() {
                 <DraftCard registration={registration.data} />
             ) : registration.data.status === "revision_required" ? (
                 <RevisionCard registration={registration.data} />
+            ) : registration.data.status === "approved" ? (
+                <MerchantHome registration={registration.data} />
             ) : (
                 <StatusCard registration={registration.data} />
             )}

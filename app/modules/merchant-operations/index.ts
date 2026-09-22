@@ -1,4 +1,5 @@
 export { merchantOperationsKeys } from "./services/merchant-operations.keys"
+export { useOperationalOutlets, useOperationsSummary } from "./services/merchant-operations.queries"
 export { SettingsSubpageHeader } from "./components/layout/settings-subpage-header"
 export { useOperationsPermissions } from "./utils/permissions"
 export { notifyError, notifySuccess } from "./utils/notify"

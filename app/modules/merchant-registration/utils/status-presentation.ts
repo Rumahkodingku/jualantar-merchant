@@ -43,7 +43,7 @@ export function statusPresentationFor(registration: MerchantRegistration): Statu
                 tone: "text-emerald-600 bg-emerald-500/10",
                 title: "Usaha Anda sudah aktif",
                 description:
-                    "Selamat! Merchant Anda telah disetujui. Anda dapat mulai mengelola usaha dari dashboard merchant.",
+                    "Selamat! Merchant Anda telah disetujui. Anda dapat mulai mengelola usaha dari beranda merchant.",
             }
         case "revision_required":
             return {

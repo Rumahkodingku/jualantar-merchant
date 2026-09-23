@@ -1,19 +1,70 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Route, Routes } from "react-router"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { ApiError } from "~/lib/api"
+import type { AuthUser } from "~/modules/auth"
 
 vi.mock("../services/merchant-registration.queries", () => ({
     useRegistration: vi.fn(),
 }))
 
+vi.mock("~/modules/authorization", () => ({
+    useAuthorization: vi.fn(),
+}))
+
+import { useAuthorization } from "~/modules/authorization"
 import { MerchantApprovedGuard } from "./merchant-approved-guard"
 import { useRegistration } from "../services/merchant-registration.queries"
 import type { MerchantRegistration, MerchantStatus } from "../types/merchant-registration.types"
 
 const mockedUseRegistration = vi.mocked(useRegistration)
+const mockedUseAuthorization = vi.mocked(useAuthorization)
+
+function ownerUser(): AuthUser {
+    return {
+        id: "u-owner",
+        email: "owner@usaha.id",
+        roles: ["merchant"],
+        permissions: [],
+        outletAssignments: [],
+        created_at: null,
+        updated_at: null,
+    }
+}
+
+function employeeUser(): AuthUser {
+    return {
+        id: "u-employee",
+        email: "karyawan@usaha.id",
+        roles: [],
+        permissions: [],
+        outletAssignments: [{ outletId: "o1", role: "outlet_manager" }],
+        created_at: null,
+        updated_at: null,
+    }
+}
+
+function noAccessUser(): AuthUser {
+    return {
+        id: "u-guest",
+        email: "tamu@usaha.id",
+        roles: [],
+        permissions: [],
+        outletAssignments: [],
+        created_at: null,
+        updated_at: null,
+    }
+}
+
+function mockAuth(user: AuthUser | null, isOwner: boolean, isLoading = false) {
+    mockedUseAuthorization.mockReturnValue({ user, isOwner, isLoading } as never)
+}
+
+function mockOwner() {
+    mockAuth(ownerUser(), true)
+}
 
 function registration(overrides: Partial<MerchantRegistration> = {}): MerchantRegistration {
     return {
@@ -90,12 +141,33 @@ function renderAtOrders() {
                     }
                 />
                 <Route path="/registration" element={<p>Halaman pendaftaran</p>} />
+                <Route path="/403" element={<p>Halaman ditolak</p>} />
             </Routes>
         </MemoryRouter>
     )
 }
 
+beforeEach(() => {
+    vi.clearAllMocks()
+    mockOwner()
+    mockPending()
+})
+
 describe("MerchantApprovedGuard", () => {
+    it("shows a splash screen while checking access", () => {
+        mockAuth(null, false, true)
+
+        render(
+            <MemoryRouter>
+                <MerchantApprovedGuard>
+                    <p>Halaman orders</p>
+                </MerchantApprovedGuard>
+            </MemoryRouter>
+        )
+
+        expect(screen.getByText("Memeriksa akses…")).toBeInTheDocument()
+    })
+
     it("shows a splash screen while checking the status", () => {
         mockPending()
 
@@ -137,6 +209,27 @@ describe("MerchantApprovedGuard", () => {
         renderAtOrders()
 
         expect(screen.getByText("Halaman pendaftaran")).toBeInTheDocument()
+    })
+
+    it("renders protected content for outlet employees without checking registration", () => {
+        mockAuth(employeeUser(), false)
+        mockError(apiError("merchant_registration_not_found"))
+
+        renderAtOrders()
+
+        expect(screen.getByText("Halaman orders")).toBeInTheDocument()
+        expect(screen.queryByText("Halaman pendaftaran")).not.toBeInTheDocument()
+    })
+
+    it("redirects users without outlet access to /403 instead of /registration", () => {
+        mockAuth(noAccessUser(), false)
+        mockError(apiError("merchant_registration_not_found"))
+
+        renderAtOrders()
+
+        expect(screen.getByText("Halaman ditolak")).toBeInTheDocument()
+        expect(screen.queryByText("Halaman orders")).not.toBeInTheDocument()
+        expect(screen.queryByText("Halaman pendaftaran")).not.toBeInTheDocument()
     })
 
     it("shows an error state with retry for other failures", async () => {

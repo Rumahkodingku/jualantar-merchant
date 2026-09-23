@@ -10,8 +10,8 @@ export function registrationQueryOptions() {
     })
 }
 
-export function useRegistration() {
-    return useQuery(registrationQueryOptions())
+export function useRegistration(enabled = true) {
+    return useQuery({ ...registrationQueryOptions(), enabled })
 }
 
 export function reviewQueryOptions() {

@@ -8,6 +8,7 @@ import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { ApiError } from "~/lib/api"
 import { useSession } from "~/modules/auth"
+import { ForbiddenState, useAuthorization } from "~/modules/authorization"
 import {
     AdminNote,
     REGISTRATION_BASE,
@@ -19,6 +20,7 @@ import {
     type MerchantRegistration,
 } from "~/modules/merchant-registration"
 
+import { EmployeeHome } from "../components/employee-home"
 import { MerchantHome } from "../components/merchant-home"
 
 function StartCard() {
@@ -124,7 +126,13 @@ function StatusCard({ registration }: { registration: MerchantRegistration }) {
 
 export function HomePage() {
     const { user } = useSession()
-    const registration = useRegistration()
+    const { isOwner, isLoading: isAuthLoading } = useAuthorization()
+    const hasAssignments = (user?.outletAssignments.length ?? 0) > 0
+    const isEmployee = !isOwner && hasAssignments
+    // Registrasi merchant hanya milik owner; query dimatikan untuk karyawan
+    // agar tidak menerima `merchant_registration_not_found` dan dikira harus
+    // mendaftar lagi.
+    const registration = useRegistration(isOwner)
 
     const notFound =
         registration.error instanceof ApiError && registration.error.code === "merchant_registration_not_found"
@@ -140,7 +148,21 @@ export function HomePage() {
                 </Text>
             </section>
 
-            {registration.isLoading ? (
+            {isAuthLoading ? (
+                <Card>
+                    <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+                        <Spinner className="size-4" />
+                        <Text variant="sm">Memeriksa akses…</Text>
+                    </CardContent>
+                </Card>
+            ) : isEmployee ? (
+                <EmployeeHome />
+            ) : !isOwner ? (
+                <ForbiddenState
+                    title="Belum ada akses outlet"
+                    description="Akun Anda belum ditugaskan ke outlet mana pun. Hubungi pemilik merchant untuk mendapatkan akses."
+                />
+            ) : registration.isLoading ? (
                 <Card>
                     <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
                         <Spinner className="size-4" />

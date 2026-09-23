@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react"
-import { Outlet } from "react-router"
+import { Navigate, Outlet } from "react-router"
 
 import { ErrorState } from "~/components/error-state"
 import { SplashScreen } from "~/components/splash-screen"
 import { ApiError } from "~/lib/api"
+import { useAuthorization } from "~/modules/authorization"
 
 import { RegistrationProvider } from "./registration-context"
 import { RegistrationScreen } from "./registration-screen"
@@ -12,7 +13,10 @@ import { useCreateRegistration } from "../services/merchant-registration.mutatio
 import { useRegistration } from "../services/merchant-registration.queries"
 
 export function RegistrationLayout() {
-    const { data, error, isError, isLoading, refetch } = useRegistration()
+    const { user, isOwner, isLoading: isAuthLoading } = useAuthorization()
+    // Alur /registration hanya untuk owner. Query dimatikan untuk non-owner
+    // agar karyawan tidak menerima 404 lalu terpicu pembuatan draft otomatis.
+    const { data, error, isError, isLoading, refetch } = useRegistration(isOwner)
     const createDraft = useCreateRegistration()
     const createAttempted = useRef(false)
 
@@ -20,6 +24,10 @@ export function RegistrationLayout() {
     const isConflict = error instanceof ApiError && error.code === "merchant_registration_already_exists"
 
     useEffect(() => {
+        if (!isOwner) {
+            return
+        }
+
         if (isNotFound && !createAttempted.current) {
             createAttempted.current = true
             createDraft.mutate(undefined, {
@@ -32,7 +40,22 @@ export function RegistrationLayout() {
         if (isConflict) {
             void refetch()
         }
-    }, [isNotFound, isConflict, createDraft, refetch])
+    }, [isOwner, isNotFound, isConflict, createDraft, refetch])
+
+    if (isAuthLoading) {
+        return <SplashScreen label="Memeriksa akses…" />
+    }
+
+    if (user === null) {
+        return <Navigate to="/403" replace />
+    }
+
+    if (!isOwner) {
+        // Karyawan tidak boleh masuk alur pendaftaran: yang punya assignment
+        // kembali ke beranda outlet-nya, yang tanpa akses ke halaman 403.
+        // Ini mencegah terciptanya merchant ganda via pembuatan draft otomatis.
+        return <Navigate to={user.outletAssignments.length > 0 ? "/" : "/403"} replace />
+    }
 
     if (isLoading || createDraft.isPending) {
         return <SplashScreen label="Menyiapkan pendaftaran…" />

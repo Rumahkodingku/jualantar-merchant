@@ -17,18 +17,15 @@ import {
     WalletCards,
     WalletIcon,
 } from "lucide-react"
-
 import { ErrorState } from "~/components/error-state"
 import { Skeleton } from "~/components/ui/skeleton"
-import { Text } from "~/components/ui/text"
 import { getApiErrorMessage } from "~/lib/api-form"
-
 import { MenuItem } from "~/components/menu-item"
 import { MenuSection } from "~/components/menu-section"
 import { useOperationalOutlets, useOperationalProfile, useOperationsSummary } from "~/modules/merchant-operations"
-
 import { SettingsHero } from "../components/settings-hero"
 import { SETTINGS_PATHS } from "../utils/paths"
+import { PageHeader } from "~/components/page-header"
 
 export function SettingsHomePage() {
     const summary = useOperationsSummary()
@@ -43,14 +40,7 @@ export function SettingsHomePage() {
 
     return (
         <div className="flex flex-1 flex-col gap-6">
-            <header className="flex flex-col gap-1">
-                <Text as="h1" variant="2xl" weight="semibold" className="tracking-tight">
-                    Pengaturan
-                </Text>
-                <Text variant="sm" className="text-muted-foreground">
-                    Kelola merchant, aplikasi, dan akun Anda.
-                </Text>
-            </header>
+            <PageHeader title="Pengaturan" description="Kelola informasi dan identitas usaha Anda." />
 
             {isPending ? (
                 <Skeleton className="h-24 w-full rounded-2xl" />

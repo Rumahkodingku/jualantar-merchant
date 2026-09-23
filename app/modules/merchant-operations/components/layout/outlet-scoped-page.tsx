@@ -44,7 +44,7 @@ export function OutletScopedPage({
                 />
             ) : query.data === undefined ? null : (
                 <>
-                    <OutletCompactHeader outlet={query.data} />
+                    {/* <OutletCompactHeader outlet={query.data} /> */}
                     {children(query.data)}
                 </>
             )}

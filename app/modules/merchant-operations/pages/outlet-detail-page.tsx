@@ -241,9 +241,6 @@ export function OutletDetailPage() {
             ) : query.data === undefined ? null : (
                 <>
                     <OutletDetail outlet={query.data} />
-                    <Button render={<Link to={OUTLETS_PATHS.home} />} variant="ghost" size="lg" className="h-11 w-full">
-                        Kembali ke daftar outlet
-                    </Button>
                 </>
             )}
         </div>

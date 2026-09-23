@@ -15,7 +15,7 @@ const PRESENTATIONS: Record<MerchantStatus, MerchantStatusPresentation> = {
     inactive: {
         status: "inactive",
         label: "Tidak Aktif",
-        indicator: "⚪",
+        indicator: "",
         description: "Merchant belum aktif. Seluruh outlet tidak dapat menerima pesanan sampai merchant diaktifkan.",
         tone: "neutral",
         actions: ["activate"],
@@ -23,7 +23,7 @@ const PRESENTATIONS: Record<MerchantStatus, MerchantStatusPresentation> = {
     active: {
         status: "active",
         label: "Aktif",
-        indicator: "🟢",
+        indicator: "",
         description:
             "Merchant aktif. Outlet dapat menerima pesanan selama outlet aktif dan berada dalam jam operasional.",
         tone: "positive",
@@ -32,7 +32,7 @@ const PRESENTATIONS: Record<MerchantStatus, MerchantStatusPresentation> = {
     suspended: {
         status: "suspended",
         label: "Ditangguhkan",
-        indicator: "🔴",
+        indicator: "",
         description:
             "Merchant ditangguhkan. Seluruh outlet berhenti menerima pesanan sampai merchant diaktifkan kembali.",
         tone: "negative",

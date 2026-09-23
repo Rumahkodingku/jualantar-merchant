@@ -1,11 +1,9 @@
 import { PlusIcon, UsersIcon } from "lucide-react"
 import { useState } from "react"
 import { useParams } from "react-router"
-
 import { ErrorState } from "~/components/error-state"
 import { Button } from "~/components/ui/button"
 import { getApiErrorMessage } from "~/lib/api-form"
-
 import { EmptyState } from "../components/common/empty-state"
 import { ListSkeleton } from "../components/common/list-skeleton"
 import { OutletScopedPage } from "../components/layout/outlet-scoped-page"

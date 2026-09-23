@@ -135,15 +135,6 @@ export function HomePage() {
 
     return (
         <>
-            <section className="flex flex-col gap-1">
-                <Text variant="sm" className="text-muted-foreground">
-                    Selamat datang,
-                </Text>
-                <Text as="h1" variant="2xl" weight="semibold" truncate className="tracking-tight">
-                    {user?.email ?? "Merchant"}
-                </Text>
-            </section>
-
             {isAuthLoading ? (
                 <Card>
                     <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">

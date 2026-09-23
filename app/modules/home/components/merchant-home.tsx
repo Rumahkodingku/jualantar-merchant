@@ -1,36 +1,28 @@
-import {
-    BanknoteIcon,
-    NotebookPenIcon,
-    PauseCircleIcon,
-    PlusIcon,
-    SettingsIcon,
-    ShoppingBagIcon,
-    TagIcon,
-    type LucideIcon,
-} from "lucide-react"
-import { Link } from "react-router"
-
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
-import { Button } from "~/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
-import { Skeleton } from "~/components/ui/skeleton"
-import { Text } from "~/components/ui/text"
+import { PauseCircleIcon } from "lucide-react"
 import { ErrorState } from "~/components/error-state"
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { getApiErrorMessage } from "~/lib/api-form"
-import { merchantStatusPresentation, useOperationalOutlets, useOperationsSummary } from "~/modules/merchant-operations"
-import { SETTINGS_PATHS } from "~/modules/settings"
+import { merchantStatusPresentation, useOperationsSummary } from "~/modules/merchant-operations"
 import type { MerchantRegistration } from "~/modules/merchant-registration"
-import { PROMOTIONS_PATHS } from "~/modules/promotions"
-import { PRODUCTS_PATHS } from "~/modules/products"
-import { cn } from "~/lib/utils"
-
-const SHORTCUTS: { to: string; label: string; description: string; icon: LucideIcon }[] = [
-    { to: "/orders", label: "Pesanan", description: "Lihat pesanan pelanggan", icon: NotebookPenIcon },
-    { to: PRODUCTS_PATHS.home, label: "Produk", description: "Kelola produk", icon: ShoppingBagIcon },
-    { to: PROMOTIONS_PATHS.home, label: "Promo", description: "Buat promo", icon: TagIcon },
-    { to: "/finances", label: "Keuangan", description: "Saldo & transaksi", icon: BanknoteIcon },
-    { to: SETTINGS_PATHS.home, label: "Pengaturan", description: "Outlet & akun", icon: SettingsIcon },
-]
+import { useHomeContext } from "../hooks/use-home-context"
+import type { HomeOutletContext } from "../types/home.types"
+import { getHomeDummyData, getOutletPerformanceDummy } from "../utils/home-dummy-data"
+import { AcademyBanner } from "./academy-banner"
+import { HomeBusinessSummary } from "./business-summary"
+import { AllOutletsCard, OutletContextCard } from "./outlet-context-card"
+import { HomeHeader } from "./home-header"
+import { HomeSkeleton } from "./home-skeleton"
+import { MainMenuGrid } from "./main-menu-grid"
+import { OperationalCta } from "./operational-cta"
+import { OutletPerformanceList } from "./outlet-performance-list"
+import { OutletSelector } from "./outlet-selector"
+import { RecentActivities } from "./recent-activities"
+import { RecentOrders } from "./recent-orders"
+import { HomeSalesChart } from "./sales-chart"
+import { SupportCard } from "./support-card"
+import { TodayOrdersSummary } from "./today-orders-summary"
+import { TopProducts } from "./top-products"
+import { ZeroOutletState } from "./zero-outlet-state"
 
 function SuspendedBanner() {
     return (
@@ -45,141 +37,180 @@ function SuspendedBanner() {
     )
 }
 
+const WELCOME_DESCRIPTION = "Kelola usahamu dengan lebih mudah di JualAntar."
+
 export function MerchantHome({ registration }: { registration: MerchantRegistration }) {
     const summary = useOperationsSummary()
-    const outlets = useOperationalOutlets({ per_page: 1 })
+    const home = useHomeContext()
 
     const summaryStatus = summary.data?.merchant.status
     const presentation = summaryStatus === undefined ? null : merchantStatusPresentation(summaryStatus)
     const businessName = summary.data?.merchant.business_name ?? registration.business_name ?? "Merchant"
     const suspended = registration.merchant_status === "suspended" || summaryStatus === "suspended"
-    const outletTotal = outlets.data?.meta.total ?? 0
+    const merchantStatus =
+        presentation === null
+            ? null
+            : { label: presentation.label, tone: presentation.tone as "positive" | "neutral" | "negative" }
 
-    const isPending = summary.isPending || outlets.isPending
-    const isError = summary.isError && outlets.isError
-
-    if (isPending) {
-        return (
-            <div className="flex flex-col gap-4">
-                <Skeleton className="h-24 w-full rounded-2xl" />
-                <Skeleton className="h-32 w-full rounded-2xl" />
-            </div>
-        )
+    if (summary.isPending || home.isPending) {
+        return <HomeSkeleton />
     }
 
-    if (isError) {
+    if (summary.isError && home.isError) {
         return (
             <ErrorState
                 title="Gagal memuat beranda"
-                description={getApiErrorMessage(summary.error ?? outlets.error)}
+                description={getApiErrorMessage(summary.error ?? home.error)}
                 onRetry={() => {
                     void summary.refetch()
-                    void outlets.refetch()
+                    home.refetch()
                 }}
             />
+        )
+    }
+
+    if (home.isError) {
+        return (
+            <>
+                {suspended ? <SuspendedBanner /> : null}
+                <HomeHeader
+                    businessName={businessName}
+                    description={WELCOME_DESCRIPTION}
+                    merchantStatus={merchantStatus}
+                />
+                <ErrorState
+                    title="Gagal memuat outlet"
+                    description={getApiErrorMessage(home.error)}
+                    onRetry={home.refetch}
+                />
+            </>
         )
     }
 
     return (
         <>
             {suspended ? <SuspendedBanner /> : null}
+            <HomeDashboard
+                context={home.context}
+                businessName={businessName}
+                merchantStatus={merchantStatus}
+                suspended={suspended}
+                home={home}
+            />
+        </>
+    )
+}
 
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center gap-3">
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-lg font-semibold text-primary">
-                            {businessName[0]?.toUpperCase() ?? "M"}
-                        </span>
-                        <div className="flex min-w-0 flex-col">
-                            <CardTitle className="truncate">{businessName}</CardTitle>
-                            <CardDescription>
-                                {presentation === null ? (
-                                    "Memuat status usaha…"
-                                ) : (
-                                    <span className="flex items-center gap-1.5">
-                                        <span
-                                            aria-hidden="true"
-                                            className={cn(
-                                                "size-2 rounded-full",
-                                                presentation.tone === "positive" && "bg-emerald-500",
-                                                presentation.tone === "neutral" && "bg-muted-foreground",
-                                                presentation.tone === "negative" && "bg-destructive"
-                                            )}
-                                        />
-                                        {presentation.label}
-                                    </span>
-                                )}
-                            </CardDescription>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    {outlets.isError ? (
-                        <ErrorState
-                            title="Gagal memuat outlet"
-                            description={getApiErrorMessage(outlets.error)}
-                            onRetry={() => void outlets.refetch()}
-                        />
-                    ) : (
-                        <div className="flex items-center justify-between gap-3">
-                            <div className="flex min-w-0 flex-col">
-                                <Text variant="xl" weight="semibold">
-                                    {outletTotal} outlet
-                                </Text>
-                                <Text variant="xs" className="text-muted-foreground">
-                                    {outletTotal === 0
-                                        ? "Tambahkan outlet pertama Anda"
-                                        : "Kelola outlet, jam, dan area layanan"}
-                                </Text>
-                            </div>
-                            <Button
-                                render={
-                                    <Link to={outletTotal === 0 ? SETTINGS_PATHS.outletNew : SETTINGS_PATHS.outlets} />
-                                }
-                                variant="outline"
-                                size="sm"
-                                className="shrink-0"
-                            >
-                                {outletTotal === 0 ? (
-                                    <>
-                                        <PlusIcon aria-hidden="true" />
-                                        Tambah
-                                    </>
-                                ) : (
-                                    "Kelola"
-                                )}
-                            </Button>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+function HomeDashboard({
+    context,
+    businessName,
+    merchantStatus,
+    suspended,
+    home,
+}: {
+    context: HomeOutletContext
+    businessName: string
+    merchantStatus: { label: string; tone: "positive" | "neutral" | "negative" } | null
+    suspended: boolean
+    home: ReturnType<typeof useHomeContext>
+}) {
+    if (context.type === "none") {
+        return (
+            <>
+                <HomeHeader
+                    businessName={businessName}
+                    description={WELCOME_DESCRIPTION}
+                    merchantStatus={merchantStatus}
+                />
+                <ZeroOutletState />
+            </>
+        )
+    }
 
-            <section className="flex flex-col gap-2">
-                <Text as="h2" variant="sm" weight="semibold">
-                    Jalan pintas
-                </Text>
-                <div className="grid grid-cols-2 gap-3">
-                    {SHORTCUTS.map((item) => (
-                        <Link
-                            key={item.to}
-                            to={item.to}
-                            className="flex items-center gap-3 rounded-2xl border bg-card p-3 transition-colors outline-none hover:bg-muted/50 focus-visible:bg-muted/60"
-                        >
-                            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-                                <item.icon className="size-4" aria-hidden="true" />
-                            </span>
-                            <span className="flex min-w-0 flex-col text-left">
-                                <Text as="span" variant="sm" weight="medium" truncate>
-                                    {item.label}
-                                </Text>
-                                <Text as="span" variant="xs" className="truncate text-muted-foreground">
-                                    {item.description}
-                                </Text>
-                            </span>
-                        </Link>
-                    ))}
-                </div>
-            </section>
+    if (context.type === "all") {
+        const dashboard = getHomeDummyData(context)
+        const performance = getOutletPerformanceDummy(
+            home.outlets.map((outlet) => ({ id: outlet.id, name: outlet.name, status: outlet.status }))
+        )
+
+        return (
+            <>
+                <HomeHeader
+                    businessName={businessName}
+                    description={WELCOME_DESCRIPTION}
+                    merchantStatus={merchantStatus}
+                />
+                <OutletSelector
+                    outlets={home.outlets}
+                    outletTotal={home.outletTotal}
+                    selectedId={null}
+                    hasMore={home.hasMoreOutlets}
+                    isPending={false}
+                    isError={false}
+                    error={null}
+                    onRetry={home.refetch}
+                    onSelect={home.selectOutlet}
+                />
+                <AllOutletsCard total={home.outletTotal} />
+                <TodayOrdersSummary data={dashboard.todayOrders} />
+                <HomeBusinessSummary
+                    data={dashboard.summary}
+                    caption={`Gabungan ${home.outletTotal} outlet hari ini.`}
+                />
+                <HomeSalesChart data={dashboard.sales7Days} />
+                <OutletPerformanceList items={performance} onSelect={(outletId) => home.selectOutlet(outletId)} />
+                <MainMenuGrid outletId={null} />
+                <RecentOrders orders={dashboard.recentOrders} />
+                <TopProducts products={dashboard.topProducts} />
+                <RecentActivities activities={dashboard.activities} />
+                <AcademyBanner />
+                <SupportCard />
+            </>
+        )
+    }
+
+    const outlet = home.selectedOutlet
+
+    if (outlet === null) {
+        return (
+            <ErrorState
+                title="Outlet tidak ditemukan"
+                description="Outlet yang dipilih tidak tersedia. Kembali ke ringkasan semua outlet."
+                retryLabel="Tampilkan semua outlet"
+                onRetry={() => home.selectOutlet(null)}
+            />
+        )
+    }
+
+    const dashboard = getHomeDummyData(context, outlet.name)
+
+    return (
+        <>
+            <HomeHeader businessName={businessName} description={WELCOME_DESCRIPTION} merchantStatus={merchantStatus} />
+            {context.type === "selected" ? (
+                <OutletSelector
+                    outlets={home.outlets}
+                    outletTotal={home.outletTotal}
+                    selectedId={outlet.id}
+                    hasMore={home.hasMoreOutlets}
+                    isPending={false}
+                    isError={false}
+                    error={null}
+                    onRetry={home.refetch}
+                    onSelect={home.selectOutlet}
+                />
+            ) : null}
+            <OutletContextCard outlet={outlet} />
+            <OperationalCta outlet={outlet} suspended={suspended} />
+            <TodayOrdersSummary data={dashboard.todayOrders} />
+            <HomeBusinessSummary data={dashboard.summary} caption={`Data ${outlet.name} hari ini.`} />
+            <HomeSalesChart data={dashboard.sales7Days} />
+            <MainMenuGrid outletId={outlet.id} />
+            <RecentOrders orders={dashboard.recentOrders} />
+            <TopProducts products={dashboard.topProducts} />
+            <RecentActivities activities={dashboard.activities} />
+            <AcademyBanner />
+            <SupportCard />
         </>
     )
 }

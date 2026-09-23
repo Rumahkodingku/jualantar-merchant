@@ -53,15 +53,11 @@ function buildPayload(values: ServiceAreaFormValues, outlet: OperationalOutlet):
     return { type: level, [`${level}_id`]: outletRegionId(outlet, level) } as ServiceAreaInput
 }
 
-export function ServiceAreaForm({
-    outlet,
-    area,
-    canUpdate,
-}: {
-    outlet: OperationalOutlet
-    area: ServiceArea | null | undefined
-    canUpdate: boolean
-}) {
+/**
+ * Editable service area. Only rendered for users who hold the update capability;
+ * read-only users get `ServiceAreaReadOnly` instead.
+ */
+export function ServiceAreaForm({ outlet, area }: { outlet: OperationalOutlet; area: ServiceArea | null | undefined }) {
     const mutation = useUpdateServiceArea(outlet.id)
 
     const form = useForm<ServiceAreaFormValues>({
@@ -113,7 +109,6 @@ export function ServiceAreaForm({
                                 options={SERVICE_AREA_TYPE_OPTIONS}
                                 value={field.value}
                                 onChange={field.onChange}
-                                disabled={!canUpdate}
                             />
                         )}
                     />
@@ -129,7 +124,6 @@ export function ServiceAreaForm({
                             className="h-11"
                             inputMode="decimal"
                             placeholder="Contoh: 5"
-                            disabled={!canUpdate}
                             aria-invalid={form.formState.errors.radius_km !== undefined}
                             {...form.register("radius_km")}
                         />
@@ -160,17 +154,7 @@ export function ServiceAreaForm({
                 </Alert>
             </div>
 
-            {canUpdate ? (
-                <FormActions
-                    form="service-area-form"
-                    submitLabel="Simpan area layanan"
-                    isSubmitting={mutation.isPending}
-                />
-            ) : (
-                <p className="pt-6 text-xs text-muted-foreground">
-                    Anda tidak memiliki izin untuk mengubah area layanan.
-                </p>
-            )}
+            <FormActions form="service-area-form" submitLabel="Simpan area layanan" isSubmitting={mutation.isPending} />
         </form>
     )
 }

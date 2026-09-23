@@ -4,6 +4,7 @@ import { useParams } from "react-router"
 import { ErrorState } from "~/components/error-state"
 import { Button } from "~/components/ui/button"
 import { getApiErrorMessage } from "~/lib/api-form"
+import { CAP } from "~/modules/authorization"
 import { EmptyState } from "../components/common/empty-state"
 import { ListSkeleton } from "../components/common/list-skeleton"
 import { OutletScopedPage } from "../components/layout/outlet-scoped-page"
@@ -17,8 +18,8 @@ import type { OutletEmployee } from "../types/merchant-operations.types"
 
 export function OutletEmployeesPage() {
     const { outlet: outletId } = useParams<{ outlet: string }>()
-    const permissions = useOperationsPermissions()
-    const query = useOutletEmployees(outletId)
+    const permissions = useOperationsPermissions(outletId)
+    const query = useOutletEmployees(outletId, { enabled: permissions.canViewEmployees })
 
     const [createOpen, setCreateOpen] = useState(false)
     const [roleTarget, setRoleTarget] = useState<OutletEmployee | null>(null)
@@ -29,6 +30,7 @@ export function OutletEmployeesPage() {
             outletId={outletId}
             title="Karyawan"
             description="Karyawan hanya memiliki akses ke outlet ini."
+            capability={CAP.outletUsersView}
         >
             {(outlet) => (
                 <>

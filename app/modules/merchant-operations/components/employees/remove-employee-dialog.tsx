@@ -9,7 +9,7 @@ import {
 } from "~/components/ui/alert-dialog"
 import { Button } from "~/components/ui/button"
 import { Spinner } from "~/components/ui/spinner"
-import { getApiErrorMessage } from "~/lib/api-form"
+import { authorizationErrorMessage } from "~/modules/authorization"
 
 import { useRemoveOutletEmployee } from "../../services/merchant-operations.mutations"
 import { notifyError, notifySuccess } from "../../utils/notify"
@@ -43,7 +43,7 @@ export function RemoveEmployeeDialog({
                 onOpenChange(false)
             },
             onError: (error) => {
-                notifyError("Gagal menghapus karyawan", getApiErrorMessage(error))
+                notifyError("Gagal menghapus karyawan", authorizationErrorMessage(error))
             },
         })
     }

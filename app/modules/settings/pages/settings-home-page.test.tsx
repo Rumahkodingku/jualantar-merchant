@@ -32,6 +32,12 @@ vi.mock("~/modules/merchant-operations/services/merchant-operations.queries", ()
     useOperationalOutlets: () => fixtures.outlets,
 }))
 
+vi.mock("~/modules/authorization", () => ({
+    CAP: { view: "merchant.operations.view", outletsCreate: "merchant.operations.outlets.create" },
+    canViewOutletList: () => true,
+    useAuthorization: () => ({ user: null, isOwner: true, can: () => true }),
+}))
+
 import { SettingsHomePage } from "./settings-home-page"
 
 function renderHome() {

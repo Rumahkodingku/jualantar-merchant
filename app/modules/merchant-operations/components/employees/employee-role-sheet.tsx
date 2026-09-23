@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { Button } from "~/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "~/components/ui/sheet"
 import { Spinner } from "~/components/ui/spinner"
-import { getApiErrorMessage } from "~/lib/api-form"
+import { authorizationErrorMessage } from "~/modules/authorization"
 import { ChoiceCards } from "~/modules/merchant-registration"
 
 import { useChangeOutletEmployeeRole } from "../../services/merchant-operations.mutations"
@@ -46,7 +46,7 @@ export function EmployeeRoleSheet({
                     onOpenChange(false)
                 },
                 onError: (error) => {
-                    notifyError("Gagal mengubah peran", getApiErrorMessage(error))
+                    notifyError("Gagal mengubah peran", authorizationErrorMessage(error))
                 },
             }
         )

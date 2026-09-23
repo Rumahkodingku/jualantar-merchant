@@ -8,7 +8,8 @@ import { Field, FieldDescription, FieldError, FieldLabel } from "~/components/ui
 import { Input } from "~/components/ui/input"
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "~/components/ui/sheet"
 import { Spinner } from "~/components/ui/spinner"
-import { applyApiFieldErrors, getApiErrorMessage } from "~/lib/api-form"
+import { applyApiFieldErrors } from "~/lib/api-form"
+import { authorizationErrorMessage } from "~/modules/authorization"
 import { ChoiceCards } from "~/modules/merchant-registration"
 
 import { employeePayload, employeeSchema, type EmployeeFormValues } from "../../schemas/employee.schema"
@@ -65,7 +66,7 @@ export function EmployeeCreateSheet({
                 const applied = applyApiFieldErrors(error, setError, FIELDS)
 
                 if (!applied) {
-                    setError("root", { message: getApiErrorMessage(error) })
+                    setError("root", { message: authorizationErrorMessage(error) })
                 }
             },
         })

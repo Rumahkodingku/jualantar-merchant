@@ -11,14 +11,16 @@ import { formToOperatingHoursPayload, operatingHoursToForm } from "../../utils/o
 import { notifyError, notifySuccess } from "../../utils/notify"
 import type { OperatingHours } from "~/modules/merchant-registration"
 
+/**
+ * Editable operating hours. Only rendered for users who hold the update
+ * capability; read-only users get `OperatingHoursReadOnly` instead.
+ */
 export function OperatingHoursForm({
     outletId,
     schedule,
-    canUpdate,
 }: {
     outletId: string
     schedule: OperatingHours | null | undefined
-    canUpdate: boolean
 }) {
     const mutation = useUpdateOperatingHours(outletId)
 
@@ -53,17 +55,11 @@ export function OperatingHoursForm({
                     <OperatingHoursField />
                 </div>
 
-                {canUpdate ? (
-                    <FormActions
-                        form="operating-hours-form"
-                        submitLabel="Simpan jam operasional"
-                        isSubmitting={mutation.isPending}
-                    />
-                ) : (
-                    <p className="pt-6 text-xs text-muted-foreground">
-                        Anda tidak memiliki izin untuk mengubah jam operasional.
-                    </p>
-                )}
+                <FormActions
+                    form="operating-hours-form"
+                    submitLabel="Simpan jam operasional"
+                    isSubmitting={mutation.isPending}
+                />
             </form>
         </FormProvider>
     )

@@ -82,6 +82,18 @@ export class ApiError extends Error {
         return this.kind === "network"
     }
 
+    get isUnauthenticated(): boolean {
+        return this.kind === "unauthenticated"
+    }
+
+    get isForbidden(): boolean {
+        return this.kind === "forbidden"
+    }
+
+    get isNotFound(): boolean {
+        return this.kind === "not_found"
+    }
+
     /** Map RFC 9457 `errors` onto a flat `field -> message` record. */
     fieldErrors(): Record<string, string> {
         const mapped: Record<string, string> = {}

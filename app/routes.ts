@@ -10,6 +10,8 @@ export default [
         layout("components/layouts/app-shell/routes/app-shell-route.tsx", [
             index("modules/home/routes/home-route.tsx"),
 
+            route("403", "modules/authorization/routes/forbidden.tsx"),
+
             route("", "modules/merchant-registration/routes/approved-guard-route.tsx", [
                 route("orders", "modules/orders/routes/index.tsx"),
                 route("finances", "modules/finances/routes/index.tsx"),

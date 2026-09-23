@@ -1,12 +1,15 @@
 import type { DayKey, GeographyLabel, OperatingHours } from "~/modules/merchant-registration"
+import type { OutletUserRole } from "~/modules/auth"
+
+// Re-exported so existing consumers keep a single import path; the definition
+// lives in `auth` because it is part of the `/auth/me` session contract.
+export type { OutletUserRole }
 
 export type MerchantStatus = "inactive" | "active" | "suspended"
 
 export type OutletStatus = "active" | "inactive"
 
 export type OutletServiceAreaType = "radius" | "province" | "regency" | "district" | "village"
-
-export type OutletUserRole = "outlet_manager" | "outlet_staff"
 
 export type OperationalAvailabilityStatus = "open" | "closed"
 

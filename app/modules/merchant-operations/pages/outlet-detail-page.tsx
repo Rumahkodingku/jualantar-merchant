@@ -17,7 +17,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { getApiErrorMessage } from "~/lib/api-form"
+import { ApiError } from "~/lib/api"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
+import { authorizationErrorMessage, ForbiddenState } from "~/modules/authorization"
 
 import { ListSkeleton } from "../components/common/list-skeleton"
 import { OutletSectionNav } from "../components/outlets/outlet-section-nav"
@@ -58,7 +60,7 @@ function OutletStatusCard({ outlet, canUpdateStatus }: { outlet: OperationalOutl
 
         mutation.mutate(undefined, {
             onSuccess: () => notifySuccess(action === "activate" ? "Outlet diaktifkan." : "Outlet dinonaktifkan."),
-            onError: (error) => notifyError("Gagal mengubah status outlet", getApiErrorMessage(error)),
+            onError: (error) => notifyError("Gagal mengubah status outlet", authorizationErrorMessage(error)),
         })
     }
 
@@ -140,7 +142,7 @@ function OutletStatusCard({ outlet, canUpdateStatus }: { outlet: OperationalOutl
 }
 
 function OutletDetail({ outlet }: { outlet: OperationalOutlet }) {
-    const permissions = useOperationsPermissions()
+    const permissions = useOperationsPermissions(outlet.id)
     const location = [
         outlet.geography?.village,
         outlet.geography?.district,
@@ -233,11 +235,15 @@ export function OutletDetailPage() {
             {query.isPending ? (
                 <ListSkeleton rows={3} className="h-28" />
             ) : query.isError ? (
-                <ErrorState
-                    title="Outlet tidak dapat diakses"
-                    description={getApiErrorMessage(query.error)}
-                    onRetry={() => void query.refetch()}
-                />
+                query.error instanceof ApiError && query.error.isForbidden ? (
+                    <ForbiddenState />
+                ) : (
+                    <ErrorState
+                        title="Outlet tidak dapat diakses"
+                        description={getApiErrorMessage(query.error)}
+                        onRetry={() => void query.refetch()}
+                    />
+                )
             ) : query.data === undefined ? null : (
                 <>
                     <OutletDetail outlet={query.data} />

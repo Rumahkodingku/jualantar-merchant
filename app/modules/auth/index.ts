@@ -7,16 +7,20 @@ export { useSession } from "./hooks/use-session"
 export {
     useLogin,
     useLogout,
+    useRefreshSession,
     useRegisterMerchant,
     useResendVerification,
     useVerifyEmail,
 } from "./services/auth.mutations"
 export { meQueryOptions } from "./services/auth.queries"
 export { authKeys } from "./services/auth.keys"
+export { normalizeAuthUser, normalizeOutletAssignments, outletUserRoleSchema } from "./schemas/auth-user.schema"
 export type {
     AuthUser,
     LoginInput,
     LoginResult,
+    OutletAssignment,
+    OutletUserRole,
     RegisterMerchantInput,
     RegisteredMerchant,
     VerifyEmailParams,

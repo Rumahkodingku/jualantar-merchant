@@ -1,4 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query"
+
+import { authKeys } from "~/modules/auth"
 
 import {
     activateMerchant,
@@ -110,14 +112,21 @@ export function useDeactivateOutlet(outletId: string) {
     return useOutletStatusMutation(outletId, deactivateOutlet)
 }
 
+/**
+ * An employee assignment change can also change the current user's own outlet
+ * role (self-assignment), so the session/authorization cache is refreshed too.
+ */
+function invalidateEmployeeCaches(queryClient: QueryClient, outletId: string) {
+    void queryClient.invalidateQueries({ queryKey: merchantOperationsKeys.employees(outletId) })
+    void queryClient.invalidateQueries({ queryKey: authKeys.me() })
+}
+
 export function useCreateOutletEmployee(outletId: string) {
     const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn: (input: CreateOutletEmployeeInput) => createOutletEmployee(outletId, input),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({ queryKey: merchantOperationsKeys.employees(outletId) })
-        },
+        onSuccess: () => invalidateEmployeeCaches(queryClient, outletId),
     })
 }
 
@@ -127,9 +136,7 @@ export function useChangeOutletEmployeeRole(outletId: string) {
     return useMutation({
         mutationFn: (input: { userId: string; role: OutletUserRole }) =>
             changeOutletEmployeeRole(outletId, input.userId, input.role),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({ queryKey: merchantOperationsKeys.employees(outletId) })
-        },
+        onSuccess: () => invalidateEmployeeCaches(queryClient, outletId),
     })
 }
 
@@ -138,9 +145,7 @@ export function useRemoveOutletEmployee(outletId: string) {
 
     return useMutation({
         mutationFn: (userId: string) => removeOutletEmployee(outletId, userId),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({ queryKey: merchantOperationsKeys.employees(outletId) })
-        },
+        onSuccess: () => invalidateEmployeeCaches(queryClient, outletId),
     })
 }
 

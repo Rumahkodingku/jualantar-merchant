@@ -4,6 +4,7 @@ import type { LucideIcon } from "lucide-react"
 import { cn } from "~/lib/utils"
 import { Text } from "~/components/ui/text"
 import { useState } from "react"
+import { CAP, useAuthorization, type OperationsCapability } from "~/modules/authorization"
 
 export interface AppNavItem {
     to: string
@@ -39,9 +40,49 @@ export const APP_NAV_ITEMS: AppNavItem[] = [
     },
 ]
 
+interface QuickAction {
+    to: string
+    label: string
+    description: string
+    icon: LucideIcon
+    /** When set, the action is hidden unless the user holds this capability. */
+    capability?: OperationsCapability
+}
+
+/**
+ * "Tambah Outlet" is an owner-only (global) capability. "Tambah Produk" and
+ * "Tambah Promo" belong to the products/promotions modules, which are outside
+ * this plan's scope and have no authorization contract yet — they stay visible
+ * rather than inventing a rule.
+ */
+const QUICK_ACTIONS: QuickAction[] = [
+    {
+        to: "/products/new",
+        label: "Tambah Produk",
+        description: "Tambahkan produk baru",
+        icon: Plus,
+    },
+    {
+        to: "/promotions/new",
+        label: "Tambah Promo",
+        description: "Buat promo untuk pelanggan",
+        icon: Tag,
+    },
+    {
+        to: "/settings/outlets/new",
+        label: "Tambah Outlet",
+        description: "Tambahkan outlet baru",
+        icon: Store,
+        capability: CAP.outletsCreate,
+    },
+]
+
 export function BottomNav() {
     const navigate = useNavigate()
+    const { can } = useAuthorization()
     const [isOpen, setIsOpen] = useState<boolean>(false)
+
+    const actions = QUICK_ACTIONS.filter((action) => action.capability === undefined || can(action.capability))
 
     const handleAction = (to: string) => {
         setIsOpen(false)
@@ -63,66 +104,30 @@ export function BottomNav() {
                     )}
                 >
                     <div className="mb-4 w-full max-w-xs overflow-hidden rounded-2xl border bg-background shadow-xl">
-                        <button
-                            type="button"
-                            onClick={() => handleAction("/products/new")}
-                            className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-muted"
-                        >
-                            <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                                <Plus className="size-5" />
-                            </span>
+                        {actions.map((action, index) => (
+                            <div key={action.to}>
+                                {index > 0 ? <div className="border-t" /> : null}
 
-                            <span>
-                                <Text variant="sm" weight="semibold">
-                                    Tambah Produk
-                                </Text>
-                                <Text variant="xs" className="text-muted-foreground">
-                                    Tambahkan produk baru
-                                </Text>
-                            </span>
-                        </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleAction(action.to)}
+                                    className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-muted"
+                                >
+                                    <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                                        <action.icon className="size-5" />
+                                    </span>
 
-                        <div className="border-t" />
-
-                        <button
-                            type="button"
-                            onClick={() => handleAction("/promotions/new")}
-                            className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-muted"
-                        >
-                            <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                                <Tag className="size-5" />
-                            </span>
-
-                            <span>
-                                <Text variant="sm" weight="semibold">
-                                    Tambah Promo
-                                </Text>
-                                <Text variant="xs" className="text-muted-foreground">
-                                    Buat promo untuk pelanggan
-                                </Text>
-                            </span>
-                        </button>
-
-                        <div className="border-t" />
-
-                        <button
-                            type="button"
-                            onClick={() => handleAction("/settings/outlets")}
-                            className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-muted"
-                        >
-                            <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                                <Store className="size-5" />
-                            </span>
-
-                            <span>
-                                <Text variant="sm" weight="semibold">
-                                    Tambah Outlet
-                                </Text>
-                                <Text variant="xs" className="text-muted-foreground">
-                                    Tambahkan outlet baru
-                                </Text>
-                            </span>
-                        </button>
+                                    <span>
+                                        <Text variant="sm" weight="semibold">
+                                            {action.label}
+                                        </Text>
+                                        <Text variant="xs" className="text-muted-foreground">
+                                            {action.description}
+                                        </Text>
+                                    </span>
+                                </button>
+                            </div>
+                        ))}
                     </div>
                 </div>
 

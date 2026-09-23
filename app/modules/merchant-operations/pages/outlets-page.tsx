@@ -8,6 +8,7 @@ import { Text } from "~/components/ui/text"
 import { getApiErrorMessage } from "~/lib/api-form"
 import { useDebouncedValue } from "~/hooks/use-debounced-value"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
+import { ForbiddenState } from "~/modules/authorization"
 
 import { EmptyState } from "../components/common/empty-state"
 import { ListSkeleton } from "../components/common/list-skeleton"
@@ -76,9 +77,18 @@ export function OutletsPage() {
         per_page: PAGE_SIZE,
     }
 
-    const query = useOperationalOutlets(params)
+    const query = useOperationalOutlets(params, { enabled: permissions.canViewOutletList })
     const meta = query.data?.meta
     const hasFilter = (searchParams.get("search") ?? "") !== "" || status !== "all"
+
+    if (!permissions.canViewOutletList) {
+        return (
+            <div className="flex flex-1 flex-col gap-5">
+                <SubpageHeader title="Outlet" description="Kelola outlet dan statusnya." backTo={SETTINGS_HOME_PATH} />
+                <ForbiddenState />
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-1 flex-col gap-5">

@@ -23,6 +23,7 @@ import { getApiErrorMessage } from "~/lib/api-form"
 import { MenuItem } from "~/components/menu-item"
 import { MenuSection } from "~/components/menu-section"
 import { useOperationalOutlets, useOperationalProfile, useOperationsSummary } from "~/modules/merchant-operations"
+import { CAP, canViewOutletList, useAuthorization } from "~/modules/authorization"
 import { SettingsHero } from "../components/settings-hero"
 import { SETTINGS_PATHS } from "../utils/paths"
 import { PageHeader } from "~/components/page-header"
@@ -31,6 +32,12 @@ export function SettingsHomePage() {
     const summary = useOperationsSummary()
     const profile = useOperationalProfile()
     const outlets = useOperationalOutlets({ per_page: 1 })
+    const { user, can } = useAuthorization()
+
+    // Merchant-level menus follow global capability; the outlet list follows the
+    // user's outlet access (owner or at least one assignment).
+    const canManageMerchant = can(CAP.view)
+    const canOpenOutlets = canViewOutletList(user)
 
     const businessName = summary.data?.merchant.business_name ?? profile.data?.business_name ?? "Merchant"
     const status = summary.data?.merchant.status ?? profile.data?.status ?? null
@@ -74,27 +81,33 @@ export function SettingsHomePage() {
                     title="Merchant"
                     description="Pengelolaan informasi dan operasional usaha Anda."
                 >
-                    <MenuItem
-                        to={SETTINGS_PATHS.profile}
-                        icon={Building2Icon}
-                        label="Profil merchant"
-                        description="Nama usaha, logo, dan kontak operasional"
-                    />
+                    {canManageMerchant ? (
+                        <MenuItem
+                            to={SETTINGS_PATHS.profile}
+                            icon={Building2Icon}
+                            label="Profil merchant"
+                            description="Nama usaha, logo, dan kontak operasional"
+                        />
+                    ) : null}
 
-                    <MenuItem
-                        to={SETTINGS_PATHS.status}
-                        icon={ActivityIcon}
-                        label="Status merchant"
-                        description="Aktif, tidak aktif, atau ditangguhkan"
-                    />
+                    {canManageMerchant ? (
+                        <MenuItem
+                            to={SETTINGS_PATHS.status}
+                            icon={ActivityIcon}
+                            label="Status merchant"
+                            description="Aktif, tidak aktif, atau ditangguhkan"
+                        />
+                    ) : null}
 
-                    <MenuItem
-                        to={SETTINGS_PATHS.outlets}
-                        icon={StoreIcon}
-                        label="Outlet"
-                        description="Kelola alamat, jam, area, dan karyawan per outlet"
-                        badge={outletTotal === 0 ? undefined : String(outletTotal)}
-                    />
+                    {canOpenOutlets ? (
+                        <MenuItem
+                            to={SETTINGS_PATHS.outlets}
+                            icon={StoreIcon}
+                            label="Outlet"
+                            description="Kelola alamat, jam, area, dan karyawan per outlet"
+                            badge={outletTotal === 0 ? undefined : String(outletTotal)}
+                        />
+                    ) : null}
                 </MenuSection>
 
                 {/* Keuangan & Legal */}

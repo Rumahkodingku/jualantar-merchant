@@ -2,10 +2,11 @@ import type { ReactNode } from "react"
 
 import { ErrorState } from "~/components/error-state"
 import { getApiErrorMessage } from "~/lib/api-form"
+import { ApiError } from "~/lib/api"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
+import { CAP, ForbiddenState, OutletCapabilityGuard, type OperationsCapability } from "~/modules/authorization"
 
 import { ListSkeleton } from "../common/list-skeleton"
-import { OutletCompactHeader } from "../outlets/outlet-compact-header"
 import { useOperationalOutlet } from "../../services/merchant-operations.queries"
 import { OUTLETS_PATHS, outletPath } from "../../utils/routes"
 import type { OperationalOutlet } from "../../types/merchant-operations.types"
@@ -13,16 +14,21 @@ import type { OperationalOutlet } from "../../types/merchant-operations.types"
 /**
  * Shared shell for the outlet-scoped settings screens: resolves the outlet,
  * renders the sub-page header and hands the outlet to the caller.
+ *
+ * `capability` is the view capability required to open the section; when the
+ * user lacks it the section renders an inline forbidden state.
  */
 export function OutletScopedPage({
     outletId,
     title,
     description,
+    capability = CAP.outletsView,
     children,
 }: {
     outletId: string | undefined
     title: string
     description?: string
+    capability?: OperationsCapability
     children: (outlet: OperationalOutlet) => ReactNode
 }) {
     const query = useOperationalOutlet(outletId)
@@ -37,16 +43,19 @@ export function OutletScopedPage({
             ) : query.isPending ? (
                 <ListSkeleton rows={2} />
             ) : query.isError ? (
-                <ErrorState
-                    title="Gagal memuat outlet"
-                    description={getApiErrorMessage(query.error)}
-                    onRetry={() => void query.refetch()}
-                />
+                query.error instanceof ApiError && query.error.isForbidden ? (
+                    <ForbiddenState />
+                ) : (
+                    <ErrorState
+                        title="Gagal memuat outlet"
+                        description={getApiErrorMessage(query.error)}
+                        onRetry={() => void query.refetch()}
+                    />
+                )
             ) : query.data === undefined ? null : (
-                <>
-                    {/* <OutletCompactHeader outlet={query.data} /> */}
+                <OutletCapabilityGuard outletId={outletId} capability={capability}>
                     {children(query.data)}
-                </>
+                </OutletCapabilityGuard>
             )}
         </div>
     )

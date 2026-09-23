@@ -1,5 +1,6 @@
 import { api } from "~/lib/api"
 
+import { normalizeAuthUser } from "../schemas/auth-user.schema"
 import type {
     AuthUser,
     LoginInput,
@@ -10,15 +11,22 @@ import type {
 } from "../types/auth.types"
 
 export async function login(input: LoginInput): Promise<LoginResult> {
-    const { data } = await api.post<{ data: LoginResult }>("/auth/login", input)
+    const { data } = await api.post<{ data: { token: string; token_type: string; user: unknown } }>(
+        "/auth/login",
+        input
+    )
 
-    return data.data
+    return {
+        token: data.data.token,
+        token_type: data.data.token_type,
+        user: normalizeAuthUser(data.data.user),
+    }
 }
 
 export async function fetchMe(): Promise<AuthUser> {
-    const { data } = await api.get<{ data: AuthUser }>("/auth/me")
+    const { data } = await api.get<{ data: unknown }>("/auth/me")
 
-    return data.data
+    return normalizeAuthUser(data.data)
 }
 
 export async function logout(): Promise<void> {

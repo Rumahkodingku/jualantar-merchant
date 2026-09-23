@@ -1,12 +1,13 @@
 import { ErrorState } from "~/components/error-state"
 import { getApiErrorMessage } from "~/lib/api-form"
 
+import { SubpageHeader } from "~/components/layouts/subpage-header"
+
 import { ListSkeleton } from "../components/common/list-skeleton"
-import { SettingsSubpageHeader } from "../components/layout/settings-subpage-header"
 import { MerchantProfileForm } from "../components/profile/merchant-profile-form"
 import { useOperationalProfile } from "../services/merchant-operations.queries"
 import { useOperationsPermissions } from "../utils/permissions"
-import { SETTINGS_PATHS } from "../utils/routes"
+import { SETTINGS_HOME_PATH } from "../utils/routes"
 
 export function MerchantProfilePage() {
     const permissions = useOperationsPermissions()
@@ -14,10 +15,10 @@ export function MerchantProfilePage() {
 
     return (
         <div className="flex flex-1 flex-col gap-5">
-            <SettingsSubpageHeader
+            <SubpageHeader
                 title="Profil Merchant"
                 description="Identitas usaha yang dilihat customer."
-                backTo={SETTINGS_PATHS.home}
+                backTo={SETTINGS_HOME_PATH}
             />
 
             {query.isPending ? (

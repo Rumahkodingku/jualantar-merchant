@@ -2,12 +2,12 @@ import type { ReactNode } from "react"
 
 import { ErrorState } from "~/components/error-state"
 import { getApiErrorMessage } from "~/lib/api-form"
+import { SubpageHeader } from "~/components/layouts/subpage-header"
 
 import { ListSkeleton } from "../common/list-skeleton"
 import { OutletCompactHeader } from "../outlets/outlet-compact-header"
-import { SettingsSubpageHeader } from "./settings-subpage-header"
 import { useOperationalOutlet } from "../../services/merchant-operations.queries"
-import { SETTINGS_PATHS, outletPath } from "../../utils/routes"
+import { OUTLETS_PATHS, outletPath } from "../../utils/routes"
 import type { OperationalOutlet } from "../../types/merchant-operations.types"
 
 /**
@@ -26,11 +26,11 @@ export function OutletScopedPage({
     children: (outlet: OperationalOutlet) => ReactNode
 }) {
     const query = useOperationalOutlet(outletId)
-    const backTo = outletId === undefined ? SETTINGS_PATHS.outlets : outletPath(outletId)
+    const backTo = outletId === undefined ? OUTLETS_PATHS.home : outletPath(outletId)
 
     return (
         <div className="flex flex-1 flex-col gap-5">
-            <SettingsSubpageHeader title={title} description={description} backTo={backTo} />
+            <SubpageHeader title={title} description={description} backTo={backTo} />
 
             {outletId === undefined ? (
                 <ErrorState title="Outlet tidak ditemukan" description="Pilih outlet terlebih dahulu." />

@@ -17,12 +17,8 @@ import { Skeleton } from "~/components/ui/skeleton"
 import { Text } from "~/components/ui/text"
 import { ErrorState } from "~/components/error-state"
 import { getApiErrorMessage } from "~/lib/api-form"
-import {
-    SETTINGS_PATHS,
-    merchantStatusPresentation,
-    useOperationalOutlets,
-    useOperationsSummary,
-} from "~/modules/merchant-operations"
+import { merchantStatusPresentation, useOperationalOutlets, useOperationsSummary } from "~/modules/merchant-operations"
+import { SETTINGS_PATHS } from "~/modules/settings"
 import type { MerchantRegistration } from "~/modules/merchant-registration"
 import { PROMOTIONS_PATHS } from "~/modules/promotions"
 import { PRODUCTS_PATHS } from "~/modules/products"

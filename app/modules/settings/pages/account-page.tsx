@@ -5,15 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { useLogout, useSession } from "~/modules/auth"
-import { SettingsSubpageHeader, SETTINGS_PATHS } from "~/modules/merchant-operations"
+import { SubpageHeader } from "~/components/layouts/subpage-header"
 
-export function ProfilePage() {
+import { SETTINGS_PATHS } from "../utils/paths"
+
+export function AccountPage() {
     const logout = useLogout()
     const { user } = useSession()
 
     return (
         <div className="flex flex-1 flex-col gap-5">
-            <SettingsSubpageHeader
+            <SubpageHeader
                 title="Akun"
                 description="Informasi akun dan keluar dari aplikasi."
                 backTo={SETTINGS_PATHS.home}
@@ -62,6 +64,7 @@ export function ProfilePage() {
 
             <Button
                 type="button"
+                size="lg"
                 variant="destructive"
                 className="w-full"
                 onClick={() => logout.mutate()}

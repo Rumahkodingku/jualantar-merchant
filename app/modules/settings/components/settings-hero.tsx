@@ -1,8 +1,5 @@
 import { Text } from "~/components/ui/text"
-
-import { StatusBadge } from "../common/status-badge"
-import { merchantStatusPresentation } from "../../utils/merchant-status"
-import type { MerchantStatus } from "../../types/merchant-operations.types"
+import { StatusBadge, merchantStatusPresentation, type MerchantStatus } from "~/modules/merchant-operations"
 
 function initials(name: string): string {
     const trimmed = name.trim()

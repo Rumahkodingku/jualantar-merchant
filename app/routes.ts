@@ -18,9 +18,12 @@ export default [
                 route("promotions", "modules/promotions/routes/index.tsx"),
                 route("promotions/new", "modules/promotions/routes/new.tsx"),
 
-                route("settings", "modules/merchant-operations/routes/index.tsx"),
-                route("settings/account", "modules/profile/routes/profile-route.tsx"),
-                route("settings/appearance", "modules/merchant-operations/routes/appearance.tsx"),
+                route("settings", "modules/settings/routes/index.tsx"),
+                route("settings/account", "modules/settings/routes/account.tsx"),
+                route("settings/appearance", "modules/settings/routes/appearance.tsx"),
+                route("settings/notifications", "modules/settings/routes/notifications.tsx"),
+                route("settings/help", "modules/settings/routes/help.tsx"),
+                route("settings/about", "modules/settings/routes/about.tsx"),
                 route("settings/profile", "modules/merchant-operations/routes/profile.tsx"),
                 route("settings/status", "modules/merchant-operations/routes/status.tsx"),
 

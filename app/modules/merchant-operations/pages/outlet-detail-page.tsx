@@ -17,9 +17,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { getApiErrorMessage } from "~/lib/api-form"
+import { SubpageHeader } from "~/components/layouts/subpage-header"
 
 import { ListSkeleton } from "../components/common/list-skeleton"
-import { SettingsSubpageHeader } from "../components/layout/settings-subpage-header"
 import { OutletSectionNav } from "../components/outlets/outlet-section-nav"
 import { StatusBadge } from "../components/common/status-badge"
 import { useActivateOutlet, useDeactivateOutlet } from "../services/merchant-operations.mutations"
@@ -28,7 +28,7 @@ import { notifyError, notifySuccess } from "../utils/notify"
 import { outletStatusDescription, outletStatusLabel } from "../utils/outlet-status"
 import { outletServiceAreaSummary } from "../utils/service-area-summary"
 import { useOperationsPermissions } from "../utils/permissions"
-import { SETTINGS_PATHS, outletEditPath } from "../utils/routes"
+import { OUTLETS_PATHS, outletEditPath } from "../utils/routes"
 import { formatDecimal } from "../utils/format"
 import type { OperationalOutlet } from "../types/merchant-operations.types"
 
@@ -228,7 +228,7 @@ export function OutletDetailPage() {
 
     return (
         <div className="flex flex-1 flex-col gap-5">
-            <SettingsSubpageHeader title="Detail Outlet" backTo={SETTINGS_PATHS.outlets} />
+            <SubpageHeader title="Detail Outlet" backTo={OUTLETS_PATHS.home} />
 
             {query.isPending ? (
                 <ListSkeleton rows={3} className="h-28" />
@@ -241,12 +241,7 @@ export function OutletDetailPage() {
             ) : query.data === undefined ? null : (
                 <>
                     <OutletDetail outlet={query.data} />
-                    <Button
-                        render={<Link to={SETTINGS_PATHS.outlets} />}
-                        variant="ghost"
-                        size="lg"
-                        className="h-11 w-full"
-                    >
+                    <Button render={<Link to={OUTLETS_PATHS.home} />} variant="ghost" size="lg" className="h-11 w-full">
                         Kembali ke daftar outlet
                     </Button>
                 </>

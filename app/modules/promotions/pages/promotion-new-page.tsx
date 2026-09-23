@@ -8,7 +8,7 @@ import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { Textarea } from "~/components/ui/textarea"
 import { toast } from "~/components/ui/toast"
-import { SettingsSubpageHeader } from "~/modules/merchant-operations"
+import { SubpageHeader } from "~/components/layouts/subpage-header"
 
 import { PROMOTIONS_PATHS } from "../utils/paths"
 
@@ -30,7 +30,7 @@ export function PromotionNewPage() {
 
     return (
         <div className="flex flex-1 flex-col gap-5">
-            <SettingsSubpageHeader
+            <SubpageHeader
                 title="Tambah Promo"
                 description="Lengkapi detail promo untuk menampilkannya ke pelanggan."
                 backTo={PROMOTIONS_PATHS.home}

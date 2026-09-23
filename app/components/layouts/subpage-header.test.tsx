@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Route, Routes } from "react-router"
 import { describe, expect, it } from "vitest"
 
-import { SettingsSubpageHeader } from "./settings-subpage-header"
+import { SubpageHeader } from "./subpage-header"
 
 function renderHeader(backTo: string) {
     return render(
@@ -12,7 +12,7 @@ function renderHeader(backTo: string) {
                 <Route
                     path="/settings/profile"
                     element={
-                        <SettingsSubpageHeader
+                        <SubpageHeader
                             title="Profil merchant"
                             description="Identitas usaha yang dilihat customer."
                             backTo={backTo}
@@ -25,7 +25,7 @@ function renderHeader(backTo: string) {
     )
 }
 
-describe("SettingsSubpageHeader", () => {
+describe("SubpageHeader", () => {
     it("renders the title and navigates to backTo on back press", async () => {
         const user = userEvent.setup()
         renderHeader("/settings")

@@ -1,10 +1,9 @@
 import { ChevronLeftIcon } from "lucide-react"
 import { useNavigate } from "react-router"
-
 import { Button } from "~/components/ui/button"
 import { Text } from "~/components/ui/text"
 
-export function SettingsSubpageHeader({
+export function SubpageHeader({
     title,
     description,
     backTo,
@@ -37,8 +36,8 @@ export function SettingsSubpageHeader({
                 <ChevronLeftIcon />
             </Button>
 
-            <div className="flex min-w-0 flex-col gap-0.5">
-                <Text as="h1" variant="xl" weight="semibold" truncate className="tracking-tight">
+            <div className="flex min-w-0 flex-col gap-0">
+                <Text as="h1" variant="sm" weight="semibold" truncate className="tracking-tight">
                     {title}
                 </Text>
                 {description !== undefined ? (

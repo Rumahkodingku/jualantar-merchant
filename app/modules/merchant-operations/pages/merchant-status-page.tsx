@@ -1,8 +1,9 @@
 import { ErrorState } from "~/components/error-state"
 import { getApiErrorMessage } from "~/lib/api-form"
 
+import { SubpageHeader } from "~/components/layouts/subpage-header"
+
 import { ListSkeleton } from "../components/common/list-skeleton"
-import { SettingsSubpageHeader } from "../components/layout/settings-subpage-header"
 import { MerchantStatusActions } from "../components/status/merchant-status-actions"
 import { MerchantStatusHero } from "../components/status/merchant-status-hero"
 import {
@@ -13,7 +14,7 @@ import {
 import { useOperationsSummary } from "../services/merchant-operations.queries"
 import { notifyError, notifySuccess } from "../utils/notify"
 import { useOperationsPermissions } from "../utils/permissions"
-import { SETTINGS_PATHS } from "../utils/routes"
+import { SETTINGS_HOME_PATH } from "../utils/routes"
 
 export function MerchantStatusPage() {
     const permissions = useOperationsPermissions()
@@ -34,10 +35,10 @@ export function MerchantStatusPage() {
 
     return (
         <div className="flex flex-1 flex-col gap-5">
-            <SettingsSubpageHeader
+            <SubpageHeader
                 title="Status Merchant"
                 description="Status operasional merchant secara keseluruhan."
-                backTo={SETTINGS_PATHS.home}
+                backTo={SETTINGS_HOME_PATH}
             />
 
             {query.isPending ? (

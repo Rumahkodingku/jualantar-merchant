@@ -7,15 +7,15 @@ import { Button } from "~/components/ui/button"
 import { Text } from "~/components/ui/text"
 import { getApiErrorMessage } from "~/lib/api-form"
 import { useDebouncedValue } from "~/hooks/use-debounced-value"
+import { SubpageHeader } from "~/components/layouts/subpage-header"
 
 import { EmptyState } from "../components/common/empty-state"
 import { ListSkeleton } from "../components/common/list-skeleton"
-import { SettingsSubpageHeader } from "../components/layout/settings-subpage-header"
 import { OutletFilters, type StatusFilter } from "../components/outlets/outlet-filters"
 import { OutletList } from "../components/outlets/outlet-list"
 import { useOperationalOutlets } from "../services/merchant-operations.queries"
 import { useOperationsPermissions } from "../utils/permissions"
-import { SETTINGS_PATHS } from "../utils/routes"
+import { OUTLETS_PATHS, SETTINGS_HOME_PATH } from "../utils/routes"
 import type { OperationalOutletListParams } from "../types/merchant-operations.types"
 
 const PAGE_SIZE = 10
@@ -82,11 +82,7 @@ export function OutletsPage() {
 
     return (
         <div className="flex flex-1 flex-col gap-5">
-            <SettingsSubpageHeader
-                title="Outlet"
-                description="Kelola outlet dan statusnya."
-                backTo={SETTINGS_PATHS.home}
-            />
+            <SubpageHeader title="Outlet" description="Kelola outlet dan statusnya." backTo={SETTINGS_HOME_PATH} />
 
             <OutletFilters
                 search={searchInput}
@@ -114,7 +110,7 @@ export function OutletsPage() {
                     }
                     action={
                         permissions.canCreateOutlet && !hasFilter ? (
-                            <Button render={<Link to={SETTINGS_PATHS.outletNew} />} size="lg" className="h-11">
+                            <Button render={<Link to={OUTLETS_PATHS.new} />} size="lg" className="h-11">
                                 <PlusIcon /> Tambah outlet
                             </Button>
                         ) : undefined
@@ -156,7 +152,7 @@ export function OutletsPage() {
             )}
 
             {permissions.canCreateOutlet && query.data !== undefined && query.data.data.length > 0 ? (
-                <Button render={<Link to={SETTINGS_PATHS.outletNew} />} size="lg" className="h-11 w-full">
+                <Button render={<Link to={OUTLETS_PATHS.new} />} size="lg" className="h-11 w-full">
                     <PlusIcon /> Tambah outlet
                 </Button>
             ) : null}

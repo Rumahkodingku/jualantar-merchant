@@ -8,8 +8,7 @@ import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { Textarea } from "~/components/ui/textarea"
 import { toast } from "~/components/ui/toast"
-
-import { SettingsSubpageHeader } from "~/modules/merchant-operations"
+import { SubpageHeader } from "~/components/layouts/subpage-header"
 import { PRODUCTS_PATHS } from "../utils/paths"
 
 export function ProductNewPage() {
@@ -30,7 +29,7 @@ export function ProductNewPage() {
 
     return (
         <div className="flex flex-1 flex-col gap-5">
-            <SettingsSubpageHeader
+            <SubpageHeader
                 title="Tambah Produk"
                 description="Lengkapi detail produk untuk menampilkannya ke pelanggan."
                 backTo={PRODUCTS_PATHS.home}

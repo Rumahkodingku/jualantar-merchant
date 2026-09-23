@@ -1,19 +1,29 @@
-import { ActivityIcon, Building2Icon, StoreIcon, SunMoonIcon, UserCogIcon } from "lucide-react"
+import {
+    ActivityIcon,
+    BellIcon,
+    Building2Icon,
+    FileCheckIcon,
+    InfoIcon,
+    KeyRoundIcon,
+    LanguagesIcon,
+    LifeBuoyIcon,
+    StoreIcon,
+    SunMoonIcon,
+    UserCogIcon,
+    WalletIcon,
+} from "lucide-react"
 
 import { ErrorState } from "~/components/error-state"
 import { Skeleton } from "~/components/ui/skeleton"
 import { Text } from "~/components/ui/text"
 import { getApiErrorMessage } from "~/lib/api-form"
 
-import { SettingsHero } from "../components/settings/settings-hero"
-import { SettingsMenuItem } from "../components/settings/settings-menu-item"
-import { SettingsSection } from "../components/settings/settings-section"
-import {
-    useOperationalOutlets,
-    useOperationalProfile,
-    useOperationsSummary,
-} from "../services/merchant-operations.queries"
-import { SETTINGS_PATHS } from "../utils/routes"
+import { MenuItem } from "~/components/menu-item"
+import { MenuSection } from "~/components/menu-section"
+import { useOperationalOutlets, useOperationalProfile, useOperationsSummary } from "~/modules/merchant-operations"
+
+import { SettingsHero } from "../components/settings-hero"
+import { SETTINGS_PATHS } from "../utils/paths"
 
 export function SettingsHomePage() {
     const summary = useOperationsSummary()
@@ -33,7 +43,7 @@ export function SettingsHomePage() {
                     Pengaturan
                 </Text>
                 <Text variant="sm" className="text-muted-foreground">
-                    Kelola merchant, outlet, dan akun Anda.
+                    Kelola merchant, aplikasi, dan akun Anda.
                 </Text>
             </header>
 
@@ -63,42 +73,98 @@ export function SettingsHomePage() {
             )}
 
             <div className="flex flex-1 flex-col gap-6 md:grid md:grid-cols-2 md:items-start">
-                <SettingsSection title="Merchant">
-                    <SettingsMenuItem
+                <MenuSection title="Merchant">
+                    <MenuItem
                         to={SETTINGS_PATHS.profile}
                         icon={Building2Icon}
                         label="Profil merchant"
                         description="Nama usaha, logo, dan kontak operasional"
                     />
-                    <SettingsMenuItem
+                    <MenuItem
                         to={SETTINGS_PATHS.status}
                         icon={ActivityIcon}
                         label="Status merchant"
                         description="Aktif, tidak aktif, atau ditangguhkan"
                     />
-                    <SettingsMenuItem
+                    <MenuItem
                         to={SETTINGS_PATHS.outlets}
                         icon={StoreIcon}
                         label="Outlet"
                         description="Kelola alamat, jam, area, dan karyawan per outlet"
                         badge={outletTotal === 0 ? undefined : String(outletTotal)}
                     />
-                </SettingsSection>
+                    <MenuItem
+                        to={SETTINGS_PATHS.payout}
+                        icon={WalletIcon}
+                        label="Rekening pencairan"
+                        description="Rekening tujuan pencairan dana usaha"
+                        badge="Segera hadir"
+                        disabled
+                    />
+                    <MenuItem
+                        to={SETTINGS_PATHS.documents}
+                        icon={FileCheckIcon}
+                        label="Dokumen & verifikasi"
+                        description="Lihat status verifikasi dokumen usaha"
+                        badge="Segera hadir"
+                        disabled
+                    />
+                </MenuSection>
 
-                <SettingsSection title="Akun">
-                    <SettingsMenuItem
+                <MenuSection title="Umum">
+                    <MenuItem
                         to={SETTINGS_PATHS.appearance}
                         icon={SunMoonIcon}
                         label="Tampilan"
                         description="Mode terang, gelap, atau mengikuti sistem"
                     />
-                    <SettingsMenuItem
+                    <MenuItem
+                        to={SETTINGS_PATHS.notifications}
+                        icon={BellIcon}
+                        label="Notifikasi"
+                        description="Izin push dan jenis notifikasi"
+                    />
+                    <MenuItem
+                        to={SETTINGS_PATHS.language}
+                        icon={LanguagesIcon}
+                        label="Bahasa"
+                        description="Bahasa aplikasi"
+                        badge="Segera hadir"
+                        disabled
+                    />
+                </MenuSection>
+
+                <MenuSection title="Akun & keamanan">
+                    <MenuItem
                         to={SETTINGS_PATHS.account}
                         icon={UserCogIcon}
                         label="Akun & keluar"
                         description="Informasi akun dan keluar aplikasi"
                     />
-                </SettingsSection>
+                    <MenuItem
+                        to={SETTINGS_PATHS.password}
+                        icon={KeyRoundIcon}
+                        label="Ubah kata sandi"
+                        description="Ganti kata sandi akun Anda"
+                        badge="Segera hadir"
+                        disabled
+                    />
+                </MenuSection>
+
+                <MenuSection title="Bantuan">
+                    <MenuItem
+                        to={SETTINGS_PATHS.help}
+                        icon={LifeBuoyIcon}
+                        label="Bantuan & dukungan"
+                        description="Jawaban cepat dan hubungi tim kami"
+                    />
+                    <MenuItem
+                        to={SETTINGS_PATHS.about}
+                        icon={InfoIcon}
+                        label="Tentang aplikasi"
+                        description="Versi, kebijakan, dan ketentuan"
+                    />
+                </MenuSection>
             </div>
         </div>
     )

@@ -1,13 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 
-import { SettingsSubpageHeader } from "../components/layout/settings-subpage-header"
-import { ThemeSwitcher } from "../components/settings/theme-switcher"
-import { SETTINGS_PATHS } from "../utils/routes"
+import { SubpageHeader } from "~/components/layouts/subpage-header"
+
+import { ThemeSwitcher } from "../components/theme-switcher"
+import { SETTINGS_PATHS } from "../utils/paths"
 
 export function AppearancePage() {
     return (
         <div className="flex flex-1 flex-col gap-5">
-            <SettingsSubpageHeader
+            <SubpageHeader
                 title="Tampilan"
                 description="Pilih mode terang, gelap, atau mengikuti sistem."
                 backTo={SETTINGS_PATHS.home}

@@ -1,17 +1,23 @@
-export const SETTINGS_BASE = "/settings"
+/**
+ * Kontrak URL untuk halaman merchant-operations.
+ *
+ * Halaman-halaman ini dirender di bawah namespace `/settings` yang dimiliki
+ * oleh `modules/settings` (sumber tunggal: `SETTINGS_PATHS`). Konstanta base
+ * di bawah diduplikasi secara sengaja agar arah dependensi tetap satu arah
+ * (`settings` → `merchant-operations`) dan tidak sirkular.
+ */
+const OUTLETS_BASE = "/settings/outlets"
 
-export const SETTINGS_PATHS = {
-    home: SETTINGS_BASE,
-    account: `${SETTINGS_BASE}/account`,
-    appearance: `${SETTINGS_BASE}/appearance`,
-    profile: `${SETTINGS_BASE}/profile`,
-    status: `${SETTINGS_BASE}/status`,
-    outlets: `${SETTINGS_BASE}/outlets`,
-    outletNew: `${SETTINGS_BASE}/outlets/new`,
+/** Kembalian ke beranda settings (dipakai sebagai `backTo`). */
+export const SETTINGS_HOME_PATH = "/settings"
+
+export const OUTLETS_PATHS = {
+    home: OUTLETS_BASE,
+    new: `${OUTLETS_BASE}/new`,
 } as const
 
 export function outletPath(outletId: string): string {
-    return `${SETTINGS_PATHS.outlets}/${outletId}`
+    return `${OUTLETS_BASE}/${outletId}`
 }
 
 export function outletEditPath(outletId: string): string {

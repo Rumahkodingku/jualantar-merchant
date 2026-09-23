@@ -1,7 +1,8 @@
 import { CalendarClockIcon, MapPinnedIcon, SignalIcon, UsersIcon } from "lucide-react"
 
-import { SettingsMenuItem } from "../settings/settings-menu-item"
-import { SettingsSection } from "../settings/settings-section"
+import { MenuItem } from "~/components/menu-item"
+import { MenuSection } from "~/components/menu-section"
+
 import { outletAvailabilityPath, outletEmployeesPath, outletHoursPath, outletServiceAreaPath } from "../../utils/routes"
 import { outletServiceAreaSummary } from "../../utils/service-area-summary"
 import type { OperationalOutlet } from "../../types/merchant-operations.types"
@@ -20,9 +21,9 @@ export function OutletSectionNav({
     canViewAvailability: boolean
 }) {
     return (
-        <SettingsSection title="Pengaturan outlet">
+        <MenuSection title="Pengaturan outlet">
             {canViewAvailability ? (
-                <SettingsMenuItem
+                <MenuItem
                     to={outletAvailabilityPath(outlet.id)}
                     icon={SignalIcon}
                     label="Status Operasional"
@@ -31,7 +32,7 @@ export function OutletSectionNav({
             ) : null}
 
             {canViewHours ? (
-                <SettingsMenuItem
+                <MenuItem
                     to={outletHoursPath(outlet.id)}
                     icon={CalendarClockIcon}
                     label="Jam Operasional"
@@ -40,7 +41,7 @@ export function OutletSectionNav({
             ) : null}
 
             {canViewServiceArea ? (
-                <SettingsMenuItem
+                <MenuItem
                     to={outletServiceAreaPath(outlet.id)}
                     icon={MapPinnedIcon}
                     label="Area Layanan"
@@ -49,13 +50,13 @@ export function OutletSectionNav({
             ) : null}
 
             {canViewEmployees ? (
-                <SettingsMenuItem
+                <MenuItem
                     to={outletEmployeesPath(outlet.id)}
                     icon={UsersIcon}
                     label="Karyawan"
                     description="Kelola akses karyawan untuk outlet ini"
                 />
             ) : null}
-        </SettingsSection>
+        </MenuSection>
     )
 }

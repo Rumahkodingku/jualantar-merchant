@@ -1,11 +1,15 @@
 export { merchantOperationsKeys } from "./services/merchant-operations.keys"
-export { useOperationalOutlets, useOperationsSummary } from "./services/merchant-operations.queries"
-export { SettingsSubpageHeader } from "./components/layout/settings-subpage-header"
+export {
+    useOperationalOutlets,
+    useOperationalProfile,
+    useOperationsSummary,
+} from "./services/merchant-operations.queries"
+export { StatusBadge } from "./components/common/status-badge"
 export { useOperationsPermissions } from "./utils/permissions"
 export { notifyError, notifySuccess } from "./utils/notify"
 export {
-    SETTINGS_BASE,
-    SETTINGS_PATHS,
+    OUTLETS_PATHS,
+    SETTINGS_HOME_PATH,
     outletAvailabilityPath,
     outletEditPath,
     outletEmployeesPath,

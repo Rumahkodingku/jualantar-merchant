@@ -22,12 +22,15 @@ const fixtures = vi.hoisted(() => ({
     },
 }))
 
-vi.mock("~/modules/merchant-operations", () => ({
+vi.mock("~/modules/settings", () => ({
     SETTINGS_PATHS: {
         home: "/settings",
         outlets: "/settings/outlets",
         outletNew: "/settings/outlets/new",
     },
+}))
+
+vi.mock("~/modules/merchant-operations", () => ({
     merchantStatusPresentation: (status: string) => ({
         status,
         label: status === "active" ? "Aktif" : status === "suspended" ? "Ditangguhkan" : "Tidak Aktif",

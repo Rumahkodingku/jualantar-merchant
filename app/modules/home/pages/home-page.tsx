@@ -1,6 +1,5 @@
 import { ArrowRightIcon } from "lucide-react"
 import { Link } from "react-router"
-
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { Progress } from "~/components/ui/progress"
@@ -19,7 +18,6 @@ import {
     useRegistration,
     type MerchantRegistration,
 } from "~/modules/merchant-registration"
-
 import { EmployeeHome } from "../components/employee-home"
 import { MerchantHome } from "../components/merchant-home"
 
@@ -129,9 +127,7 @@ export function HomePage() {
     const { isOwner, isLoading: isAuthLoading } = useAuthorization()
     const hasAssignments = (user?.outletAssignments.length ?? 0) > 0
     const isEmployee = !isOwner && hasAssignments
-    // Registrasi merchant hanya milik owner; query dimatikan untuk karyawan
-    // agar tidak menerima `merchant_registration_not_found` dan dikira harus
-    // mendaftar lagi.
+
     const registration = useRegistration(isOwner)
 
     const notFound =

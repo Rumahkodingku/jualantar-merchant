@@ -1,12 +1,10 @@
 import { ImageIcon, RotateCcwIcon, UploadCloudIcon, XIcon } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
-
 import { Button } from "~/components/ui/button"
 import { Progress } from "~/components/ui/progress"
 import { Text } from "~/components/ui/text"
 import { MAX_UPLOAD_SIZE_LABEL } from "~/modules/merchant-registration"
 import { cn } from "~/lib/utils"
-
 import { useOperationalUpload } from "../../hooks/use-operational-upload"
 
 const ACCEPT = "image/jpeg,image/png,image/webp"

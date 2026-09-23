@@ -1,6 +1,5 @@
 import { NotebookPenIcon, StoreIcon } from "lucide-react"
 import { Link } from "react-router"
-
 import { ErrorState } from "~/components/error-state"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
@@ -18,13 +17,6 @@ import {
     useOperationalOutlets,
 } from "~/modules/merchant-operations"
 
-/**
- * Beranda untuk karyawan outlet (`outlet_manager` / `outlet_staff`).
- *
- * Karyawan tidak memiliki baris registrasi merchant sehingga tidak pernah
- * melewati alur `/registration`. Daftar outlet di bawah dibatasi server ke
- * assignment milik akun; API tetap menjadi boundary otorisasi.
- */
 export function EmployeeHome() {
     const { user } = useSession()
     const assignments = user?.outletAssignments ?? []

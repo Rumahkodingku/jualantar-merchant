@@ -5,19 +5,11 @@ import { getApiErrorMessage } from "~/lib/api-form"
 import { ApiError } from "~/lib/api"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
 import { CAP, ForbiddenState, OutletCapabilityGuard, type OperationsCapability } from "~/modules/authorization"
-
 import { ListSkeleton } from "../common/list-skeleton"
 import { useOperationalOutlet } from "../../services/merchant-operations.queries"
 import { OUTLETS_PATHS, outletPath } from "../../utils/routes"
 import type { OperationalOutlet } from "../../types/merchant-operations.types"
 
-/**
- * Shared shell for the outlet-scoped settings screens: resolves the outlet,
- * renders the sub-page header and hands the outlet to the caller.
- *
- * `capability` is the view capability required to open the section; when the
- * user lacks it the section renders an inline forbidden state.
- */
 export function OutletScopedPage({
     outletId,
     title,

@@ -1,10 +1,5 @@
 import type { OutletUserRole } from "~/modules/auth"
 
-/**
- * Capability strings taken verbatim from the `jualantar-api` permission catalog
- * (`App\Modules\IdentityAccess\Database\Seeders\RbacSeeder::PERMISSIONS`).
- * Do not invent new capability strings in the frontend.
- */
 export const CAP = {
     view: "merchant.operations.view",
     statusUpdate: "merchant.operations.status.update",
@@ -26,14 +21,6 @@ export const CAP = {
 
 export type OperationsCapability = (typeof CAP)[keyof typeof CAP]
 
-/**
- * Outlet-role → capability mapping.
- *
- * This is a deliberate frontend MIRROR of the API's single source of truth:
- * `jualantar-api` `App\Modules\Merchant\Domain\Authorization\OutletRoleCapabilityResolver::permissionsFor()`.
- * The API does not expose per-outlet capabilities, so keeping this in sync is a
- * contract obligation — if the backend map changes, change it here too.
- */
 export const OUTLET_ROLE_CAPABILITIES: Record<OutletUserRole, readonly OperationsCapability[]> = {
     outlet_manager: [
         CAP.view,

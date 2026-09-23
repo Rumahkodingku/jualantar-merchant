@@ -10,33 +10,35 @@ export default [
         layout("components/layouts/app-shell/routes/app-shell-route.tsx", [
             index("modules/home/routes/home-route.tsx"),
 
-            route("orders", "modules/orders/routes/index.tsx"),
-            route("finances", "modules/finances/routes/index.tsx"),
-            route("products", "modules/products/routes/index.tsx"),
-            route("products/new", "modules/products/routes/new.tsx"),
-            route("promotions", "modules/promotions/routes/index.tsx"),
-            route("promotions/new", "modules/promotions/routes/new.tsx"),
+            route("", "modules/merchant-registration/routes/approved-guard-route.tsx", [
+                route("orders", "modules/orders/routes/index.tsx"),
+                route("finances", "modules/finances/routes/index.tsx"),
+                route("products", "modules/products/routes/index.tsx"),
+                route("products/new", "modules/products/routes/new.tsx"),
+                route("promotions", "modules/promotions/routes/index.tsx"),
+                route("promotions/new", "modules/promotions/routes/new.tsx"),
 
-            route("settings", "modules/merchant-operations/routes/index.tsx"),
-            route("settings/account", "modules/profile/routes/profile-route.tsx"),
-            route("settings/appearance", "modules/merchant-operations/routes/appearance.tsx"),
-            route("settings/profile", "modules/merchant-operations/routes/profile.tsx"),
-            route("settings/status", "modules/merchant-operations/routes/status.tsx"),
+                route("settings", "modules/merchant-operations/routes/index.tsx"),
+                route("settings/account", "modules/profile/routes/profile-route.tsx"),
+                route("settings/appearance", "modules/merchant-operations/routes/appearance.tsx"),
+                route("settings/profile", "modules/merchant-operations/routes/profile.tsx"),
+                route("settings/status", "modules/merchant-operations/routes/status.tsx"),
 
-            route("settings/outlets", "modules/merchant-operations/routes/outlets.tsx"),
-            route("settings/outlets/new", "modules/merchant-operations/routes/outlet-new.tsx"),
-            route("settings/outlets/:outlet", "modules/merchant-operations/routes/outlet-detail.tsx"),
-            route("settings/outlets/:outlet/edit", "modules/merchant-operations/routes/outlet-edit.tsx"),
-            route("settings/outlets/:outlet/hours", "modules/merchant-operations/routes/outlet-hours.tsx"),
-            route(
-                "settings/outlets/:outlet/service-area",
-                "modules/merchant-operations/routes/outlet-service-area.tsx"
-            ),
-            route("settings/outlets/:outlet/employees", "modules/merchant-operations/routes/outlet-employees.tsx"),
-            route(
-                "settings/outlets/:outlet/availability",
-                "modules/merchant-operations/routes/outlet-availability.tsx"
-            ),
+                route("settings/outlets", "modules/merchant-operations/routes/outlets.tsx"),
+                route("settings/outlets/new", "modules/merchant-operations/routes/outlet-new.tsx"),
+                route("settings/outlets/:outlet", "modules/merchant-operations/routes/outlet-detail.tsx"),
+                route("settings/outlets/:outlet/edit", "modules/merchant-operations/routes/outlet-edit.tsx"),
+                route("settings/outlets/:outlet/hours", "modules/merchant-operations/routes/outlet-hours.tsx"),
+                route(
+                    "settings/outlets/:outlet/service-area",
+                    "modules/merchant-operations/routes/outlet-service-area.tsx"
+                ),
+                route("settings/outlets/:outlet/employees", "modules/merchant-operations/routes/outlet-employees.tsx"),
+                route(
+                    "settings/outlets/:outlet/availability",
+                    "modules/merchant-operations/routes/outlet-availability.tsx"
+                ),
+            ]),
         ]),
         route("registration", "modules/merchant-registration/routes/registration-layout.tsx", [
             index("modules/merchant-registration/routes/index.tsx"),

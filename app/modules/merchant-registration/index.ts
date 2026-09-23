@@ -1,4 +1,5 @@
 export { RegistrationLayout } from "./components/registration-layout"
+export { MerchantApprovedGuard } from "./components/merchant-approved-guard"
 export { RegistrationProvider } from "./components/registration-context"
 export { RegistrationStatusScreen } from "./components/registration-status-screen"
 export { AdminNote } from "./components/admin-note"

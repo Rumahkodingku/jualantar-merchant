@@ -7,8 +7,11 @@ import { useCreateRegistration } from "../services/merchant-registration.mutatio
 import { rejectionNote } from "../utils/rejection-note"
 import { statusPresentationFor } from "../utils/status-presentation"
 import type { MerchantRegistration } from "../types/merchant-registration.types"
+import { Text } from "~/components/ui/text"
+import { useNavigate } from "react-router"
 
 export function RegistrationStatusScreen({ registration }: { registration: MerchantRegistration }) {
+    const navigate = useNavigate()
     const logout = useLogout()
     const createDraft = useCreateRegistration()
     const presentation = statusPresentationFor(registration)
@@ -43,14 +46,8 @@ export function RegistrationStatusScreen({ registration }: { registration: Merch
                         </Button>
                     ) : null}
 
-                    <Button
-                        variant="outline"
-                        size="lg"
-                        className="h-11 w-full"
-                        onClick={() => logout.mutate()}
-                        disabled={logout.isPending}
-                    >
-                        Keluar
+                    <Button variant="default" size="lg" onClick={() => navigate(-1)} disabled={logout.isPending}>
+                        Kembali ke halaman sebelumnya
                     </Button>
                 </div>
             </div>

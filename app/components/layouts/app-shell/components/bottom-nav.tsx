@@ -143,10 +143,10 @@ export function BottomNav() {
                             aria-label={isOpen ? "Tutup menu aksi" : "Buka menu aksi"}
                             aria-expanded={isOpen}
                             className={cn(
-                                "absolute -top-6 flex size-18 items-center justify-center",
+                                "absolute -top-8 flex size-18 items-center justify-center",
                                 "rounded-full border-4 border-background",
                                 "bg-primary text-primary-foreground",
-                                "shadow-lg shadow-primary/25",
+                                "shadow-sm shadow-primary/25",
                                 "transition-all duration-200",
                                 "hover:scale-105 active:scale-95",
                                 isOpen && "rotate-0"

@@ -2,14 +2,19 @@ import {
     ActivityIcon,
     BellIcon,
     Building2Icon,
+    CircleHelp,
     FileCheckIcon,
     InfoIcon,
     KeyRoundIcon,
     LanguagesIcon,
     LifeBuoyIcon,
+    Settings,
+    Shield,
+    Store,
     StoreIcon,
     SunMoonIcon,
     UserCogIcon,
+    WalletCards,
     WalletIcon,
 } from "lucide-react"
 
@@ -73,19 +78,26 @@ export function SettingsHomePage() {
             )}
 
             <div className="flex flex-1 flex-col gap-6 md:grid md:grid-cols-2 md:items-start">
-                <MenuSection title="Merchant">
+                {/* Merchant */}
+                <MenuSection
+                    icon={Store}
+                    title="Merchant"
+                    description="Pengelolaan informasi dan operasional usaha Anda."
+                >
                     <MenuItem
                         to={SETTINGS_PATHS.profile}
                         icon={Building2Icon}
                         label="Profil merchant"
                         description="Nama usaha, logo, dan kontak operasional"
                     />
+
                     <MenuItem
                         to={SETTINGS_PATHS.status}
                         icon={ActivityIcon}
                         label="Status merchant"
                         description="Aktif, tidak aktif, atau ditangguhkan"
                     />
+
                     <MenuItem
                         to={SETTINGS_PATHS.outlets}
                         icon={StoreIcon}
@@ -93,6 +105,14 @@ export function SettingsHomePage() {
                         description="Kelola alamat, jam, area, dan karyawan per outlet"
                         badge={outletTotal === 0 ? undefined : String(outletTotal)}
                     />
+                </MenuSection>
+
+                {/* Keuangan & Legal */}
+                <MenuSection
+                    icon={WalletCards}
+                    title="Keuangan & legal"
+                    description="Pengaturan terkait pencairan dana dan dokumen usaha."
+                >
                     <MenuItem
                         to={SETTINGS_PATHS.payout}
                         icon={WalletIcon}
@@ -101,6 +121,7 @@ export function SettingsHomePage() {
                         badge="Segera hadir"
                         disabled
                     />
+
                     <MenuItem
                         to={SETTINGS_PATHS.documents}
                         icon={FileCheckIcon}
@@ -111,19 +132,26 @@ export function SettingsHomePage() {
                     />
                 </MenuSection>
 
-                <MenuSection title="Umum">
+                {/* Preferensi Aplikasi */}
+                <MenuSection
+                    icon={Settings}
+                    title="Preferensi aplikasi"
+                    description="Atur tampilan dan pengalaman penggunaan aplikasi."
+                >
                     <MenuItem
                         to={SETTINGS_PATHS.appearance}
                         icon={SunMoonIcon}
                         label="Tampilan"
                         description="Mode terang, gelap, atau mengikuti sistem"
                     />
+
                     <MenuItem
                         to={SETTINGS_PATHS.notifications}
                         icon={BellIcon}
                         label="Notifikasi"
                         description="Izin push dan jenis notifikasi"
                     />
+
                     <MenuItem
                         to={SETTINGS_PATHS.language}
                         icon={LanguagesIcon}
@@ -134,13 +162,19 @@ export function SettingsHomePage() {
                     />
                 </MenuSection>
 
-                <MenuSection title="Akun & keamanan">
+                {/* Akun & Keamanan */}
+                <MenuSection
+                    icon={Shield}
+                    title="Akun & keamanan"
+                    description="Kelola informasi akun dan keamanan Anda."
+                >
                     <MenuItem
                         to={SETTINGS_PATHS.account}
                         icon={UserCogIcon}
                         label="Akun & keluar"
                         description="Informasi akun dan keluar aplikasi"
                     />
+
                     <MenuItem
                         to={SETTINGS_PATHS.password}
                         icon={KeyRoundIcon}
@@ -151,13 +185,15 @@ export function SettingsHomePage() {
                     />
                 </MenuSection>
 
-                <MenuSection title="Bantuan">
+                {/* Bantuan */}
+                <MenuSection icon={CircleHelp} title="Bantuan" description="Dapatkan bantuan dan informasi tambahan.">
                     <MenuItem
                         to={SETTINGS_PATHS.help}
                         icon={LifeBuoyIcon}
                         label="Bantuan & dukungan"
                         description="Jawaban cepat dan hubungi tim kami"
                     />
+
                     <MenuItem
                         to={SETTINGS_PATHS.about}
                         icon={InfoIcon}

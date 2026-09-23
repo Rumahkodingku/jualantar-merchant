@@ -21,7 +21,7 @@ export function MenuItem({
 }) {
     const content = (
         <>
-            <span className="flex size-9 shrink-0 items-center justify-center text-muted-foreground">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-none text-muted-foreground">
                 <Icon className="size-4" aria-hidden="true" />
             </span>
 
@@ -45,7 +45,10 @@ export function MenuItem({
 
     if (disabled) {
         return (
-            <div aria-disabled="true" className="flex min-h-12 w-full items-center gap-3 border-none py-3 opacity-60">
+            <div
+                aria-disabled="true"
+                className="flex min-h-12 w-full items-center gap-3 border-none px-4 py-3 opacity-60"
+            >
                 {content}
             </div>
         )
@@ -54,7 +57,7 @@ export function MenuItem({
     return (
         <Link
             to={to}
-            className="flex min-h-12 w-full items-center gap-3 border-none py-3 transition-colors outline-none hover:bg-muted/50 focus-visible:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset"
+            className="flex min-h-12 w-full items-center gap-3 border-none px-4 py-3 transition-colors outline-none hover:bg-muted/50 focus-visible:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset"
         >
             {content}
         </Link>

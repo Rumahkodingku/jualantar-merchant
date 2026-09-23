@@ -21,7 +21,7 @@ export function OutletSectionNav({
     canViewAvailability: boolean
 }) {
     return (
-        <MenuSection title="Pengaturan outlet">
+        <MenuSection title="Pengaturan outlet" description="Atur pengaturan outlet anda dengan detail">
             {canViewAvailability ? (
                 <MenuItem
                     to={outletAvailabilityPath(outlet.id)}

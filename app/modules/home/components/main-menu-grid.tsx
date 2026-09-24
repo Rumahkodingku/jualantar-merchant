@@ -12,7 +12,7 @@ import { Link } from "react-router"
 import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
 import { outletHoursPath } from "~/modules/merchant-operations"
-import { PRODUCTS_PATHS } from "~/modules/products"
+import { CATALOGS_PATHS } from "~/modules/catalogs"
 import { PROMOTIONS_PATHS } from "~/modules/promotions"
 import { SETTINGS_PATHS } from "~/modules/settings"
 
@@ -34,7 +34,7 @@ const PASTELS = [
 export function MainMenuGrid({ outletId }: { outletId: string | null }) {
     const items: MenuItem[] = [
         { to: "/orders", label: "Pesanan", icon: NotebookPenIcon },
-        { to: PRODUCTS_PATHS.home, label: "Produk", icon: ShoppingBagIcon },
+        { to: CATALOGS_PATHS.home, label: "Katalog", icon: ShoppingBagIcon },
         { to: PROMOTIONS_PATHS.home, label: "Promo", icon: TagIcon },
         { to: "/finances", label: "Keuangan", icon: BanknoteIcon },
         {

@@ -9,9 +9,9 @@ import { Text } from "~/components/ui/text"
 import { Textarea } from "~/components/ui/textarea"
 import { toast } from "~/components/ui/toast"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
-import { PRODUCTS_PATHS } from "../utils/paths"
+import { CATALOGS_PATHS } from "../utils/paths"
 
-export function ProductNewPage() {
+export function CatalogNewPage() {
     const [isPending, setIsPending] = useState(false)
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -32,7 +32,7 @@ export function ProductNewPage() {
             <SubpageHeader
                 title="Tambah Produk"
                 description="Lengkapi detail produk untuk menampilkannya ke pelanggan."
-                backTo={PRODUCTS_PATHS.home}
+                backTo={CATALOGS_PATHS.home}
             />
 
             <Card>

@@ -2,27 +2,27 @@ import { render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router"
 import { describe, expect, it } from "vitest"
 
-import { ProductNewPage } from "./product-new-page"
-import { ProductsPage } from "./products-page"
+import { CatalogNewPage } from "./catalog-new-page"
+import { CatalogsPage } from "./catalogs-page"
 
-describe("ProductsPage", () => {
+describe("CatalogsPage", () => {
     it("renders the scaffold heading and empty state", () => {
         render(
-            <MemoryRouter initialEntries={["/products"]}>
-                <ProductsPage />
+            <MemoryRouter initialEntries={["/catalogs"]}>
+                <CatalogsPage />
             </MemoryRouter>
         )
 
-        expect(screen.getByRole("heading", { name: "Produk" })).toBeInTheDocument()
-        expect(screen.getByText("Belum ada produk")).toBeInTheDocument()
+        expect(screen.getByRole("heading", { name: "Katalog" })).toBeInTheDocument()
+        expect(screen.getByText("Belum ada katalog")).toBeInTheDocument()
     })
 })
 
-describe("ProductNewPage", () => {
+describe("CatalogNewPage", () => {
     it("renders the scaffold form", () => {
         render(
-            <MemoryRouter initialEntries={["/products/new"]}>
-                <ProductNewPage />
+            <MemoryRouter initialEntries={["/catalogs/new"]}>
+                <CatalogNewPage />
             </MemoryRouter>
         )
 

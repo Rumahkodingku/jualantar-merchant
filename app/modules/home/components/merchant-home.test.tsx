@@ -36,8 +36,8 @@ vi.mock("~/modules/settings", () => ({
     },
 }))
 
-vi.mock("~/modules/products", () => ({
-    PRODUCTS_PATHS: { home: "/products", new: "/products/new" },
+vi.mock("~/modules/catalogs", () => ({
+    CATALOGS_PATHS: { home: "/catalogs", new: "/catalogs/new" },
 }))
 
 vi.mock("~/modules/promotions", () => ({

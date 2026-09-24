@@ -3,7 +3,7 @@ import { Link } from "react-router"
 
 import { Card, CardContent } from "~/components/ui/card"
 import { Text } from "~/components/ui/text"
-import { PRODUCTS_PATHS } from "~/modules/products"
+import { CATALOGS_PATHS } from "~/modules/catalogs"
 import type { TopProduct } from "../types/home.types"
 import { formatIDR } from "../utils/home-format"
 
@@ -15,7 +15,7 @@ export function TopProducts({ products }: { products: TopProduct[] }) {
                     Produk Terlaris Hari Ini
                 </Text>
                 <Link
-                    to={PRODUCTS_PATHS.home}
+                    to={CATALOGS_PATHS.home}
                     className="inline-flex min-h-11 items-center gap-0.5 rounded-lg px-2 text-sm font-medium text-primary outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                     Lihat semua
@@ -28,7 +28,7 @@ export function TopProducts({ products }: { products: TopProduct[] }) {
                     {products.map((product, index) => (
                         <Link
                             key={product.id}
-                            to={PRODUCTS_PATHS.home}
+                            to={CATALOGS_PATHS.home}
                             className="flex items-center gap-3 rounded-xl py-2.5 transition-colors outline-none hover:bg-muted/40 focus-visible:bg-muted/60"
                         >
                             <span

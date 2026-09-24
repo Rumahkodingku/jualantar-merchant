@@ -3,6 +3,6 @@
 // - POST /merchant/products -> { data: Product }
 // Ikuti pola services merchant-operations (keys/api/queries/mutations).
 
-export { PRODUCTS_BASE, PRODUCTS_PATHS } from "./utils/paths"
-export { ProductNewPage } from "./pages/product-new-page"
-export { ProductsPage } from "./pages/products-page"
+export { CATALOGS_BASE, CATALOGS_PATHS } from "./utils/paths"
+export { CatalogNewPage } from "./pages/catalog-new-page"
+export { CatalogsPage } from "./pages/catalogs-page"

@@ -15,8 +15,8 @@ export default [
             route("", "modules/merchant-registration/routes/approved-guard-route.tsx", [
                 route("orders", "modules/orders/routes/index.tsx"),
                 route("finances", "modules/finances/routes/index.tsx"),
-                route("products", "modules/products/routes/index.tsx"),
-                route("products/new", "modules/products/routes/new.tsx"),
+                route("catalogs", "modules/catalogs/routes/index.tsx"),
+                route("catalogs/new", "modules/catalogs/routes/new.tsx"),
                 route("promotions", "modules/promotions/routes/index.tsx"),
                 route("promotions/new", "modules/promotions/routes/new.tsx"),
 

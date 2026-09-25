@@ -28,9 +28,13 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     )
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+function CardTitle({
+    className,
+    as: Component = "div",
+    ...props
+}: React.ComponentProps<"div"> & { as?: React.ElementType }) {
     return (
-        <div
+        <Component
             data-slot="card-title"
             className={cn(
                 "font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
@@ -41,8 +45,14 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
     )
 }
 
-function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
-    return <div data-slot="card-description" className={cn("text-sm text-muted-foreground", className)} {...props} />
+function CardDescription({
+    className,
+    as: Component = "div",
+    ...props
+}: React.ComponentProps<"div"> & { as?: React.ElementType }) {
+    return (
+        <Component data-slot="card-description" className={cn("text-sm text-muted-foreground", className)} {...props} />
+    )
 }
 
 function CardAction({ className, ...props }: React.ComponentProps<"div">) {

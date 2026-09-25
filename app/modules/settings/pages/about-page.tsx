@@ -1,8 +1,28 @@
+import { ExternalLinkIcon } from "lucide-react"
+
+import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { Text } from "~/components/ui/text"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
 
 import { SETTINGS_PATHS } from "../utils/paths"
+
+const APP_VERSION = import.meta.env.VITE_APP_VERSION?.trim() || null
+const PRIVACY_URL = import.meta.env.VITE_PRIVACY_URL?.trim() || null
+const TERMS_URL = import.meta.env.VITE_TERMS_URL?.trim() || null
+
+function isValidExternalUrl(value: string | null): value is string {
+    if (value === null) {
+        return false
+    }
+
+    try {
+        const url = new URL(value)
+        return url.protocol === "https:" || url.protocol === "http:"
+    } catch {
+        return false
+    }
+}
 
 export function AboutPage() {
     return (
@@ -21,42 +41,58 @@ export function AboutPage() {
                     J
                 </span>
                 <div className="flex min-w-0 flex-col gap-0.5">
-                    <Text as="h2" variant="lg" weight="semibold" truncate className="tracking-tight">
+                    <Text as="h2" variant="lg" weight="semibold" className="tracking-tight break-words">
                         JualAntar Merchant
                     </Text>
-                    {/* TODO: ganti dengan versi rilis yang sebenarnya. */}
                     <Text variant="xs" className="text-muted-foreground">
-                        Versi 1.0.0
+                        {APP_VERSION === null ? "Versi belum ditentukan" : `Versi ${APP_VERSION}`}
                     </Text>
                 </div>
             </section>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Kebijakan privasi</CardTitle>
-                    <CardDescription>Ringkasan cara kami mengelola data Anda.</CardDescription>
+                    <CardTitle as="h2">Kebijakan privasi</CardTitle>
+                    <CardDescription as="p">Pelajari bagaimana JualAntar menggunakan data usaha Anda.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Text variant="sm" className="leading-relaxed text-muted-foreground">
-                        Data usaha, outlet, dan akun Anda digunakan untuk menjalankan layanan pemesanan JualAntar,
-                        termasuk menampilkan katalog ke pelanggan dan memproses transaksi. Kami tidak membagikan data
-                        Anda ke pihak ketiga di luar kebutuhan operasional layanan. Teks lengkap kebijakan akan
-                        diterbitkan sebelum versi produksi.
-                    </Text>
+                    {isValidExternalUrl(PRIVACY_URL) ? (
+                        <Button
+                            variant="outline"
+                            className="h-11 w-full justify-between"
+                            render={<a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer" />}
+                        >
+                            Baca kebijakan privasi
+                            <ExternalLinkIcon className="size-4" aria-hidden="true" />
+                        </Button>
+                    ) : (
+                        <Text variant="sm" className="leading-relaxed text-muted-foreground">
+                            Dokumen kebijakan privasi lengkap belum tersedia.
+                        </Text>
+                    )}
                 </CardContent>
             </Card>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Syarat & ketentuan</CardTitle>
-                    <CardDescription>Aturan penggunaan aplikasi merchant.</CardDescription>
+                    <CardTitle as="h2">Syarat &amp; ketentuan</CardTitle>
+                    <CardDescription as="p">Pelajari aturan penggunaan aplikasi merchant.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Text variant="sm" className="leading-relaxed text-muted-foreground">
-                        Dengan menggunakan aplikasi ini, merchant menyetujui untuk menjaga keakuratan data usaha, jam
-                        operasional, dan ketersediaan produk, serta memproses pesanan pelanggan sesuai ketentuan layanan
-                        JualAntar. Teks lengkap syarat & ketentuan akan diterbitkan sebelum versi produksi.
-                    </Text>
+                    {isValidExternalUrl(TERMS_URL) ? (
+                        <Button
+                            variant="outline"
+                            className="h-11 w-full justify-between"
+                            render={<a href={TERMS_URL} target="_blank" rel="noopener noreferrer" />}
+                        >
+                            Baca syarat &amp; ketentuan
+                            <ExternalLinkIcon className="size-4" aria-hidden="true" />
+                        </Button>
+                    ) : (
+                        <Text variant="sm" className="leading-relaxed text-muted-foreground">
+                            Dokumen syarat dan ketentuan lengkap belum tersedia.
+                        </Text>
+                    )}
                 </CardContent>
             </Card>
         </div>

@@ -17,16 +17,18 @@ import {
     WalletCards,
     WalletIcon,
 } from "lucide-react"
+
 import { ErrorState } from "~/components/error-state"
-import { Skeleton } from "~/components/ui/skeleton"
-import { getApiErrorMessage } from "~/lib/api-form"
 import { MenuItem } from "~/components/menu-item"
 import { MenuSection } from "~/components/menu-section"
-import { useOperationalOutlets, useOperationalProfile, useOperationsSummary } from "~/modules/merchant-operations"
+import { PageHeader } from "~/components/page-header"
+import { Skeleton } from "~/components/ui/skeleton"
+import { getApiErrorMessage } from "~/lib/api-form"
 import { CAP, canViewOutletList, useAuthorization } from "~/modules/authorization"
+import { useOperationalOutlets, useOperationalProfile, useOperationsSummary } from "~/modules/merchant-operations"
+
 import { SettingsHero } from "../components/settings-hero"
 import { SETTINGS_PATHS } from "../utils/paths"
-import { PageHeader } from "~/components/page-header"
 
 export function SettingsHomePage() {
     const summary = useOperationsSummary()
@@ -34,87 +36,81 @@ export function SettingsHomePage() {
     const outlets = useOperationalOutlets({ per_page: 1 })
     const { user, can } = useAuthorization()
 
-    // Merchant-level menus follow global capability; the outlet list follows the
-    // user's outlet access (owner or at least one assignment).
     const canManageMerchant = can(CAP.view)
     const canOpenOutlets = canViewOutletList(user)
 
-    const businessName = summary.data?.merchant.business_name ?? profile.data?.business_name ?? "Merchant"
+    const businessName = summary.data?.merchant.business_name ?? profile.data?.business_name ?? "Usaha"
     const status = summary.data?.merchant.status ?? profile.data?.status ?? null
-    const outletTotal = outlets.data?.meta.total ?? 0
-    const isPending = summary.isPending && profile.isPending
-    const isError = summary.isError && profile.isError
+    const outletTotal = outlets.data ? outlets.data.meta.total : null
+    const isPending = summary.isPending || profile.isPending
+    const isError = summary.isError || profile.isError
+    const settingsError = summary.isError ? summary.error : profile.error
+    const hasMerchantAccess = canManageMerchant || canOpenOutlets
 
     return (
         <div className="flex flex-1 flex-col gap-6">
-            <PageHeader title="Pengaturan" description="Kelola informasi dan identitas usaha Anda." />
+            <PageHeader title="Pengaturan" description="Kelola informasi usaha, preferensi, dan keamanan akun Anda." />
 
             {isPending ? (
-                <Skeleton className="h-24 w-full rounded-2xl" />
+                <Skeleton className="h-28 w-full rounded-2xl" />
             ) : isError ? (
                 <ErrorState
                     title="Gagal memuat pengaturan"
-                    description={getApiErrorMessage(summary.error ?? profile.error)}
+                    description={getApiErrorMessage(settingsError)}
                     onRetry={() => {
                         void summary.refetch()
                         void profile.refetch()
                     }}
                 />
             ) : status === null ? (
-                <ErrorState
-                    title="Merchant tidak ditemukan"
-                    description="Akun ini belum terhubung ke merchant mana pun."
-                />
+                <ErrorState title="Usaha belum ditemukan" description="Akun ini belum terhubung ke usaha mana pun." />
             ) : (
                 <SettingsHero
                     businessName={businessName}
                     logoUrl={profile.data?.logo_url ?? null}
                     status={status}
                     outletTotal={outletTotal}
+                    outletPending={outlets.isPending}
                 />
             )}
 
-            <div className="flex flex-1 flex-col gap-6 md:grid md:grid-cols-2 md:items-start">
-                {/* Merchant */}
-                <MenuSection
-                    icon={Store}
-                    title="Merchant"
-                    description="Pengelolaan informasi dan operasional usaha Anda."
-                >
-                    {canManageMerchant ? (
-                        <MenuItem
-                            to={SETTINGS_PATHS.profile}
-                            icon={Building2Icon}
-                            label="Profil merchant"
-                            description="Nama usaha, logo, dan kontak operasional"
-                        />
-                    ) : null}
+            <div className="flex flex-1 flex-col gap-6 md:grid md:grid-cols-2 md:items-start md:gap-x-6 md:gap-y-8">
+                {hasMerchantAccess ? (
+                    <MenuSection icon={Store} title="Usaha" description="Informasi dan operasional usaha Anda.">
+                        {canManageMerchant ? (
+                            <MenuItem
+                                to={SETTINGS_PATHS.profile}
+                                icon={Building2Icon}
+                                label="Profil usaha"
+                                description="Nama usaha, logo, dan kontak operasional"
+                            />
+                        ) : null}
 
-                    {canManageMerchant ? (
-                        <MenuItem
-                            to={SETTINGS_PATHS.status}
-                            icon={ActivityIcon}
-                            label="Status merchant"
-                            description="Aktif, tidak aktif, atau ditangguhkan"
-                        />
-                    ) : null}
+                        {canManageMerchant ? (
+                            <MenuItem
+                                to={SETTINGS_PATHS.status}
+                                icon={ActivityIcon}
+                                label="Status usaha"
+                                description="Status aktif, tidak aktif, atau ditangguhkan"
+                            />
+                        ) : null}
 
-                    {canOpenOutlets ? (
-                        <MenuItem
-                            to={SETTINGS_PATHS.outlets}
-                            icon={StoreIcon}
-                            label="Outlet"
-                            description="Kelola alamat, jam, area, dan karyawan per outlet"
-                            badge={outletTotal === 0 ? undefined : String(outletTotal)}
-                        />
-                    ) : null}
-                </MenuSection>
+                        {canOpenOutlets ? (
+                            <MenuItem
+                                to={SETTINGS_PATHS.outlets}
+                                icon={StoreIcon}
+                                label="Outlet"
+                                description="Kelola alamat, jam, area layanan, dan karyawan"
+                                badge={outletTotal === null ? undefined : String(outletTotal)}
+                            />
+                        ) : null}
+                    </MenuSection>
+                ) : null}
 
-                {/* Keuangan & Legal */}
                 <MenuSection
                     icon={WalletCards}
                     title="Keuangan & legal"
-                    description="Pengaturan terkait pencairan dana dan dokumen usaha."
+                    description="Pengaturan pencairan dana dan dokumen usaha."
                 >
                     <MenuItem
                         to={SETTINGS_PATHS.payout}
@@ -129,17 +125,16 @@ export function SettingsHomePage() {
                         to={SETTINGS_PATHS.documents}
                         icon={FileCheckIcon}
                         label="Dokumen & verifikasi"
-                        description="Lihat status verifikasi dokumen usaha"
+                        description="Status verifikasi dokumen usaha"
                         badge="Segera hadir"
                         disabled
                     />
                 </MenuSection>
 
-                {/* Preferensi Aplikasi */}
                 <MenuSection
                     icon={Settings}
                     title="Preferensi aplikasi"
-                    description="Atur tampilan dan pengalaman penggunaan aplikasi."
+                    description="Atur tampilan dan pengalaman penggunaan."
                 >
                     <MenuItem
                         to={SETTINGS_PATHS.appearance}
@@ -151,8 +146,8 @@ export function SettingsHomePage() {
                     <MenuItem
                         to={SETTINGS_PATHS.notifications}
                         icon={BellIcon}
-                        label="Notifikasi"
-                        description="Izin push dan jenis notifikasi"
+                        label="Notifikasi perangkat"
+                        description="Izin dan jenis notifikasi yang diterima"
                     />
 
                     <MenuItem
@@ -165,17 +160,16 @@ export function SettingsHomePage() {
                     />
                 </MenuSection>
 
-                {/* Akun & Keamanan */}
                 <MenuSection
                     icon={Shield}
                     title="Akun & keamanan"
-                    description="Kelola informasi akun dan keamanan Anda."
+                    description="Kelola informasi dan keamanan akun Anda."
                 >
                     <MenuItem
                         to={SETTINGS_PATHS.account}
                         icon={UserCogIcon}
-                        label="Akun & keluar"
-                        description="Informasi akun dan keluar aplikasi"
+                        label="Akun"
+                        description="Lihat informasi akun dan keluar dari aplikasi"
                     />
 
                     <MenuItem
@@ -188,13 +182,12 @@ export function SettingsHomePage() {
                     />
                 </MenuSection>
 
-                {/* Bantuan */}
-                <MenuSection icon={CircleHelp} title="Bantuan" description="Dapatkan bantuan dan informasi tambahan.">
+                <MenuSection icon={CircleHelp} title="Bantuan" description="Dapatkan bantuan dan informasi aplikasi.">
                     <MenuItem
                         to={SETTINGS_PATHS.help}
                         icon={LifeBuoyIcon}
                         label="Bantuan & dukungan"
-                        description="Jawaban cepat dan hubungi tim kami"
+                        description="Jawaban cepat dan kontak tim kami"
                     />
 
                     <MenuItem

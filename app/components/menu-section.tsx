@@ -1,5 +1,6 @@
 import { type LucideIcon } from "lucide-react"
 import type { ReactNode } from "react"
+
 import { Text } from "~/components/ui/text"
 
 export function MenuSection({
@@ -15,23 +16,30 @@ export function MenuSection({
 }) {
     return (
         <section className="flex min-w-0 flex-col gap-3">
-            <div className="flex min-w-0 items-center gap-3 px-1">
-                {Icon && <Icon className="size-5 shrink-0 text-muted-foreground" strokeWidth={2} aria-hidden="true" />}
+            <div className="flex min-w-0 items-start gap-3 px-1">
+                {Icon ? (
+                    <Icon className="mt-0.5 size-5 shrink-0 text-primary/80" strokeWidth={2} aria-hidden="true" />
+                ) : null}
 
                 <div className="min-w-0">
-                    <Text as="h2" variant="xs" weight="bold" className="text-foreground uppercase">
+                    <Text as="h2" variant="sm" weight="semibold" className="tracking-tight">
                         {title}
                     </Text>
 
-                    {description && (
-                        <Text as="p" variant="xs" weight="medium" className="mt-0.5 text-muted-foreground">
+                    {description ? (
+                        <Text
+                            as="p"
+                            variant="xs"
+                            weight="medium"
+                            className="mt-1 max-w-prose text-pretty break-words text-muted-foreground"
+                        >
                             {description}
                         </Text>
-                    )}
+                    ) : null}
                 </div>
             </div>
 
-            <div className="flex flex-col gap-0 divide-y overflow-hidden rounded-2xl border">{children}</div>
+            <div className="flex flex-col gap-0 divide-y overflow-hidden rounded-2xl border bg-card">{children}</div>
         </section>
     )
 }

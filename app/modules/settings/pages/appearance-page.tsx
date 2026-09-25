@@ -10,14 +10,16 @@ export function AppearancePage() {
         <div className="flex flex-1 flex-col gap-5">
             <SubpageHeader
                 title="Tampilan"
-                description="Pilih mode terang, gelap, atau mengikuti sistem."
+                description="Pilih mode terang, gelap, atau ikuti sistem."
                 backTo={SETTINGS_PATHS.home}
             />
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Mode tampilan</CardTitle>
-                    <CardDescription>Mode sistem mengikuti tema smartphone Anda.</CardDescription>
+                    <CardTitle as="h2">Mode tampilan</CardTitle>
+                    <CardDescription as="p">
+                        Pilih tampilan yang nyaman. Mode sistem mengikuti preferensi perangkat Anda.
+                    </CardDescription>
                 </CardHeader>
                 <CardContent className="px-0 pb-0">
                     <ThemeSwitcher />

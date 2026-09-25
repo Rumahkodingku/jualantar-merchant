@@ -1,16 +1,17 @@
-import { mediaPlaceholderPool } from "../data"
 import type {
-    AvailabilityStatus,
     CatalogCategory,
     CatalogStatus,
     CategoryCreateInput,
     CategoryIndexParams,
     CategoryUpdateInput,
-    MediaCreateInput,
+    MediaRegisterInput,
+    MediaUploadTarget,
+    MediaUploadUrlInput,
     ModifierCreateInput,
     ModifierGroupCreateInput,
     ModifierGroupUpdateInput,
     ModifierUpdateInput,
+    OutletAvailabilityInput,
     OutletProductAssignment,
     PaginatedResponse,
     Product,
@@ -27,6 +28,8 @@ import type {
     VariantUpdateInput,
 } from "../types/catalog.types"
 import { getDb, nextId, nowIso } from "./catalog-mock-db"
+
+import type { CatalogRepository } from "./catalog.repository"
 
 const DEFAULT_PER_PAGE = 15
 
@@ -416,7 +419,18 @@ async function listMedia(productId: string): Promise<ProductMedia[]> {
     return [...(getDb().mediaByProduct[productId] ?? [])]
 }
 
-async function createMedia(productId: string, input: MediaCreateInput): Promise<ProductMedia> {
+async function createMediaUploadUrl(productId: string, input: MediaUploadUrlInput): Promise<MediaUploadTarget> {
+    ensureMedia(productId)
+
+    return {
+        object_key: `merchants/mock/products/${productId}/${input.file_name}`,
+        upload_url: "https://mock.local/upload",
+        headers: {},
+        expires_at: nowIso(),
+    }
+}
+
+async function createMedia(productId: string, input: MediaRegisterInput): Promise<ProductMedia> {
     const media = ensureMedia(productId)
     const timestamp = nowIso()
     const shouldBePrimary = input.is_primary ?? media.length === 0
@@ -429,12 +443,12 @@ async function createMedia(productId: string, input: MediaCreateInput): Promise<
 
     const item: ProductMedia = {
         id: nextId("med"),
-        url: input.url,
+        url: null,
         alt_text: input.alt_text ?? null,
-        mime_type: input.mime_type ?? "image/svg+xml",
-        file_size: input.file_size ?? null,
+        mime_type: "image/jpeg",
+        file_size: null,
         is_primary: shouldBePrimary,
-        display_order: media.length,
+        display_order: input.display_order ?? media.length,
         created_at: timestamp,
         updated_at: timestamp,
     }
@@ -492,12 +506,6 @@ async function reorderMedia(productId: string, items: ReorderItem[]): Promise<vo
 
     media.sort((a, b) => a.display_order - b.display_order)
     resequence(media)
-}
-
-export function pickMediaPlaceholder(): Pick<ProductMedia, "url" | "alt_text" | "mime_type" | "file_size"> {
-    const index = Math.floor(Math.random() * mediaPlaceholderPool.length)
-
-    return mediaPlaceholderPool[index]
 }
 
 function ensureGroups(productId: string): ProductModifierGroup[] {
@@ -836,54 +844,22 @@ async function setAssignmentStatus(
 async function setAssignmentAvailability(
     productId: string,
     outletId: string,
-    availability: AvailabilityStatus
+    input: OutletAvailabilityInput
 ): Promise<OutletProductAssignment> {
     const assignment = findAssignmentOrThrow(ensureAssignments(productId), outletId)
 
-    assignment.availability_status = availability
-    assignment.unavailable_reason = availability === "available" ? null : assignment.unavailable_reason
+    assignment.availability_status = input.status
+    assignment.unavailable_reason = input.status === "available" ? null : (input.reason ?? null)
     assignment.updated_at = nowIso()
 
     return assignment
 }
 
-export interface ProductViewSummary {
-    primary_media_url: string | null
-    variant_count: number
-    min_price: number | null
+async function listModifiers(productId: string, groupId: string): Promise<ProductModifier[]> {
+    return structuredClone(findGroupOrThrow(productId, groupId).modifiers)
 }
 
-/**
- * Derived presentation data for list cards (primary image, variant count,
- * "from" price). Not a domain field on Product — computed at read time so the
- * Product contract itself stays backend-exact.
- */
-async function viewSummaries(): Promise<Record<string, ProductViewSummary>> {
-    const db = getDb()
-    const result: Record<string, ProductViewSummary> = {}
-
-    for (const product of db.products) {
-        const media = db.mediaByProduct[product.id] ?? []
-        const variants = db.variantsByProduct[product.id] ?? []
-        const primary = media.find((item) => item.is_primary) ?? media[0]
-        const activePrices = variants.filter((variant) => variant.status === "active").map((variant) => variant.price)
-
-        result[product.id] = {
-            primary_media_url: primary?.url ?? null,
-            variant_count: variants.length,
-            min_price:
-                product.product_type === "simple"
-                    ? product.price
-                    : activePrices.length > 0
-                      ? Math.min(...activePrices)
-                      : null,
-        }
-    }
-
-    return result
-}
-
-export const mockCatalogRepository = {
+export const mockCatalogRepository: CatalogRepository = {
     products: {
         list: listProducts,
         get: getProduct,
@@ -893,7 +869,6 @@ export const mockCatalogRepository = {
         activate: (id: string) => setProductStatus(id, "active"),
         deactivate: (id: string) => setProductStatus(id, "inactive"),
         reorder: reorderProducts,
-        viewSummaries,
     },
     categories: {
         list: listCategories,
@@ -916,11 +891,11 @@ export const mockCatalogRepository = {
     },
     media: {
         list: listMedia,
+        createUploadUrl: createMediaUploadUrl,
         create: createMedia,
         delete: deleteMedia,
         setPrimary: setPrimaryMedia,
         reorder: reorderMedia,
-        pickPlaceholder: pickMediaPlaceholder,
     },
     modifierGroups: {
         list: listModifierGroups,
@@ -932,6 +907,7 @@ export const mockCatalogRepository = {
         reorder: reorderModifierGroups,
     },
     modifiers: {
+        list: listModifiers,
         create: createModifier,
         update: updateModifier,
         delete: deleteModifier,
@@ -950,11 +926,4 @@ export const mockCatalogRepository = {
         deactivate: (productId: string, outletId: string) => setAssignmentStatus(productId, outletId, "inactive"),
         setAvailability: setAssignmentAvailability,
     },
-    outlets: {
-        list: async () => structuredClone(getDb().outlets),
-    },
 }
-
-export type CatalogRepository = typeof mockCatalogRepository
-
-export const catalogRepository: CatalogRepository = mockCatalogRepository

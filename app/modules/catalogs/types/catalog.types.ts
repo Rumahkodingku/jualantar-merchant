@@ -188,14 +188,6 @@ export interface VariantUpdateInput {
     is_default?: boolean
 }
 
-export interface MediaCreateInput {
-    url: string
-    alt_text?: string | null
-    mime_type?: string
-    file_size?: number | null
-    is_primary?: boolean
-}
-
 export interface ModifierGroupCreateInput {
     name: string
     description?: string | null
@@ -231,4 +223,84 @@ export interface ModifierUpdateInput {
 export interface ReorderItem {
     id: string
     display_order: number
+}
+
+export interface ProductViewSummary {
+    primary_media_url: string | null
+    variant_count: number | null
+    min_price: number | null
+}
+
+export interface MediaUploadUrlInput {
+    file_name: string
+    mime_type: string
+    file_size: number
+}
+
+export interface MediaUploadTarget {
+    object_key: string
+    upload_url: string
+    headers: Record<string, string>
+    expires_at: string
+}
+
+export interface MediaRegisterInput {
+    object_key: string
+    is_primary?: boolean
+    alt_text?: string | null
+    display_order?: number
+}
+
+export interface VariantIndexParams {
+    search?: string
+    status?: CatalogStatus
+    sort?: "name" | "price" | "display_order" | "created_at"
+    order?: SortOrder
+    per_page?: number
+    page?: number
+}
+
+export interface MediaIndexParams {
+    sort?: "display_order" | "created_at"
+    order?: SortOrder
+    per_page?: number
+    page?: number
+}
+
+export interface OutletIndexParams {
+    status?: CatalogStatus
+    availability?: AvailabilityStatus
+    sort?: "display_order" | "created_at"
+    order?: SortOrder
+    per_page?: number
+    page?: number
+}
+
+export interface OutletAvailabilityInput {
+    status: AvailabilityStatus
+    reason?: string | null
+}
+
+export interface ProductReorderRequest {
+    items: Array<{ product_id: string; display_order: number }>
+}
+
+export interface CategoryReorderRequest {
+    items: Array<{ category_id: string; display_order: number }>
+}
+
+export interface VariantReorderRequest {
+    items: Array<{ variant_id: string; display_order: number }>
+}
+
+export interface MediaReorderRequest {
+    items: Array<{ media_id: string; display_order: number }>
+}
+
+export interface ModifierGroupReorderRequest {
+    items: Array<{ group_id: string; display_order: number }>
+}
+
+export interface ModifierReorderRequest {
+    items: Array<{ modifier_id: string; display_order: number }>
 }

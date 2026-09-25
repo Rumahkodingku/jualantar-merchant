@@ -52,6 +52,7 @@ import {
 } from "../services/catalog.mutations"
 import { useCategories } from "../services/catalog.queries"
 import { categorySchema, type CategoryFormValues } from "../schemas/catalog.schema"
+import { applyServerFieldErrors, catalogErrorMessage } from "../utils/api-error"
 import { notifyError, notifySuccess } from "../utils/notify"
 import type { CatalogCategory, CatalogStatus } from "../types/catalog.types"
 
@@ -112,16 +113,23 @@ function CategoryDialog({
             onOpenChange(false)
         }
 
+        const payload = { name: parsed.data.name, description: parsed.data.description ?? null }
+
+        const onError = (error: unknown) => {
+            const fieldErrors = applyServerFieldErrors(error, ["name", "description"])
+
+            if (Object.keys(fieldErrors).length > 0) {
+                setErrors(fieldErrors)
+                return
+            }
+
+            notifyError(catalogErrorMessage(error, "Gagal menyimpan kategori"))
+        }
+
         if (category === undefined) {
-            createMutation.mutate(
-                { name: parsed.data.name, description: parsed.data.description ?? null },
-                { onSuccess, onError: () => notifyError("Gagal membuat kategori") }
-            )
+            createMutation.mutate(payload, { onSuccess, onError })
         } else {
-            updateMutation.mutate(
-                { name: parsed.data.name, description: parsed.data.description ?? null },
-                { onSuccess, onError: () => notifyError("Gagal memperbarui kategori") }
-            )
+            updateMutation.mutate(payload, { onSuccess, onError })
         }
     }
 
@@ -315,7 +323,7 @@ export function CatalogCategoriesPage() {
                 setConfirm(null)
                 notifySuccess(nextStatus === "active" ? "Kategori diaktifkan" : "Kategori dinonaktifkan")
             },
-            onError: () => notifyError("Gagal memperbarui status"),
+            onError: (error) => notifyError(catalogErrorMessage(error, "Gagal memperbarui status")),
         })
     }
 
@@ -325,7 +333,7 @@ export function CatalogCategoriesPage() {
                 setConfirm(null)
                 notifySuccess("Kategori dihapus", `"${category.name}" dihapus.`)
             },
-            onError: () => notifyError("Gagal menghapus kategori"),
+            onError: (error) => notifyError(catalogErrorMessage(error, "Gagal menghapus kategori")),
         })
     }
 

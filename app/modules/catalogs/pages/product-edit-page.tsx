@@ -22,11 +22,12 @@ import { VariantEditor } from "../components/variant-editor"
 import { useUpdateProduct } from "../services/catalog.mutations"
 import { useCategories, useProductAssignments, useProductDetail } from "../services/catalog.queries"
 import { productInfoSchema, simplePriceSchema, type ProductInfoFormValues } from "../schemas/catalog.schema"
+import { applyServerFieldErrors, catalogErrorMessage } from "../utils/api-error"
 import { formatCurrency } from "../utils/format-currency"
 import { PRODUCT_TYPE_LABEL } from "../utils/labels"
 import { notifyError, notifySuccess } from "../utils/notify"
 import { CATALOGS_PATHS } from "../utils/paths"
-import type { ProductDetail, ProductType } from "../types/catalog.types"
+import type { ProductDetail } from "../types/catalog.types"
 
 type SectionId = "info" | "price" | "variant" | "customization" | "media" | "outlet"
 
@@ -89,30 +90,29 @@ function InfoSection({
 
         setErrors({})
 
-        const payload: {
-            name: string
-            category_id: string
-            description: string | null
-            product_type: ProductType
-            price?: number | null
-        } = {
-            name: parsed.data.name,
-            category_id: parsed.data.category_id,
-            description: parsed.data.description ?? null,
-            product_type: parsed.data.product_type,
-        }
-
-        if (parsed.data.product_type === "variable" && product.product_type !== "variable") {
-            payload.price = null
-        }
-
-        updateMutation.mutate(payload, {
-            onSuccess: () => {
-                notifySuccess("Informasi disimpan")
-                onToggleEdit()
+        updateMutation.mutate(
+            {
+                name: parsed.data.name,
+                category_id: parsed.data.category_id,
+                description: parsed.data.description ?? null,
             },
-            onError: () => notifyError("Gagal menyimpan informasi"),
-        })
+            {
+                onSuccess: () => {
+                    notifySuccess("Informasi disimpan")
+                    onToggleEdit()
+                },
+                onError: (error) => {
+                    const fieldErrors = applyServerFieldErrors(error, ["name", "category_id", "description"])
+
+                    if (Object.keys(fieldErrors).length > 0) {
+                        setErrors(fieldErrors)
+                        return
+                    }
+
+                    notifyError(catalogErrorMessage(error, "Gagal menyimpan informasi"))
+                },
+            }
+        )
     }
 
     if (editing) {
@@ -164,30 +164,16 @@ function InfoSection({
 
                 <Field>
                     <FieldLabel htmlFor="edit-type">Tipe Produk</FieldLabel>
-                    <Select
-                        value={values.product_type}
-                        onValueChange={(value) =>
-                            setValues((current) => ({
-                                ...current,
-                                product_type: (value ?? current.product_type) as ProductType,
-                            }))
-                        }
-                    >
-                        <SelectTrigger id="edit-type" className="h-11 w-full">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="simple">Simple Product</SelectItem>
-                            <SelectItem value="variable">Variable Product</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {values.product_type !== product.product_type ? (
-                        <Text variant="xs" className="text-muted-foreground">
-                            {values.product_type === "variable"
-                                ? "Mengubah ke variable akan mengosongkan harga tunggal."
-                                : "Mengubah ke simple — lengkapi harga di bagian Harga."}
-                        </Text>
-                    ) : null}
+                    <Input
+                        id="edit-type"
+                        value={PRODUCT_TYPE_LABEL[product.product_type]}
+                        readOnly
+                        disabled
+                        className="h-11"
+                    />
+                    <Text variant="xs" className="text-muted-foreground">
+                        Tipe produk tidak dapat diubah setelah produk dibuat.
+                    </Text>
                 </Field>
 
                 <div className="flex gap-2">
@@ -250,13 +236,22 @@ function PriceSection({
         setErrors({})
 
         updateMutation.mutate(
-            { product_type: "simple", price: parsed.data.price },
+            { price: parsed.data.price },
             {
                 onSuccess: () => {
                     notifySuccess("Harga disimpan")
                     onToggleEdit()
                 },
-                onError: () => notifyError("Gagal menyimpan harga"),
+                onError: (error) => {
+                    const fieldErrors = applyServerFieldErrors(error, ["price"])
+
+                    if (Object.keys(fieldErrors).length > 0) {
+                        setErrors(fieldErrors)
+                        return
+                    }
+
+                    notifyError(catalogErrorMessage(error, "Gagal menyimpan harga"))
+                },
             }
         )
     }

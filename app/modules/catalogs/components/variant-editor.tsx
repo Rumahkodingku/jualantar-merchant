@@ -27,6 +27,7 @@ import {
     useSetVariantStatus,
     useUpdateVariant,
 } from "../services/catalog.mutations"
+import { applyServerFieldErrors, catalogErrorMessage } from "../utils/api-error"
 import { formatCurrency } from "../utils/format-currency"
 import { notifyError, notifySuccess } from "../utils/notify"
 import { variantRowSchema, type VariantRowValues } from "../schemas/catalog.schema"
@@ -93,10 +94,21 @@ function VariantFormDialog({
             onOpenChange(false)
         }
 
+        const onError = (error: unknown) => {
+            const fieldErrors = applyServerFieldErrors(error, ["name", "sku", "price"])
+
+            if (Object.keys(fieldErrors).length > 0) {
+                setErrors(fieldErrors)
+                return
+            }
+
+            notifyError(catalogErrorMessage(error, "Gagal menyimpan variant"))
+        }
+
         if (variant === undefined) {
-            createMutation.mutate(payload, { onSuccess, onError: () => notifyError("Gagal menyimpan variant") })
+            createMutation.mutate(payload, { onSuccess, onError })
         } else {
-            updateMutation.mutate(payload, { onSuccess, onError: () => notifyError("Gagal menyimpan variant") })
+            updateMutation.mutate(payload, { onSuccess, onError })
         }
     }
 

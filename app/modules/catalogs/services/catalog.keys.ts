@@ -11,5 +11,4 @@ export const catalogKeys = {
     categories: () => [ROOT, "categories"] as const,
     categoryList: (params: CategoryIndexParams = {}) => [ROOT, "categories", "list", params] as const,
     category: (categoryId: string) => [ROOT, "category", categoryId] as const,
-    outlets: () => [ROOT, "outlets"] as const,
 }

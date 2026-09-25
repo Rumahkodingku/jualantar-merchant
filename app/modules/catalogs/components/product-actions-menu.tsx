@@ -33,6 +33,7 @@ import { Spinner } from "~/components/ui/spinner"
 
 import { useDeleteProduct, useSetProductStatus } from "../services/catalog.mutations"
 import { CATALOGS_PATHS } from "../utils/paths"
+import { catalogErrorMessage } from "../utils/api-error"
 import { notifyError, notifySuccess } from "../utils/notify"
 import type { Product } from "../types/catalog.types"
 
@@ -57,7 +58,7 @@ export function ProductActionsMenu({ product }: { product: Product }) {
                     `Status "${product.name}" diperbarui.`
                 )
             },
-            onError: () => notifyError("Gagal memperbarui status"),
+            onError: (error) => notifyError(catalogErrorMessage(error, "Gagal memperbarui status")),
         })
     }
 
@@ -67,7 +68,7 @@ export function ProductActionsMenu({ product }: { product: Product }) {
                 setConfirm(null)
                 notifySuccess("Produk dihapus", `"${product.name}" dihapus dari katalog.`)
             },
-            onError: () => notifyError("Gagal menghapus produk"),
+            onError: (error) => notifyError(catalogErrorMessage(error, "Gagal menghapus produk")),
         })
     }
 

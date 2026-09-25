@@ -2,10 +2,103 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Route, Routes } from "react-router"
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import { CatalogCategoriesPage } from "./categories-page"
 import { CatalogsPage } from "./catalogs-page"
 import { ProductNewPage } from "./product-new-page"
+import type { CatalogCategory, Product, ProductIndexParams } from "../types/catalog.types"
+
+const { fetchProducts, fetchCategories, useOperationalOutlets } = vi.hoisted(() => ({
+    fetchProducts: vi.fn(),
+    fetchCategories: vi.fn(),
+    useOperationalOutlets: vi.fn(),
+}))
+
+vi.mock("../services/catalog.api", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../services/catalog.api")>()
+
+    return { ...actual, fetchProducts, fetchCategories }
+})
+
+vi.mock("~/modules/merchant-operations", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("~/modules/merchant-operations")>()
+
+    return { ...actual, useOperationalOutlets }
+})
+
+const CATEGORIES: CatalogCategory[] = [
+    {
+        id: "cat-001",
+        name: "Makanan",
+        description: null,
+        status: "active",
+        display_order: 0,
+        created_at: null,
+        updated_at: null,
+    },
+    {
+        id: "cat-002",
+        name: "Minuman",
+        description: null,
+        status: "active",
+        display_order: 1,
+        created_at: null,
+        updated_at: null,
+    },
+    {
+        id: "cat-003",
+        name: "Dessert",
+        description: null,
+        status: "active",
+        display_order: 2,
+        created_at: null,
+        updated_at: null,
+    },
+]
+
+const PRODUCTS: Product[] = [
+    {
+        id: "prd-001",
+        category_id: "cat-001",
+        name: "Ayam Geprek",
+        description: null,
+        product_type: "simple",
+        price: 18000,
+        status: "active",
+        display_order: 0,
+        created_at: null,
+        updated_at: null,
+    },
+    {
+        id: "prd-002",
+        category_id: "cat-001",
+        name: "Nasi Goreng Spesial",
+        description: null,
+        product_type: "variable",
+        price: null,
+        status: "active",
+        display_order: 1,
+        created_at: null,
+        updated_at: null,
+    },
+    {
+        id: "prd-003",
+        category_id: "cat-002",
+        name: "Es Teh Manis",
+        description: null,
+        product_type: "simple",
+        price: 5000,
+        status: "active",
+        display_order: 2,
+        created_at: null,
+        updated_at: null,
+    },
+]
+
+function paginated<T>(data: T[]) {
+    return { data, meta: { current_page: 1, per_page: 15, total: data.length, last_page: 1 } }
+}
 
 function renderWithProviders(ui: React.ReactNode, initialEntries: string[] = ["/catalogs"]) {
     const queryClient = new QueryClient({
@@ -22,8 +115,34 @@ function renderWithProviders(ui: React.ReactNode, initialEntries: string[] = ["/
     )
 }
 
+beforeEach(() => {
+    fetchProducts.mockReset()
+    fetchCategories.mockReset()
+    useOperationalOutlets.mockReset()
+
+    fetchProducts.mockImplementation((params: ProductIndexParams = {}) => {
+        const search = params.search?.trim().toLowerCase()
+        const products =
+            search === undefined || search === ""
+                ? PRODUCTS
+                : PRODUCTS.filter((product) => product.name.toLowerCase().includes(search))
+
+        return Promise.resolve(paginated(products))
+    })
+
+    fetchCategories.mockImplementation(() => Promise.resolve(paginated(CATEGORIES)))
+
+    useOperationalOutlets.mockReturnValue({
+        data: paginated([]),
+        isPending: false,
+        isError: false,
+        error: null,
+        refetch: vi.fn(),
+    })
+})
+
 describe("CatalogsPage", () => {
-    it("renders product list from dummy data", async () => {
+    it("renders the product list from the API", async () => {
         renderWithProviders(
             <Routes>
                 <Route path="/catalogs" element={<CatalogsPage />} />
@@ -35,7 +154,7 @@ describe("CatalogsPage", () => {
         expect(screen.getByRole("link", { name: /Tambah Produk/ })).toBeInTheDocument()
     })
 
-    it("filters products by search query", async () => {
+    it("sends the search term to the API and renders the narrowed result", async () => {
         const user = userEvent.setup()
 
         renderWithProviders(
@@ -55,6 +174,8 @@ describe("CatalogsPage", () => {
             },
             { timeout: 2000 }
         )
+
+        expect(fetchProducts).toHaveBeenCalledWith(expect.objectContaining({ search: "Es Teh" }))
     })
 })
 
@@ -89,7 +210,7 @@ describe("ProductNewPage", () => {
 
         await screen.findByRole("button", { name: "Lanjut" })
 
-        await user.type(screen.getByLabelText("Nama Produk"), "Burger Spesial")
+        await user.type(screen.getByLabelText(/Nama Produk/), "Burger Spesial")
         await user.click(screen.getByRole("button", { name: "Lanjut" }))
 
         expect(await screen.findByText("Kategori wajib dipilih.")).toBeInTheDocument()
@@ -98,7 +219,7 @@ describe("ProductNewPage", () => {
 })
 
 describe("CatalogCategoriesPage", () => {
-    it("renders categories from dummy data", async () => {
+    it("renders categories from the API", async () => {
         renderWithProviders(
             <Routes>
                 <Route path="/catalogs/categories" element={<CatalogCategoriesPage />} />

@@ -9,7 +9,7 @@ import { ListSkeleton } from "../components/list-skeleton"
 import { ProductFilters, type ProductFilterValues } from "../components/product-filters"
 import { ProductList } from "../components/product-list"
 import { useReorderProducts } from "../services/catalog.mutations"
-import { useCategories, useProductViewSummaries, useProducts } from "../services/catalog.queries"
+import { useCategories, useProducts } from "../services/catalog.queries"
 import { notifyError, notifySuccess } from "../utils/notify"
 import { CATALOGS_PATHS } from "../utils/paths"
 import type { CatalogStatus, ProductIndexParams, ProductType } from "../types/catalog.types"
@@ -71,7 +71,6 @@ export function CatalogsPage() {
 
     const productsQuery = useProducts(params)
     const categoriesQuery = useCategories({ per_page: 100 })
-    const summariesQuery = useProductViewSummaries()
     const reorderMutation = useReorderProducts()
 
     const categories = categoriesQuery.data?.data ?? []
@@ -79,7 +78,6 @@ export function CatalogsPage() {
         () => Object.fromEntries(categories.map((category) => [category.id, category.name])),
         [categories]
     )
-    const summariesById = summariesQuery.data ?? {}
 
     function patchFilters(patch: Partial<ProductFilterValues>) {
         setReorderMode(false)
@@ -170,7 +168,6 @@ export function CatalogsPage() {
                 <ProductList
                     products={productsQuery.data.data}
                     categoryNameById={categoryNameById}
-                    summariesById={summariesById}
                     reorderMode={reorderMode && !hasFilters}
                     onReorder={handleReorder}
                 />

@@ -7,18 +7,9 @@ import { cn } from "~/lib/utils"
 
 import { ProductActionsMenu } from "./product-actions-menu"
 import { ProductCard } from "./product-card"
-import type { ProductViewSummary } from "../services/catalog-mock.repository"
 import type { Product } from "../types/catalog.types"
 
-function SortableProductCard({
-    product,
-    categoryName,
-    summary,
-}: {
-    product: Product
-    categoryName?: string
-    summary?: ProductViewSummary
-}) {
+function SortableProductCard({ product, categoryName }: { product: Product; categoryName?: string }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: product.id })
 
     return (
@@ -31,7 +22,6 @@ function SortableProductCard({
             <ProductCard
                 product={product}
                 categoryName={categoryName}
-                summary={summary}
                 reorderMode
                 dragHandle={
                     <button
@@ -51,13 +41,11 @@ function SortableProductCard({
 export function ProductList({
     products,
     categoryNameById,
-    summariesById,
     reorderMode = false,
     onReorder,
 }: {
     products: Product[]
     categoryNameById: Record<string, string | undefined>
-    summariesById: Record<string, ProductViewSummary | undefined>
     reorderMode?: boolean
     onReorder?: (orderedIds: string[]) => void
 }) {
@@ -95,7 +83,6 @@ export function ProductList({
                                 key={product.id}
                                 product={product}
                                 categoryName={categoryNameById[product.category_id]}
-                                summary={summariesById[product.id]}
                             />
                         ))}
                     </div>
@@ -111,7 +98,6 @@ export function ProductList({
                     key={product.id}
                     product={product}
                     categoryName={categoryNameById[product.category_id]}
-                    summary={summariesById[product.id]}
                     actionMenu={<ProductActionsMenu product={product} />}
                 />
             ))}

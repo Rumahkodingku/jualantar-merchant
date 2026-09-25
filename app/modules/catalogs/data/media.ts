@@ -54,30 +54,3 @@ export const dummyMediaByProduct: Record<string, ProductMedia[]> = {
         },
     ],
 }
-
-export const mediaPlaceholderPool: Array<Pick<ProductMedia, "url" | "alt_text" | "mime_type" | "file_size">> = [
-    {
-        url: "/images/catalog/placeholder-1.svg",
-        alt_text: "Foto produk 1",
-        mime_type: "image/svg+xml",
-        file_size: 120000,
-    },
-    {
-        url: "/images/catalog/placeholder-2.svg",
-        alt_text: "Foto produk 2",
-        mime_type: "image/svg+xml",
-        file_size: 130000,
-    },
-    {
-        url: "/images/catalog/placeholder-3.svg",
-        alt_text: "Foto produk 3",
-        mime_type: "image/svg+xml",
-        file_size: 140000,
-    },
-    {
-        url: "/images/catalog/placeholder-4.svg",
-        alt_text: "Foto produk 4",
-        mime_type: "image/svg+xml",
-        file_size: 110000,
-    },
-]

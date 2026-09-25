@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ArrowDownIcon, ArrowUpIcon, PlusIcon, StarIcon, Trash2Icon } from "lucide-react"
+import { ArrowDownIcon, ArrowUpIcon, StarIcon, Trash2Icon } from "lucide-react"
 
 import {
     AlertDialog,
@@ -14,36 +14,21 @@ import {
 import { Button } from "~/components/ui/button"
 import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
+import { MAX_UPLOAD_SIZE_LABEL } from "~/modules/merchant-registration"
 
-import { useAddMedia, useDeleteMedia, useReorderMedia, useSetPrimaryMedia } from "../services/catalog.mutations"
-import { pickMediaPlaceholder } from "../services/catalog-mock.repository"
+import { MediaUploadTile } from "./media-upload-tile"
+import { MAX_PRODUCT_MEDIA } from "../hooks/use-catalog-media-upload"
+import { useDeleteMedia, useReorderMedia, useSetPrimaryMedia } from "../services/catalog.mutations"
+import { catalogErrorMessage } from "../utils/api-error"
 import { notifyError, notifySuccess } from "../utils/notify"
 import type { ProductMedia } from "../types/catalog.types"
 
 export function MediaManager({ productId, media }: { productId: string; media: ProductMedia[] }) {
     const [pendingDelete, setPendingDelete] = useState<ProductMedia | null>(null)
 
-    const addMutation = useAddMedia(productId)
     const deleteMutation = useDeleteMedia(productId)
     const primaryMutation = useSetPrimaryMedia(productId)
     const reorderMutation = useReorderMedia(productId)
-
-    function handleAdd() {
-        const placeholder = pickMediaPlaceholder()
-
-        addMutation.mutate(
-            {
-                url: placeholder.url ?? "/images/catalog/placeholder-1.svg",
-                alt_text: placeholder.alt_text,
-                mime_type: placeholder.mime_type,
-                file_size: placeholder.file_size,
-            },
-            {
-                onSuccess: () => notifySuccess("Foto ditambahkan"),
-                onError: () => notifyError("Gagal menambahkan foto"),
-            }
-        )
-    }
 
     function move(index: number, direction: -1 | 1) {
         const next = [...media]
@@ -59,7 +44,7 @@ export function MediaManager({ productId, media }: { productId: string; media: P
 
         reorderMutation.mutate(
             next.map((entry, order) => ({ id: entry.id, display_order: order })),
-            { onError: () => notifyError("Gagal mengubah urutan") }
+            { onError: (error) => notifyError(catalogErrorMessage(error, "Gagal mengubah urutan")) }
         )
     }
 
@@ -94,7 +79,8 @@ export function MediaManager({ productId, media }: { productId: string; media: P
                                     onClick={() =>
                                         primaryMutation.mutate(item.id, {
                                             onSuccess: () => notifySuccess("Foto utama diperbarui"),
-                                            onError: () => notifyError("Gagal mengatur foto utama"),
+                                            onError: (error) =>
+                                                notifyError(catalogErrorMessage(error, "Gagal mengatur foto utama")),
                                         })
                                     }
                                 >
@@ -134,20 +120,12 @@ export function MediaManager({ productId, media }: { productId: string; media: P
                     </div>
                 ))}
 
-                <button
-                    type="button"
-                    onClick={handleAdd}
-                    disabled={addMutation.isPending}
-                    aria-label="Tambah foto"
-                    className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-                >
-                    {addMutation.isPending ? <Spinner /> : <PlusIcon aria-hidden="true" className="size-5" />}
-                    <Text variant="xs">Tambah</Text>
-                </button>
+                <MediaUploadTile productId={productId} mediaCount={media.length} />
             </div>
 
             <Text variant="xs" className="text-muted-foreground">
-                Mode dummy: memilih foto menambahkan gambar placeholder lokal, tanpa upload ke storage.
+                Format JPG, PNG, atau WEBP. Maksimal {MAX_UPLOAD_SIZE_LABEL} per foto dan {MAX_PRODUCT_MEDIA} foto per
+                produk.
             </Text>
 
             <AlertDialog
@@ -174,7 +152,7 @@ export function MediaManager({ productId, media }: { productId: string; media: P
                                         setPendingDelete(null)
                                         notifySuccess("Foto dihapus")
                                     },
-                                    onError: () => notifyError("Gagal menghapus foto"),
+                                    onError: (error) => notifyError(catalogErrorMessage(error, "Gagal menghapus foto")),
                                 })
                             }}
                         >

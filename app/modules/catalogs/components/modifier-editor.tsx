@@ -27,12 +27,13 @@ import {
     useCreateModifierGroup,
     useDeleteModifier,
     useDeleteModifierGroup,
-    useReorderModifierGroups,
+    useReorderModifiers,
     useSetModifierGroupStatus,
     useSetModifierStatus,
     useUpdateModifier,
     useUpdateModifierGroup,
 } from "../services/catalog.mutations"
+import { applyServerFieldErrors, catalogErrorMessage } from "../utils/api-error"
 import { formatCurrency } from "../utils/format-currency"
 import { notifyError, notifySuccess } from "../utils/notify"
 import { SELECTION_TYPE_LABEL } from "../utils/labels"
@@ -129,10 +130,21 @@ function GroupFormDialog({
             onOpenChange(false)
         }
 
+        const onError = (error: unknown) => {
+            const fieldErrors = applyServerFieldErrors(error, ["name", "description", "min_selection", "max_selection"])
+
+            if (Object.keys(fieldErrors).length > 0) {
+                setErrors(fieldErrors)
+                return
+            }
+
+            notifyError(catalogErrorMessage(error, "Gagal menyimpan group"))
+        }
+
         if (group === undefined) {
-            createMutation.mutate(payload, { onSuccess, onError: () => notifyError("Gagal menyimpan group") })
+            createMutation.mutate(payload, { onSuccess, onError })
         } else {
-            updateMutation.mutate(payload, { onSuccess, onError: () => notifyError("Gagal menyimpan group") })
+            updateMutation.mutate(payload, { onSuccess, onError })
         }
     }
 
@@ -304,10 +316,21 @@ function ModifierFormDialog({
             onOpenChange(false)
         }
 
+        const onError = (error: unknown) => {
+            const fieldErrors = applyServerFieldErrors(error, ["name", "description", "price"])
+
+            if (Object.keys(fieldErrors).length > 0) {
+                setErrors(fieldErrors)
+                return
+            }
+
+            notifyError(catalogErrorMessage(error, "Gagal menyimpan modifier"))
+        }
+
         if (modifier === undefined) {
-            createMutation.mutate(payload, { onSuccess, onError: () => notifyError("Gagal menyimpan modifier") })
+            createMutation.mutate(payload, { onSuccess, onError })
         } else {
-            updateMutation.mutate(payload, { onSuccess, onError: () => notifyError("Gagal menyimpan modifier") })
+            updateMutation.mutate(payload, { onSuccess, onError })
         }
     }
 
@@ -404,7 +427,7 @@ function GroupCard({
     const statusMutation = useSetModifierGroupStatus(productId, group.id)
     const deleteGroupMutation = useDeleteModifierGroup(productId)
     const deleteModifierMutation = useDeleteModifier(productId, group.id)
-    const reorderModifiers = useReorderModifierGroups(productId)
+    const reorderModifiers = useReorderModifiers(productId, group.id)
 
     function moveModifier(index: number, direction: -1 | 1) {
         const next = [...group.modifiers]

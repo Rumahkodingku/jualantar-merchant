@@ -12,8 +12,17 @@ import {
     AlertDialogTitle,
 } from "~/components/ui/alert-dialog"
 import { Button } from "~/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "~/components/ui/dialog"
 import { Spinner } from "~/components/ui/spinner"
+import { Field, FieldLabel } from "~/components/ui/field"
+import { Input } from "~/components/ui/input"
 import { Switch } from "~/components/ui/switch"
 import { Text } from "~/components/ui/text"
 
@@ -25,6 +34,7 @@ import {
     useSetOutletAssignmentStatus,
     useSetOutletAvailability,
 } from "../services/catalog.mutations"
+import { catalogErrorMessage } from "../utils/api-error"
 import { AVAILABILITY_LABEL, availabilityTone } from "../utils/labels"
 import { notifyError, notifySuccess } from "../utils/notify"
 import { Badge } from "~/components/ui/badge"
@@ -65,7 +75,7 @@ function AssignmentStatusControl({
             onCheckedChange={(checked) =>
                 statusMutation.mutate(checked === true ? "active" : "inactive", {
                     onSuccess: () => notifySuccess("Status assignment diperbarui"),
-                    onError: () => notifyError("Gagal memperbarui status assignment"),
+                    onError: (error) => notifyError(catalogErrorMessage(error, "Gagal memperbarui status assignment")),
                 })
             }
         />
@@ -74,19 +84,95 @@ function AssignmentStatusControl({
 
 function AvailabilityControl({ productId, assignment }: { productId: string; assignment: OutletProductAssignment }) {
     const availabilityMutation = useSetOutletAvailability(productId, assignment.outlet_id)
+    const [reasonOpen, setReasonOpen] = useState(false)
+    const [reason, setReason] = useState("")
+
+    const outletLabel = assignment.outlet?.name ?? assignment.outlet_id
+
+    function handleSuccess() {
+        setReasonOpen(false)
+        notifySuccess("Ketersediaan diperbarui")
+    }
+
+    function handleError(error: unknown) {
+        notifyError(catalogErrorMessage(error, "Gagal memperbarui ketersediaan"))
+    }
+
+    function handleToggle(checked: boolean) {
+        if (checked === true) {
+            availabilityMutation.mutate({ status: "available" }, { onSuccess: handleSuccess, onError: handleError })
+            return
+        }
+
+        setReason("")
+        setReasonOpen(true)
+    }
+
+    function submitUnavailable(withReason: boolean) {
+        const trimmed = reason.trim()
+
+        availabilityMutation.mutate(
+            { status: "unavailable", reason: withReason && trimmed !== "" ? trimmed : null },
+            { onSuccess: handleSuccess, onError: handleError }
+        )
+    }
 
     return (
-        <Switch
-            checked={assignment.availability_status === "available"}
-            disabled={availabilityMutation.isPending || assignment.status === "inactive"}
-            aria-label={`Ketersediaan ${assignment.outlet?.name ?? assignment.outlet_id}`}
-            onCheckedChange={(checked) =>
-                availabilityMutation.mutate(checked === true ? "available" : "unavailable", {
-                    onSuccess: () => notifySuccess("Ketersediaan diperbarui"),
-                    onError: () => notifyError("Gagal memperbarui ketersediaan"),
-                })
-            }
-        />
+        <>
+            <Switch
+                checked={assignment.availability_status === "available"}
+                disabled={availabilityMutation.isPending || assignment.status === "inactive"}
+                aria-label={`Ketersediaan ${outletLabel}`}
+                onCheckedChange={handleToggle}
+            />
+
+            <Dialog open={reasonOpen} onOpenChange={setReasonOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Tandai tidak tersedia</DialogTitle>
+                        <DialogDescription>
+                            Alasan bersifat opsional dan membantu tim outlet memahami kenapa produk tidak tersedia.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Field>
+                        <FieldLabel htmlFor={`availability-reason-${assignment.outlet_id}`}>
+                            Alasan (opsional)
+                        </FieldLabel>
+                        <Input
+                            id={`availability-reason-${assignment.outlet_id}`}
+                            value={reason}
+                            maxLength={255}
+                            placeholder="cth. Stok habis"
+                            onChange={(event) => setReason(event.target.value)}
+                            className="h-11"
+                        />
+                    </Field>
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            disabled={availabilityMutation.isPending}
+                            onClick={() => submitUnavailable(false)}
+                        >
+                            Lewati
+                        </Button>
+                        <Button
+                            type="button"
+                            disabled={availabilityMutation.isPending}
+                            onClick={() => submitUnavailable(true)}
+                        >
+                            {availabilityMutation.isPending ? (
+                                <>
+                                    <Spinner /> Menyimpan…
+                                </>
+                            ) : (
+                                "Simpan"
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
     )
 }
 
@@ -125,7 +211,7 @@ export function OutletAssignment({
                 setAssignOpen(false)
                 notifySuccess("Penugasan outlet diperbarui")
             },
-            onError: () => notifyError("Gagal memperbarui penugasan outlet"),
+            onError: (error) => notifyError(catalogErrorMessage(error, "Gagal memperbarui penugasan outlet")),
         })
     }
 
@@ -186,7 +272,10 @@ export function OutletAssignment({
                                         Availability
                                     </Text>
                                     <Text variant="xs" className="text-muted-foreground">
-                                        Produk sedang tersedia/tidak tersedia
+                                        {assignment.availability_status === "unavailable" &&
+                                        assignment.unavailable_reason != null
+                                            ? `Alasan: ${assignment.unavailable_reason}`
+                                            : "Produk sedang tersedia/tidak tersedia"}
                                     </Text>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -285,7 +374,8 @@ export function OutletAssignment({
                                         setPendingRemove(null)
                                         notifySuccess("Penugasan dihapus")
                                     },
-                                    onError: () => notifyError("Gagal menghapus penugasan"),
+                                    onError: (error) =>
+                                        notifyError(catalogErrorMessage(error, "Gagal menghapus penugasan")),
                                 })
                             }}
                         >

@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { useNavigate } from "react-router"
+import { useEffect, useRef, useState } from "react"
+import { Link, useNavigate } from "react-router"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
 import { ErrorState } from "~/components/error-state"
 import { Button } from "~/components/ui/button"
@@ -25,12 +25,21 @@ import {
 import { useCreateProductBundle } from "../services/catalog.mutations"
 import { useCategories, useOutlets } from "../services/catalog.queries"
 import { productInfoSchema, simplePriceSchema, type ProductInfoFormValues } from "../schemas/catalog.schema"
+import { catalogErrorMessage } from "../utils/api-error"
 import { formatCurrency } from "../utils/format-currency"
 import { PRODUCT_TYPE_FORM_LABEL, PRODUCT_TYPE_LABEL } from "../utils/labels"
-import { notifyError, notifySuccess } from "../utils/notify"
+import { notifySuccess } from "../utils/notify"
 import { CATALOGS_PATHS } from "../utils/paths"
 import type { ProductType } from "../types/catalog.types"
 import { MoveLeft, MoveRight } from "lucide-react"
+
+const BUNDLE_STATUS_LABEL = {
+    pending: "Menunggu",
+    running: "Diproses…",
+    success: "Berhasil",
+    skipped: "Tidak ada",
+    failed: "Gagal",
+} as const
 
 const STEPS = [
     { id: "info", label: "Informasi" },
@@ -209,11 +218,30 @@ export function ProductNewPage() {
     const [outletIds, setOutletIds] = useState<string[]>([])
     const [stepError, setStepError] = useState<string | null>(null)
     const [expandedReview, setExpandedReview] = useState<string | null>(null)
+    const savedRef = useRef(false)
 
     const step = STEPS[stepIndex]
+    const saveAttempted = createBundle.steps.some((entry) => entry.status !== "pending")
+    const firstFailedError = createBundle.steps.find((entry) => entry.status === "failed")?.error
     const categories = categoriesQuery.data?.data ?? []
     const outlets = outletsQuery.data ?? []
     const isPending = createBundle.isPending
+
+    useEffect(() => {
+        if (createBundle.isPending || createBundle.hasFailure || createBundle.productId === null) {
+            return
+        }
+
+        const allSettled = createBundle.steps.every((entry) => entry.status === "success" || entry.status === "skipped")
+
+        if (!allSettled || savedRef.current) {
+            return
+        }
+
+        savedRef.current = true
+        notifySuccess("Produk dibuat", `"${info.name}" ditambahkan ke katalog.`)
+        void navigate(CATALOGS_PATHS.detail(createBundle.productId))
+    }, [createBundle, info.name, navigate])
 
     function patchInfo(patch: Partial<ProductInfoFormValues>) {
         setInfo((current) => ({ ...current, ...patch }))
@@ -282,56 +310,46 @@ export function ProductNewPage() {
 
         const price = info.product_type === "simple" ? Number(priceRaw) : null
 
-        createBundle.mutate(
-            {
-                product: {
-                    category_id: info.category_id,
-                    name: info.name,
-                    description: info.description ?? null,
-                    product_type: info.product_type,
-                    price,
-                },
-                variants:
-                    info.product_type === "variable"
-                        ? variants.map((variant) => ({
-                              name: variant.name,
-                              sku: variant.sku === "" ? null : variant.sku,
-                              price: variant.price,
-                              is_default: variant.is_default,
-                          }))
-                        : [],
-                modifierGroups: groups.map((group) => ({
-                    group: {
-                        name: group.name,
-                        description: group.description === "" ? null : group.description,
-                        selection_type: group.selection_type,
-                        min_selection: group.min_selection,
-                        max_selection: group.max_selection,
-                        is_required: group.is_required,
-                    },
-                    modifiers: group.modifiers.map((modifier) => ({
-                        name: modifier.name,
-                        description: modifier.description === "" ? null : modifier.description,
-                        price: modifier.price,
-                        is_default: modifier.is_default,
-                    })),
-                })),
-                media: media.map((item) => ({
-                    url: item.url,
-                    alt_text: item.alt_text === "" ? null : item.alt_text,
-                    mime_type: "image/svg+xml",
-                    is_primary: item.is_primary,
-                })),
-                outletIds,
+        createBundle.start({
+            product: {
+                category_id: info.category_id,
+                name: info.name,
+                description: info.description ?? null,
+                product_type: info.product_type,
+                price,
             },
-            {
-                onSuccess: (product) => {
-                    notifySuccess("Produk dibuat", `"${product.name}" ditambahkan ke katalog.`)
-                    void navigate(CATALOGS_PATHS.detail(product.id))
+            variants:
+                info.product_type === "variable"
+                    ? variants.map((variant) => ({
+                          name: variant.name,
+                          sku: variant.sku === "" ? null : variant.sku,
+                          price: variant.price,
+                          is_default: variant.is_default,
+                      }))
+                    : [],
+            modifierGroups: groups.map((group) => ({
+                group: {
+                    name: group.name,
+                    description: group.description === "" ? null : group.description,
+                    selection_type: group.selection_type,
+                    min_selection: group.min_selection,
+                    max_selection: group.max_selection,
+                    is_required: group.is_required,
                 },
-                onError: () => notifyError("Gagal membuat produk"),
-            }
-        )
+                modifiers: group.modifiers.map((modifier) => ({
+                    name: modifier.name,
+                    description: modifier.description === "" ? null : modifier.description,
+                    price: modifier.price,
+                    is_default: modifier.is_default,
+                })),
+            })),
+            media: media.map((item) => ({
+                file: item.file,
+                alt_text: item.alt_text === "" ? null : item.alt_text,
+                is_primary: item.is_primary,
+            })),
+            outletIds,
+        })
     }
 
     const reviewSections = [
@@ -436,7 +454,7 @@ export function ProductNewPage() {
                     ) : (
                         media.map((item) => (
                             <div key={item.key} className="relative size-16 overflow-hidden rounded-lg border bg-muted">
-                                <img src={item.url} alt={item.alt_text} className="size-full object-cover" />
+                                <img src={item.previewUrl} alt={item.alt_text} className="size-full object-cover" />
                             </div>
                         ))
                     )}
@@ -571,7 +589,10 @@ export function ProductNewPage() {
                 ) : null}
 
                 {step.id === "media" ? (
-                    <StepShell title="Foto Produk" description="Pilih foto dummy untuk produk.">
+                    <StepShell
+                        title="Foto Produk"
+                        description="Pilih foto produk. Unggahan diproses saat produk disimpan."
+                    >
                         <MediaDraftPicker media={media} onChange={setMedia} />
                     </StepShell>
                 ) : null}
@@ -605,6 +626,68 @@ export function ProductNewPage() {
                                 </ReviewSection>
                             ))}
                         </div>
+
+                        {saveAttempted ? (
+                            <div className="mt-4 flex flex-col gap-3 rounded-xl border p-3">
+                                <Text variant="sm" weight="semibold">
+                                    Status penyimpanan
+                                </Text>
+                                <ul className="flex flex-col gap-1.5">
+                                    {createBundle.steps.map((entry) => (
+                                        <li key={entry.key} className="flex items-center justify-between gap-3">
+                                            <Text variant="sm">{entry.label}</Text>
+                                            <Text
+                                                variant="xs"
+                                                className={
+                                                    entry.status === "failed"
+                                                        ? "font-semibold text-destructive"
+                                                        : "text-muted-foreground"
+                                                }
+                                            >
+                                                {BUNDLE_STATUS_LABEL[entry.status]}
+                                            </Text>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {createBundle.hasFailure ? (
+                                    <div className="flex flex-col gap-2">
+                                        <p role="alert" className="text-sm font-semibold text-destructive">
+                                            {catalogErrorMessage(
+                                                firstFailedError,
+                                                "Sebagian data gagal disimpan. Coba lagi hanya langkah yang gagal."
+                                            )}
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                disabled={createBundle.isPending}
+                                                onClick={createBundle.retry}
+                                            >
+                                                {createBundle.isPending ? (
+                                                    <>
+                                                        <Spinner /> Mencoba…
+                                                    </>
+                                                ) : (
+                                                    "Coba lagi"
+                                                )}
+                                            </Button>
+                                            {createBundle.productId !== null ? (
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    variant="outline"
+                                                    render={<Link to={CATALOGS_PATHS.detail(createBundle.productId)} />}
+                                                >
+                                                    Buka Product Detail
+                                                </Button>
+                                            ) : null}
+                                        </div>
+                                    </div>
+                                ) : null}
+                            </div>
+                        ) : null}
                     </StepShell>
                 ) : null}
 
@@ -615,7 +698,7 @@ export function ProductNewPage() {
                 ) : null}
             </div>
 
-            <div className="sticky bottom-0 -mx-1 flex gap-2 border-t bg-background/95 px-1 py-3 backdrop-blur">
+            <div className="sticky bottom-0 -mx-1 flex gap-2 px-1 py-3 backdrop-blur">
                 <Button
                     type="button"
                     variant="outline"

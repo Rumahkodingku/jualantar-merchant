@@ -4,7 +4,7 @@ import { Link } from "react-router"
 import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
 
-import { StatusBadge } from "../common/status-badge"
+import { StatusBadge } from "~/components/status-badge"
 import { outletServiceAreaSummary } from "../../utils/service-area-summary"
 import { outletStatusLabel } from "../../utils/outlet-status"
 import type { OperationalOutlet } from "../../types/merchant-operations.types"

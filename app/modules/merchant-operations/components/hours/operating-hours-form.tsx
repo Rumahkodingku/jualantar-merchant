@@ -3,12 +3,13 @@ import { FormProvider, useForm, type Resolver } from "react-hook-form"
 
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { getApiErrorMessage } from "~/lib/api-form"
-import { OperatingHoursField, RegistrationActions as FormActions } from "~/modules/merchant-registration"
+import { FormActions } from "~/components/form-actions"
+import { OperatingHoursField } from "~/modules/merchant-registration"
 
 import { operatingHoursSchema, type OperatingHoursFormValues } from "../../schemas/operating-hours.schema"
 import { useUpdateOperatingHours } from "../../services/merchant-operations.mutations"
 import { formToOperatingHoursPayload, operatingHoursToForm } from "../../utils/operating-hours"
-import { notifyError, notifySuccess } from "../../utils/notify"
+import { notifyError, notifySuccess } from "~/lib/notify"
 import type { OperatingHours } from "~/modules/merchant-registration"
 
 /**

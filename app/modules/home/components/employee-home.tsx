@@ -8,7 +8,7 @@ import { Text } from "~/components/ui/text"
 import { ApiError } from "~/lib/api"
 import { getApiErrorMessage } from "~/lib/api-form"
 import { useSession } from "~/modules/auth"
-import { ForbiddenState } from "~/modules/authorization"
+import { ForbiddenState } from "~/components/forbidden-state"
 import {
     OUTLET_ROLE_LABEL,
     outletPath,

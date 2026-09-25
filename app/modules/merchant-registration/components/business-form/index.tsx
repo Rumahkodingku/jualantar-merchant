@@ -4,8 +4,8 @@ import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Field, FieldDescription, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
 import { Textarea } from "~/components/ui/textarea"
-import { ChoiceCards } from "../ui/choice-cards"
-import { RegistrationActions } from "../ui/registration-actions"
+import { ChoiceCards } from "~/components/ui/choice-cards"
+import { FormActions } from "~/components/form-actions"
 import { useRegistrationContext } from "../registration-context"
 import { businessSchema, MERCHANT_TYPE_OPTIONS, type BusinessFormValues } from "../../schemas/business.schema"
 import { useUpdateBusinessProfile } from "../../services/merchant-registration.mutations"
@@ -112,7 +112,7 @@ export function BusinessForm() {
                 </Field>
             </div>
 
-            <RegistrationActions
+            <FormActions
                 form="business-form"
                 isSubmitting={mutation.isPending}
                 onBack={navigation.isFirst ? undefined : navigation.goBack}

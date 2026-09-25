@@ -1,0 +1,7 @@
+# Taste
+- Do not add comments to code (no block or line comments explaining behavior). Wants the code to speak for itself and the agent to just implement the work directly. Confidence: 0.85
+- Communicates in Indonesian and expects responses, plans, and written artifacts in Bahasa Indonesia (written summaries, even in mixed form, are kept in Indonesian). Confidence: 0.8
+- Prefers the agent to run autonomously once a plan is approved: wants permission prompts bypassed and the plan executed end-to-end without pausing for per-step confirmation. Works from an explicit phase/todo plan and expects every remaining item driven to completion ("continue until done") rather than progress reports that wait for the next go-ahead. Confidence: 0.85
+- Prefers shell work done as small, explicit, single-purpose commands rather than one large compound invocation: a bulk command chaining `git mv` with multi-file `sed` rewrites was rejected, and the same work then succeeded when split into discrete steps. Confidence: 0.5
+- Expects a full verification gate (typecheck, lint, test run, production build) to be run after finishing a change and the results reported before work is called done — explicitly asks to "verify everything" once the step is complete. Confidence: 0.6
+- Do not read or edit files under `node_modules` (e.g. inspecting a dependency's source to learn its API) — wants third-party package internals left untouched even when investigating how to configure a library. Confidence: 0.9

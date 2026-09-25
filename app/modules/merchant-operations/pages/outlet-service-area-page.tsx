@@ -4,7 +4,7 @@ import { ErrorState } from "~/components/error-state"
 import { getApiErrorMessage } from "~/lib/api-form"
 import { CAP } from "~/modules/authorization"
 
-import { ListSkeleton } from "../components/common/list-skeleton"
+import { ListSkeleton } from "~/components/list-skeleton"
 import { OutletScopedPage } from "../components/layout/outlet-scoped-page"
 import { ServiceAreaForm } from "../components/service-area/service-area-form"
 import { ServiceAreaReadOnly } from "../components/service-area/service-area-readonly"

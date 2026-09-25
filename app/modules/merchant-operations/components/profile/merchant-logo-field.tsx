@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { Button } from "~/components/ui/button"
 import { Progress } from "~/components/ui/progress"
 import { Text } from "~/components/ui/text"
-import { MAX_UPLOAD_SIZE_LABEL } from "~/modules/merchant-registration"
+import { MAX_UPLOAD_SIZE_LABEL } from "~/lib/upload"
 import { cn } from "~/lib/utils"
 import { useOperationalUpload } from "../../hooks/use-operational-upload"
 

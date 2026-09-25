@@ -5,10 +5,10 @@ import { getApiErrorMessage } from "~/lib/api-form"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
 import { CAP, OutletCapabilityGuard } from "~/modules/authorization"
 
-import { ListSkeleton } from "../components/common/list-skeleton"
+import { ListSkeleton } from "~/components/list-skeleton"
 import { OutletForm } from "../components/outlets/outlet-form"
 import { useOperationalOutlet } from "../services/merchant-operations.queries"
-import { notifySuccess } from "../utils/notify"
+import { notifySuccess } from "~/lib/notify"
 import { OUTLETS_PATHS, outletPath } from "../utils/routes"
 
 export function OutletEditPage() {

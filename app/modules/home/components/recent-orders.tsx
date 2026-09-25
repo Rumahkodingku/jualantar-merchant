@@ -3,7 +3,7 @@ import { Link } from "react-router"
 
 import { Card, CardContent } from "~/components/ui/card"
 import { Text } from "~/components/ui/text"
-import { StatusBadge } from "~/modules/merchant-operations"
+import { StatusBadge } from "~/components/status-badge"
 import type { RecentOrder, RecentOrderStatus } from "../types/home.types"
 import { formatIDR } from "../utils/home-format"
 

@@ -3,7 +3,7 @@ import { getApiErrorMessage } from "~/lib/api-form"
 
 import { SubpageHeader } from "~/components/layouts/subpage-header"
 
-import { ListSkeleton } from "../components/common/list-skeleton"
+import { ListSkeleton } from "~/components/list-skeleton"
 import { MerchantProfileForm } from "../components/profile/merchant-profile-form"
 import { useOperationalProfile } from "../services/merchant-operations.queries"
 import { useOperationsPermissions } from "../utils/permissions"

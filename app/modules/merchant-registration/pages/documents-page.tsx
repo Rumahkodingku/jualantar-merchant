@@ -5,7 +5,7 @@ import { Text } from "~/components/ui/text"
 
 import { DocumentChecklist } from "../components/documents/document-checklist"
 import { FileUpload } from "../components/ui/file-upload"
-import { RegistrationActions } from "../components/ui/registration-actions"
+import { FormActions } from "~/components/form-actions"
 import { useRegistrationContext } from "../components/registration-context"
 import { merchantRegistrationKeys } from "../services/merchant-registration.keys"
 
@@ -56,7 +56,7 @@ export function DocumentsPage() {
                 </section>
             </div>
 
-            <RegistrationActions
+            <FormActions
                 type="button"
                 submitLabel="Simpan & lanjut"
                 disabled={logoBusy}

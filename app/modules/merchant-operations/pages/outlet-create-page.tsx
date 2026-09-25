@@ -4,7 +4,7 @@ import { SubpageHeader } from "~/components/layouts/subpage-header"
 import { CAP, RequireCapability } from "~/modules/authorization"
 
 import { OutletForm } from "../components/outlets/outlet-form"
-import { notifySuccess } from "../utils/notify"
+import { notifySuccess } from "~/lib/notify"
 import { OUTLETS_PATHS, outletPath } from "../utils/routes"
 
 export function OutletCreatePage() {

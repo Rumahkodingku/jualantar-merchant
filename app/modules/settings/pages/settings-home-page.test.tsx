@@ -26,7 +26,8 @@ const fixtures = vi.hoisted(() => ({
     },
 }))
 
-vi.mock("~/modules/merchant-operations/services/merchant-operations.queries", () => ({
+vi.mock("~/modules/merchant-operations", async (importOriginal) => ({
+    ...(await importOriginal<typeof import("~/modules/merchant-operations")>()),
     useOperationsSummary: () => fixtures.summary,
     useOperationalProfile: () => fixtures.profile,
     useOperationalOutlets: () => fixtures.outlets,
@@ -55,7 +56,8 @@ describe("SettingsHomePage", () => {
         expect(screen.getByRole("heading", { name: "Pengaturan" })).toBeInTheDocument()
         expect(screen.getByRole("heading", { name: "Toko Maju" })).toBeInTheDocument()
         expect(screen.getByRole("heading", { name: "Merchant" })).toBeInTheDocument()
-        expect(screen.getByRole("heading", { name: "Umum" })).toBeInTheDocument()
+        expect(screen.getByRole("heading", { name: "Keuangan & legal" })).toBeInTheDocument()
+        expect(screen.getByRole("heading", { name: "Preferensi aplikasi" })).toBeInTheDocument()
         expect(screen.getByRole("heading", { name: "Akun & keamanan" })).toBeInTheDocument()
         expect(screen.getByRole("heading", { name: "Bantuan" })).toBeInTheDocument()
 

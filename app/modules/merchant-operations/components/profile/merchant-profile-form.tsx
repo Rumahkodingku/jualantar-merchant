@@ -8,7 +8,7 @@ import { Field, FieldDescription, FieldError, FieldLabel } from "~/components/ui
 import { Input } from "~/components/ui/input"
 import { Textarea } from "~/components/ui/textarea"
 import { applyApiFieldErrors, getApiErrorMessage } from "~/lib/api-form"
-import { RegistrationActions as FormActions } from "~/modules/merchant-registration"
+import { FormActions } from "~/components/form-actions"
 
 import { MerchantLogoField } from "./merchant-logo-field"
 import {
@@ -17,7 +17,7 @@ import {
     type MerchantProfileFormValues,
 } from "../../schemas/merchant-profile.schema"
 import { useUpdateOperationalProfile } from "../../services/merchant-operations.mutations"
-import { notifySuccess } from "../../utils/notify"
+import { notifySuccess } from "~/lib/notify"
 import type { OperationalProfile } from "../../types/merchant-operations.types"
 
 const FIELDS = ["business_name", "description", "operational_phone", "operational_email", "website"] as const

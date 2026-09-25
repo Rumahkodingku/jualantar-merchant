@@ -4,10 +4,10 @@ import { Button } from "~/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "~/components/ui/sheet"
 import { Spinner } from "~/components/ui/spinner"
 import { authorizationErrorMessage } from "~/modules/authorization"
-import { ChoiceCards } from "~/modules/merchant-registration"
+import { ChoiceCards } from "~/components/ui/choice-cards"
 
 import { useChangeOutletEmployeeRole } from "../../services/merchant-operations.mutations"
-import { notifyError, notifySuccess } from "../../utils/notify"
+import { notifyError, notifySuccess } from "~/lib/notify"
 import { OUTLET_ROLE_DESCRIPTION, OUTLET_ROLE_LABEL, OUTLET_ROLE_OPTIONS } from "../../utils/outlet-status"
 import type { OutletEmployee, OutletUserRole } from "../../types/merchant-operations.types"
 

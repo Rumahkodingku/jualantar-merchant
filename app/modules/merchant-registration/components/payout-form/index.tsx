@@ -7,7 +7,7 @@ import { Input } from "~/components/ui/input"
 import { SearchableSelect, type SearchableSelectOption } from "~/components/ui/searchable-select"
 import { useDebouncedValue } from "~/hooks/use-debounced-value"
 import { useBanks } from "~/modules/bank-directory"
-import { RegistrationActions } from "../ui/registration-actions"
+import { FormActions } from "~/components/form-actions"
 import { useRegistrationContext } from "../registration-context"
 import { payoutSchema, type PayoutFormValues } from "../../schemas/payout.schema"
 import { useSavePayoutAccount } from "../../services/merchant-registration.mutations"
@@ -148,7 +148,7 @@ export function PayoutForm() {
                 </Field>
             </div>
 
-            <RegistrationActions form="payout-form" isSubmitting={mutation.isPending} onBack={navigation.goBack} />
+            <FormActions form="payout-form" isSubmitting={mutation.isPending} onBack={navigation.goBack} />
         </form>
     )
 }

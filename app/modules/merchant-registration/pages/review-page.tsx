@@ -6,7 +6,7 @@ import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { ApiError } from "~/lib/api"
 
-import { RegistrationReview } from "../components/registration-review"
+import { RegistrationReview } from "../components/review/registration-review"
 import { useRegistrationContext } from "../components/registration-context"
 import { useSubmitRegistration } from "../services/merchant-registration.mutations"
 import { firstIncompleteStep } from "../utils/steps"

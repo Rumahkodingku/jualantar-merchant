@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Switch } from "~/components/ui/switch"
 import { Text } from "~/components/ui/text"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
-import { useNotificationStore } from "~/stores"
+import { useNotificationStore } from "../hooks/use-notification-store"
 
 import { SETTINGS_PATHS } from "../utils/paths"
 

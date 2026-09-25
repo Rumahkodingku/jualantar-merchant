@@ -4,350 +4,27 @@ import { useParams } from "react-router"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
 import { ErrorState } from "~/components/error-state"
 import { Button } from "~/components/ui/button"
-import { Field, FieldError, FieldLabel } from "~/components/ui/field"
-import { Input } from "~/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Skeleton } from "~/components/ui/skeleton"
-import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
-import { Textarea } from "~/components/ui/textarea"
 
-import { ListSkeleton } from "../components/list-skeleton"
-import { MediaManager } from "../components/media-manager"
-import { ModifierEditor } from "../components/modifier-editor"
-import { OutletAssignment } from "../components/outlet-assignment"
+import { ListSkeleton } from "~/components/list-skeleton"
+import { MediaManager } from "../components/media/media-manager"
+import { ModifierEditor } from "../components/modifiers/modifier-editor"
+import { OutletAssignment } from "../components/outlets/outlet-assignment"
+import { ProductInfoSection } from "../components/product/product-info-section"
+import { ProductPriceSection } from "../components/product/product-price-section"
+import { ProductMediaGrid, ProductOutletsList } from "../components/product/product-readonly-sections"
 import { ReviewSection } from "../components/review-section"
 import { StatusBadge } from "../components/status-badge"
-import { VariantEditor } from "../components/variant-editor"
-import { useUpdateProduct } from "../services/catalog.mutations"
-import { useCategories, useProductAssignments, useProductDetail } from "../services/catalog.queries"
-import { productInfoSchema, simplePriceSchema, type ProductInfoFormValues } from "../schemas/catalog.schema"
-import { applyServerFieldErrors, catalogErrorMessage } from "../utils/api-error"
+import { VariantEditor } from "../components/variants/variant-editor"
+import { useCategories } from "../services/categories/category.queries"
+import { useProductAssignments } from "../services/product-outlets/product-outlet.queries"
+import { useProductDetail } from "../services/products/product.queries"
 import { formatCurrency } from "../utils/format-currency"
 import { PRODUCT_TYPE_LABEL } from "../utils/labels"
-import { notifyError, notifySuccess } from "../utils/notify"
 import { CATALOGS_PATHS } from "../utils/paths"
-import type { ProductDetail } from "../types/catalog.types"
 
 type SectionId = "info" | "price" | "variant" | "customization" | "media" | "outlet"
-
-function issuesToMessages(issues: { path: PropertyKey[]; message: string }[]) {
-    const next: Record<string, string> = {}
-
-    for (const issue of issues) {
-        const key = String(issue.path[0] ?? "")
-
-        if (next[key] === undefined) {
-            next[key] = issue.message
-        }
-    }
-
-    return next
-}
-
-function DetailRows({ rows }: { rows: Array<{ term: string; value: string }> }) {
-    return (
-        <dl className="flex flex-col divide-y rounded-xl border">
-            {rows.map((row) => (
-                <div key={row.term} className="flex items-start justify-between gap-4 px-3 py-2">
-                    <dt className="shrink-0 text-sm text-muted-foreground">{row.term}</dt>
-                    <dd className="text-right text-sm font-medium wrap-break-word">{row.value}</dd>
-                </div>
-            ))}
-        </dl>
-    )
-}
-
-function InfoSection({
-    product,
-    categories,
-    editing,
-    onToggleEdit,
-}: {
-    product: ProductDetail
-    categories: Array<{ id: string; name: string }>
-    editing: boolean
-    onToggleEdit: () => void
-}) {
-    const updateMutation = useUpdateProduct(product.id)
-    const [values, setValues] = useState<ProductInfoFormValues>(() => ({
-        name: product.name,
-        category_id: product.category_id,
-        description: product.description ?? "",
-        product_type: product.product_type,
-    }))
-    const [errors, setErrors] = useState<Record<string, string>>({})
-
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-
-        const parsed = productInfoSchema.safeParse(values)
-
-        if (!parsed.success) {
-            setErrors(issuesToMessages(parsed.error.issues))
-            return
-        }
-
-        setErrors({})
-
-        updateMutation.mutate(
-            {
-                name: parsed.data.name,
-                category_id: parsed.data.category_id,
-                description: parsed.data.description ?? null,
-            },
-            {
-                onSuccess: () => {
-                    notifySuccess("Informasi disimpan")
-                    onToggleEdit()
-                },
-                onError: (error) => {
-                    const fieldErrors = applyServerFieldErrors(error, ["name", "category_id", "description"])
-
-                    if (Object.keys(fieldErrors).length > 0) {
-                        setErrors(fieldErrors)
-                        return
-                    }
-
-                    notifyError(catalogErrorMessage(error, "Gagal menyimpan informasi"))
-                },
-            }
-        )
-    }
-
-    if (editing) {
-        return (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-                <Field>
-                    <FieldLabel htmlFor="edit-name">Nama Produk</FieldLabel>
-                    <Input
-                        id="edit-name"
-                        value={values.name}
-                        onChange={(event) => setValues((current) => ({ ...current, name: event.target.value }))}
-                        aria-invalid={errors.name !== undefined}
-                        className="h-11"
-                    />
-                    {errors.name !== undefined ? <FieldError>{errors.name}</FieldError> : null}
-                </Field>
-
-                <Field>
-                    <FieldLabel htmlFor="edit-category">Kategori</FieldLabel>
-                    <Select
-                        value={values.category_id}
-                        onValueChange={(value) =>
-                            setValues((current) => ({ ...current, category_id: value ?? current.category_id }))
-                        }
-                    >
-                        <SelectTrigger id="edit-category" className="h-11 w-full">
-                            <SelectValue placeholder="Pilih kategori" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {categories.map((category) => (
-                                <SelectItem key={category.id} value={category.id}>
-                                    {category.name}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    {errors.category_id !== undefined ? <FieldError>{errors.category_id}</FieldError> : null}
-                </Field>
-
-                <Field>
-                    <FieldLabel htmlFor="edit-description">Deskripsi (opsional)</FieldLabel>
-                    <Textarea
-                        id="edit-description"
-                        value={values.description ?? ""}
-                        onChange={(event) => setValues((current) => ({ ...current, description: event.target.value }))}
-                        rows={3}
-                    />
-                </Field>
-
-                <Field>
-                    <FieldLabel htmlFor="edit-type">Tipe Produk</FieldLabel>
-                    <Input
-                        id="edit-type"
-                        value={PRODUCT_TYPE_LABEL[product.product_type]}
-                        readOnly
-                        disabled
-                        className="h-11"
-                    />
-                    <Text variant="xs" className="text-muted-foreground">
-                        Tipe produk tidak dapat diubah setelah produk dibuat.
-                    </Text>
-                </Field>
-
-                <div className="flex gap-2">
-                    <Button type="button" variant="outline" className="flex-1" onClick={onToggleEdit}>
-                        Batal
-                    </Button>
-                    <Button type="submit" className="flex-1" disabled={updateMutation.isPending}>
-                        {updateMutation.isPending ? (
-                            <>
-                                <Spinner /> Menyimpan…
-                            </>
-                        ) : (
-                            "Simpan"
-                        )}
-                    </Button>
-                </div>
-            </form>
-        )
-    }
-
-    return (
-        <DetailRows
-            rows={[
-                { term: "Nama", value: product.name },
-                { term: "Kategori", value: product.category?.name ?? "Tanpa kategori" },
-                { term: "Deskripsi", value: product.description ?? "-" },
-                { term: "Tipe produk", value: PRODUCT_TYPE_LABEL[product.product_type] },
-            ]}
-        />
-    )
-}
-
-function PriceSection({
-    product,
-    editing,
-    onToggleEdit,
-}: {
-    product: ProductDetail
-    editing: boolean
-    onToggleEdit: () => void
-}) {
-    const updateMutation = useUpdateProduct(product.id)
-    const [priceRaw, setPriceRaw] = useState(() => (product.price != null ? String(product.price) : ""))
-    const [errors, setErrors] = useState<Record<string, string>>({})
-
-    if (product.product_type === "variable") {
-        return null
-    }
-
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-
-        const parsed = simplePriceSchema.safeParse({ price: priceRaw })
-
-        if (!parsed.success) {
-            setErrors(issuesToMessages(parsed.error.issues))
-            return
-        }
-
-        setErrors({})
-
-        updateMutation.mutate(
-            { price: parsed.data.price },
-            {
-                onSuccess: () => {
-                    notifySuccess("Harga disimpan")
-                    onToggleEdit()
-                },
-                onError: (error) => {
-                    const fieldErrors = applyServerFieldErrors(error, ["price"])
-
-                    if (Object.keys(fieldErrors).length > 0) {
-                        setErrors(fieldErrors)
-                        return
-                    }
-
-                    notifyError(catalogErrorMessage(error, "Gagal menyimpan harga"))
-                },
-            }
-        )
-    }
-
-    if (editing) {
-        return (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-                <Field>
-                    <FieldLabel htmlFor="edit-price">Harga (Rp)</FieldLabel>
-                    <Input
-                        id="edit-price"
-                        inputMode="numeric"
-                        value={priceRaw}
-                        onChange={(event) => {
-                            setPriceRaw(event.target.value)
-                            setErrors({})
-                        }}
-                        aria-invalid={errors.price !== undefined}
-                        className="h-11"
-                    />
-                    {errors.price !== undefined ? <FieldError>{errors.price}</FieldError> : null}
-                </Field>
-
-                <div className="flex gap-2">
-                    <Button type="button" variant="outline" className="flex-1" onClick={onToggleEdit}>
-                        Batal
-                    </Button>
-                    <Button type="submit" className="flex-1" disabled={updateMutation.isPending}>
-                        {updateMutation.isPending ? (
-                            <>
-                                <Spinner /> Menyimpan…
-                            </>
-                        ) : (
-                            "Simpan"
-                        )}
-                    </Button>
-                </div>
-            </form>
-        )
-    }
-
-    return (
-        <Text variant="base" weight="semibold">
-            {formatCurrency(product.price)}
-        </Text>
-    )
-}
-
-function ReadMediaGrid({ product }: { product: ProductDetail }) {
-    const media = product.media ?? []
-
-    if (media.length === 0) {
-        return (
-            <Text variant="sm" className="text-muted-foreground">
-                Belum ada foto.
-            </Text>
-        )
-    }
-
-    return (
-        <div className="flex flex-wrap gap-2">
-            {media.map((item) => (
-                <div key={item.id} className="relative size-16 overflow-hidden rounded-lg border bg-muted">
-                    {item.url != null ? (
-                        <img src={item.url} alt={item.alt_text ?? ""} className="size-full object-cover" />
-                    ) : null}
-                    {item.is_primary ? (
-                        <span className="absolute top-0.5 left-0.5 rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-semibold text-primary-foreground">
-                            Utama
-                        </span>
-                    ) : null}
-                </div>
-            ))}
-        </div>
-    )
-}
-
-function ReadOutlets({ assignments }: { assignments: Array<{ id: string; outlet_name?: string; outlet_id: string }> }) {
-    if (assignments.length === 0) {
-        return (
-            <Text variant="sm" className="text-muted-foreground">
-                Belum ada outlet yang ditugaskan.
-            </Text>
-        )
-    }
-
-    return (
-        <ul className="flex flex-col gap-1.5">
-            {assignments.map((assignment) => (
-                <li key={assignment.id} className="rounded-lg border px-3 py-2">
-                    <Text variant="sm">{assignment.outlet_name ?? assignment.outlet_id}</Text>
-                </li>
-            ))}
-        </ul>
-    )
-}
 
 export function ProductEditPage() {
     const { productId } = useParams<{ productId: string }>()
@@ -427,7 +104,7 @@ export function ProductEditPage() {
                 </Button>
             ),
             body: (
-                <InfoSection
+                <ProductInfoSection
                     product={product}
                     categories={categories}
                     editing={editing.info}
@@ -498,7 +175,7 @@ export function ProductEditPage() {
                     </div>
                 )
             ) : (
-                <PriceSection product={product} editing={editing.price} onToggleEdit={() => stopEdit("price")} />
+                <ProductPriceSection product={product} editing={editing.price} onToggleEdit={() => stopEdit("price")} />
             ),
         },
         {
@@ -572,7 +249,7 @@ export function ProductEditPage() {
                 </div>
             ) : (
                 <div className="flex flex-col gap-3">
-                    <ReadMediaGrid product={product} />
+                    <ProductMediaGrid product={product} />
                     <Button type="button" size="sm" className="self-start" onClick={() => startEdit("media")}>
                         Ubah
                     </Button>
@@ -607,7 +284,7 @@ export function ProductEditPage() {
                 </div>
             ) : (
                 <div className="flex flex-col gap-3">
-                    <ReadOutlets
+                    <ProductOutletsList
                         assignments={assignments.map((assignment) => ({
                             id: assignment.id,
                             outlet_id: assignment.outlet_id,

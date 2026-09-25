@@ -4,7 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Skeleton } from "~/components/ui/skeleton"
 import { cn } from "~/lib/utils"
 import { useCategories } from "~/modules/service-catalog"
-import { RegistrationActions } from "../ui/registration-actions"
+import { FormActions } from "~/components/form-actions"
 import { useRegistrationContext } from "../registration-context"
 import { useSaveCategories } from "../../services/merchant-registration.mutations"
 import { getApiErrorMessage } from "../../utils/api-error"
@@ -121,7 +121,7 @@ export function CategoryForm() {
                 )}
             </div>
 
-            <RegistrationActions
+            <FormActions
                 form="category-form"
                 submitLabel="Simpan & lanjut"
                 isSubmitting={mutation.isPending}

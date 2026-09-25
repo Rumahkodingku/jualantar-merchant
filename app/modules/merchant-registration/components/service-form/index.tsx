@@ -3,8 +3,8 @@ import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { Skeleton } from "~/components/ui/skeleton"
 import { useServices } from "~/modules/service-catalog"
-import { ChoiceCards } from "../ui/choice-cards"
-import { RegistrationActions } from "../ui/registration-actions"
+import { ChoiceCards } from "~/components/ui/choice-cards"
+import { FormActions } from "~/components/form-actions"
 import { useRegistrationContext } from "../registration-context"
 import { useSaveService } from "../../services/merchant-registration.mutations"
 import { getApiErrorMessage } from "../../utils/api-error"
@@ -87,7 +87,7 @@ export function ServiceForm() {
                 </Field>
             </div>
 
-            <RegistrationActions form="service-form" isSubmitting={mutation.isPending} onBack={navigation.goBack} />
+            <FormActions form="service-form" isSubmitting={mutation.isPending} onBack={navigation.goBack} />
         </form>
     )
 }

@@ -4,7 +4,7 @@ import { Navigate } from "react-router"
 import type { OperationsCapability } from "../utils/capabilities"
 import { useAuthorization } from "../hooks/use-authorization"
 import { useOutletAuthorization } from "../hooks/use-outlet-authorization"
-import { ForbiddenState } from "./forbidden-state"
+import { ForbiddenState } from "~/components/forbidden-state"
 
 /**
  * Whole-route guard for a global capability. Unauthorized users are sent to the

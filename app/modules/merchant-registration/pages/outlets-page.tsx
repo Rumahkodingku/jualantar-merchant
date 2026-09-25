@@ -4,7 +4,7 @@ import { Alert, AlertDescription } from "~/components/ui/alert"
 
 import { OutletForm } from "../components/outlets/outlet-form"
 import { OutletList } from "../components/outlets/outlet-list"
-import { RegistrationActions } from "../components/ui/registration-actions"
+import { FormActions } from "~/components/form-actions"
 import { useRegistrationContext } from "../components/registration-context"
 import { useDeleteOutlet } from "../services/merchant-registration.mutations"
 import type { MerchantOutlet } from "../types/merchant-registration.types"
@@ -66,7 +66,7 @@ export function OutletsPage() {
                 ) : null}
             </div>
 
-            <RegistrationActions
+            <FormActions
                 type="button"
                 submitLabel="Simpan & lanjut"
                 disabled={!hasActiveOutlet}

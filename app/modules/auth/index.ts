@@ -1,27 +1,4 @@
-export { ProtectedRoute } from "./components/protected-route"
-export { LoginPage } from "./pages/login-page"
-export { RegisterPage } from "./pages/register-page"
-export { CheckEmailPage } from "./pages/check-email-page"
-export { VerifyEmailPage } from "./pages/verify-email-page"
 export { useSession } from "./hooks/use-session"
-export {
-    useLogin,
-    useLogout,
-    useRefreshSession,
-    useRegisterMerchant,
-    useResendVerification,
-    useVerifyEmail,
-} from "./services/auth.mutations"
-export { meQueryOptions } from "./services/auth.queries"
+export { useLogout } from "./services/auth.mutations"
 export { authKeys } from "./services/auth.keys"
-export { normalizeAuthUser, normalizeOutletAssignments, outletUserRoleSchema } from "./schemas/auth-user.schema"
-export type {
-    AuthUser,
-    LoginInput,
-    LoginResult,
-    OutletAssignment,
-    OutletUserRole,
-    RegisterMerchantInput,
-    RegisteredMerchant,
-    VerifyEmailParams,
-} from "./types/auth.types"
+export type { AuthUser, OutletUserRole } from "./types/auth.types"

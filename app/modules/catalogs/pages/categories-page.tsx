@@ -1,279 +1,35 @@
 import { useEffect, useState } from "react"
-import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core"
-import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
-import {
-    FolderPlusIcon,
-    GripVerticalIcon,
-    MoreVerticalIcon,
-    PencilIcon,
-    PowerIcon,
-    SearchXIcon,
-    Trash2Icon,
-} from "lucide-react"
+import { FolderPlusIcon, SearchXIcon } from "lucide-react"
 
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "~/components/ui/alert-dialog"
 import { Button } from "~/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog"
 import { ErrorState } from "~/components/error-state"
-import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
-import { Spinner } from "~/components/ui/spinner"
-import { Text } from "~/components/ui/text"
-import { Textarea } from "~/components/ui/textarea"
 import { useDebouncedValue } from "~/hooks/use-debounced-value"
-import { cn } from "~/lib/utils"
 
 import { CatalogEmptyState } from "../components/catalog-empty-state"
-import { ListSkeleton } from "../components/list-skeleton"
-import { StatusBadge } from "../components/status-badge"
+import { ListSkeleton } from "~/components/list-skeleton"
+import { CategoryDeleteDialog } from "../components/categories/category-delete-dialog"
+import { CategoryFormDialog } from "../components/categories/category-form-dialog"
+import { CategoryList } from "../components/categories/category-list"
+import { CategoryStatusDialog } from "../components/categories/category-status-dialog"
+import type { CategoryRowAction } from "../components/categories/category-row"
 import {
-    useCreateCategory,
     useDeleteCategory,
     useReorderCategories,
     useSetCategoryStatus,
-    useUpdateCategory,
-} from "../services/catalog.mutations"
-import { useCategories } from "../services/catalog.queries"
-import { categorySchema, type CategoryFormValues } from "../schemas/catalog.schema"
-import { applyServerFieldErrors, catalogErrorMessage } from "../utils/api-error"
-import { notifyError, notifySuccess } from "../utils/notify"
+} from "../services/categories/category.mutations"
+import { useCategories } from "../services/categories/category.queries"
+import { catalogErrorMessage } from "../utils/api-error"
+import { notifyError, notifySuccess } from "~/lib/notify"
 import type { CatalogCategory, CatalogStatus } from "../types/catalog.types"
 
-type ConfirmAction =
-    { kind: "status"; category: CatalogCategory } | { kind: "delete"; category: CatalogCategory } | null
-
-function issuesToMessages(issues: { path: PropertyKey[]; message: string }[]) {
-    const next: Record<string, string> = {}
-
-    for (const issue of issues) {
-        const key = String(issue.path[0] ?? "")
-
-        if (next[key] === undefined) {
-            next[key] = issue.message
-        }
-    }
-
-    return next
-}
-
-function CategoryDialog({
-    open,
-    onOpenChange,
-    category,
-}: {
-    open: boolean
-    onOpenChange: (open: boolean) => void
-    category?: CatalogCategory
-}) {
-    const createMutation = useCreateCategory()
-    const updateMutation = useUpdateCategory(category?.id ?? "")
-    const [values, setValues] = useState<CategoryFormValues>({ name: "", description: "" })
-    const [errors, setErrors] = useState<Record<string, string>>({})
-
-    useEffect(() => {
-        if (open) {
-            setValues({ name: category?.name ?? "", description: category?.description ?? "" })
-            setErrors({})
-        }
-    }, [open, category])
-
-    const isPending = createMutation.isPending || updateMutation.isPending
-
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-
-        const parsed = categorySchema.safeParse(values)
-
-        if (!parsed.success) {
-            setErrors(issuesToMessages(parsed.error.issues))
-            return
-        }
-
-        setErrors({})
-
-        const onSuccess = () => {
-            notifySuccess(category === undefined ? "Kategori dibuat" : "Kategori diperbarui")
-            onOpenChange(false)
-        }
-
-        const payload = { name: parsed.data.name, description: parsed.data.description ?? null }
-
-        const onError = (error: unknown) => {
-            const fieldErrors = applyServerFieldErrors(error, ["name", "description"])
-
-            if (Object.keys(fieldErrors).length > 0) {
-                setErrors(fieldErrors)
-                return
-            }
-
-            notifyError(catalogErrorMessage(error, "Gagal menyimpan kategori"))
-        }
-
-        if (category === undefined) {
-            createMutation.mutate(payload, { onSuccess, onError })
-        } else {
-            updateMutation.mutate(payload, { onSuccess, onError })
-        }
-    }
-
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{category === undefined ? "Tambah kategori" : "Edit kategori"}</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-                    <Field>
-                        <FieldLabel htmlFor="category-name">Nama kategori</FieldLabel>
-                        <Input
-                            id="category-name"
-                            value={values.name}
-                            onChange={(event) => {
-                                setValues((current) => ({ ...current, name: event.target.value }))
-                                setErrors({})
-                            }}
-                            placeholder="cth. Makanan"
-                            aria-invalid={errors.name !== undefined}
-                            className="h-11"
-                        />
-                        {errors.name !== undefined ? <FieldError>{errors.name}</FieldError> : null}
-                    </Field>
-
-                    <Field>
-                        <FieldLabel htmlFor="category-description">Deskripsi (opsional)</FieldLabel>
-                        <Textarea
-                            id="category-description"
-                            value={values.description ?? ""}
-                            onChange={(event) =>
-                                setValues((current) => ({ ...current, description: event.target.value }))
-                            }
-                            rows={3}
-                        />
-                    </Field>
-
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                            Batal
-                        </Button>
-                        <Button type="submit" disabled={isPending}>
-                            {isPending ? (
-                                <>
-                                    <Spinner /> Menyimpan…
-                                </>
-                            ) : (
-                                "Simpan"
-                            )}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
-    )
-}
-
-function CategoryRow({
-    category,
-    reorderMode,
-    onAction,
-}: {
-    category: CatalogCategory
-    reorderMode: boolean
-    onAction: (action: "edit" | "status" | "delete") => void
-}) {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-        id: category.id,
-        disabled: !reorderMode,
-    })
-
-    return (
-        <div
-            ref={setNodeRef}
-            style={{ transform: CSS.Transform.toString(transform), transition }}
-            className={cn(
-                "flex items-center gap-2 rounded-2xl border bg-card px-3 py-3 ring-1 ring-foreground/5",
-                isDragging && "relative z-10 opacity-70"
-            )}
-            {...attributes}
-        >
-            {reorderMode ? (
-                <button
-                    type="button"
-                    aria-label={`Seret ${category.name} untuk mengurutkan`}
-                    className="flex w-6 shrink-0 cursor-grab items-center justify-center text-muted-foreground active:cursor-grabbing"
-                    {...listeners}
-                >
-                    <GripVerticalIcon aria-hidden="true" className="size-4" />
-                </button>
-            ) : null}
-
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <Text variant="sm" weight="medium" truncate>
-                    {category.name}
-                </Text>
-                {category.description != null && category.description !== "" ? (
-                    <Text variant="xs" className="truncate text-muted-foreground">
-                        {category.description}
-                    </Text>
-                ) : null}
-            </div>
-
-            <StatusBadge status={category.status} className="shrink-0" />
-
-            {!reorderMode ? (
-                <DropdownMenu>
-                    <DropdownMenuTrigger
-                        render={
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                aria-label={`Aksi untuk ${category.name}`}
-                            />
-                        }
-                    >
-                        <MoreVerticalIcon />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onAction("edit")}>
-                            <PencilIcon /> Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onAction("status")}>
-                            <PowerIcon /> {category.status === "active" ? "Nonaktifkan" : "Aktifkan"}
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem variant="destructive" onClick={() => onAction("delete")}>
-                            <Trash2Icon /> Hapus
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            ) : null}
-        </div>
-    )
-}
+type ConfirmAction = { kind: "status" | "delete"; category: CatalogCategory } | null
 
 export function CatalogCategoriesPage() {
     const [searchInput, setSearchInput] = useState("")
     const debouncedSearch = useDebouncedValue(searchInput, 300)
     const [reorderMode, setReorderMode] = useState(false)
-    const [dialogOpen, setDialogOpen] = useState(false)
-    const [editingCategory, setEditingCategory] = useState<CatalogCategory | undefined>(undefined)
+    const [dialog, setDialog] = useState<{ open: boolean; category?: CatalogCategory }>({ open: false })
     const [confirm, setConfirm] = useState<ConfirmAction>(null)
 
     useEffect(() => {
@@ -296,19 +52,9 @@ export function CatalogCategoriesPage() {
     const hasSearch = debouncedSearch.trim() !== ""
     const isConfirmPending = deleteMutation.isPending || statusMutation.isPending
 
-    function openCreate() {
-        setEditingCategory(undefined)
-        setDialogOpen(true)
-    }
-
-    function openEdit(category: CatalogCategory) {
-        setEditingCategory(category)
-        setDialogOpen(true)
-    }
-
-    function handleRowAction(category: CatalogCategory, action: "edit" | "status" | "delete") {
+    function handleRowAction(category: CatalogCategory, action: CategoryRowAction) {
         if (action === "edit") {
-            openEdit(category)
+            setDialog({ open: true, category })
             return
         }
 
@@ -347,30 +93,6 @@ export function CatalogCategoriesPage() {
         )
     }
 
-    const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }))
-
-    function handleDragEnd(event: DragEndEvent) {
-        if (!reorderMode) {
-            return
-        }
-
-        const { active, over } = event
-
-        if (over == null || active.id === over.id) {
-            return
-        }
-
-        const ids = categories.map((category) => category.id)
-        const oldIndex = ids.indexOf(String(active.id))
-        const newIndex = ids.indexOf(String(over.id))
-
-        if (oldIndex < 0 || newIndex < 0) {
-            return
-        }
-
-        handleReorder(arrayMove(ids, oldIndex, newIndex))
-    }
-
     return (
         <>
             <div className="flex flex-col gap-3">
@@ -395,7 +117,7 @@ export function CatalogCategoriesPage() {
                         {reorderMode ? "Selesai" : "Urutkan"}
                     </Button>
 
-                    <Button type="button" size="sm" className="h-10 shrink-0" onClick={openCreate}>
+                    <Button type="button" size="sm" className="h-10 shrink-0" onClick={() => setDialog({ open: true })}>
                         <FolderPlusIcon aria-hidden="true" />
                         <span className="hidden sm:inline">Tambah Kategori</span>
                         <span className="sm:hidden">Tambah</span>
@@ -434,112 +156,39 @@ export function CatalogCategoriesPage() {
                         title="Belum ada kategori"
                         description="Tambahkan kategori untuk mengelompokkan produk Anda."
                         action={
-                            <Button type="button" onClick={openCreate}>
+                            <Button type="button" onClick={() => setDialog({ open: true })}>
                                 <FolderPlusIcon aria-hidden="true" /> Tambah Kategori
                             </Button>
                         }
                     />
                 )
-            ) : reorderMode && !hasSearch ? (
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext
-                        items={categories.map((category) => category.id)}
-                        strategy={verticalListSortingStrategy}
-                    >
-                        <div className="flex flex-col gap-2">
-                            {categories.map((category) => (
-                                <CategoryRow
-                                    key={category.id}
-                                    category={category}
-                                    reorderMode
-                                    onAction={() => undefined}
-                                />
-                            ))}
-                        </div>
-                    </SortableContext>
-                </DndContext>
             ) : (
-                <div className="flex flex-col gap-2">
-                    {categories.map((category) => (
-                        <CategoryRow
-                            key={category.id}
-                            category={category}
-                            reorderMode={false}
-                            onAction={(action) => handleRowAction(category, action)}
-                        />
-                    ))}
-                </div>
+                <CategoryList
+                    categories={categories}
+                    reorderMode={reorderMode}
+                    hasSearch={hasSearch}
+                    onAction={handleRowAction}
+                    onReorder={handleReorder}
+                />
             )}
 
-            <CategoryDialog open={dialogOpen} onOpenChange={setDialogOpen} category={editingCategory} />
+            {dialog.open ? (
+                <CategoryFormDialog category={dialog.category} onClose={() => setDialog({ open: false })} />
+            ) : null}
 
-            <AlertDialog
-                open={confirm?.kind === "status"}
-                onOpenChange={(open) => (!open ? setConfirm(null) : undefined)}
-            >
-                <AlertDialogContent size="sm">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            {confirm?.category.status === "active" ? "Nonaktifkan kategori?" : "Aktifkan kategori?"}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {confirm?.category.status === "active"
-                                ? `Kategori "${confirm.category.name}" tidak akan aktif pada katalog.`
-                                : `Kategori "${confirm?.category.name ?? ""}" akan tampil aktif pada katalog.`}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <Button
-                            type="button"
-                            variant={confirm?.category.status === "active" ? "destructive" : "default"}
-                            disabled={isConfirmPending}
-                            onClick={() => confirm?.kind === "status" && runStatus(confirm.category)}
-                        >
-                            {isConfirmPending ? (
-                                <>
-                                    <Spinner /> Memproses…
-                                </>
-                            ) : confirm?.category.status === "active" ? (
-                                "Nonaktifkan"
-                            ) : (
-                                "Aktifkan"
-                            )}
-                        </Button>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <CategoryStatusDialog
+                category={confirm?.kind === "status" ? confirm.category : null}
+                isPending={isConfirmPending}
+                onClose={() => setConfirm(null)}
+                onConfirm={() => confirm?.kind === "status" && runStatus(confirm.category)}
+            />
 
-            <AlertDialog
-                open={confirm?.kind === "delete"}
-                onOpenChange={(open) => (!open ? setConfirm(null) : undefined)}
-            >
-                <AlertDialogContent size="sm">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Hapus kategori?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Kategori &ldquo;{confirm?.category.name ?? ""}&rdquo; akan dihapus dari katalog.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <Button
-                            type="button"
-                            variant="destructive"
-                            disabled={isConfirmPending}
-                            onClick={() => confirm?.kind === "delete" && runDelete(confirm.category)}
-                        >
-                            {isConfirmPending ? (
-                                <>
-                                    <Spinner /> Memproses…
-                                </>
-                            ) : (
-                                "Hapus"
-                            )}
-                        </Button>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <CategoryDeleteDialog
+                category={confirm?.kind === "delete" ? confirm.category : null}
+                isPending={isConfirmPending}
+                onClose={() => setConfirm(null)}
+                onConfirm={() => confirm?.kind === "delete" && runDelete(confirm.category)}
+            />
         </>
     )
 }

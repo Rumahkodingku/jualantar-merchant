@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useNavigate, useSearchParams } from "react-router"
 
-import { PasswordInput } from "~/components/password-input"
+import { PasswordInput } from "./password-input"
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"

@@ -3,7 +3,8 @@ import { Link } from "react-router"
 
 import { Card, CardContent } from "~/components/ui/card"
 import { Text } from "~/components/ui/text"
-import { outletPath, outletStatusLabel, StatusBadge, type OperationalOutlet } from "~/modules/merchant-operations"
+import { StatusBadge } from "~/components/status-badge"
+import { outletPath, outletStatusLabel, type OperationalOutlet } from "~/modules/merchant-operations"
 
 function outletPhoto(outlet: OperationalOutlet): string | null {
     const fromUrls = outlet.photos_url.find((photo) => photo !== null && photo !== "")

@@ -12,7 +12,7 @@ import { Spinner } from "~/components/ui/spinner"
 import { authorizationErrorMessage } from "~/modules/authorization"
 
 import { useRemoveOutletEmployee } from "../../services/merchant-operations.mutations"
-import { notifyError, notifySuccess } from "../../utils/notify"
+import { notifyError, notifySuccess } from "~/lib/notify"
 import { OUTLET_ROLE_LABEL } from "../../utils/outlet-status"
 import type { OutletEmployee } from "../../types/merchant-operations.types"
 

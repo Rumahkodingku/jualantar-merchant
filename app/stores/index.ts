@@ -1,5 +1,4 @@
 export { THEME_MODES, THEME_STORAGE_KEY, resolveThemeMode, useThemeStore } from "./theme-store"
 export type { ResolvedTheme, ThemeMode } from "./theme-store"
-export { NOTIFICATION_STORAGE_KEY, useNotificationStore } from "./notification-store"
 export { PWA_INSTALL_STORAGE_KEY, usePwaInstallStore } from "./pwa-install-store"
 export type { BeforeInstallPromptEvent } from "./pwa-install-store"

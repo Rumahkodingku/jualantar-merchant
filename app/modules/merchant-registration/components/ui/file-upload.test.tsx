@@ -6,7 +6,7 @@ vi.mock("~/lib/api", async (importOriginal) => {
     return { ...actual, putToStorage: vi.fn() }
 })
 
-vi.mock("../services/merchant-registration.mutations", () => ({
+vi.mock("../../services/merchant-registration.mutations", () => ({
     useCreateRegistrationUpload: () => ({ mutateAsync: vi.fn() }),
 }))
 

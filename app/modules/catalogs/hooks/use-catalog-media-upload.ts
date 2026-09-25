@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 
 import { usePresignedUpload, type PresignedUploadController } from "~/hooks/use-presigned-upload"
-import { validateUploadFile } from "~/modules/merchant-registration"
+import { validateUploadFile } from "~/lib/upload"
 
 import { catalogRepository } from "../services/catalog.repository"
 import type { MediaUploadTarget } from "../types/catalog.types"

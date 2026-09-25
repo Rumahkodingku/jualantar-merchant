@@ -6,7 +6,7 @@ import { Input } from "~/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Textarea } from "~/components/ui/textarea"
 import { GeographyFields } from "../outlets/geography-fields"
-import { RegistrationActions } from "../ui/registration-actions"
+import { FormActions } from "~/components/form-actions"
 import { useRegistrationContext } from "../registration-context"
 import {
     LEGAL_ENTITY_TYPE_OPTIONS,
@@ -187,11 +187,7 @@ export function LegalEntityForm() {
                     </Field>
                 </div>
 
-                <RegistrationActions
-                    form="legal-entity-form"
-                    isSubmitting={mutation.isPending}
-                    onBack={navigation.goBack}
-                />
+                <FormActions form="legal-entity-form" isSubmitting={mutation.isPending} onBack={navigation.goBack} />
             </form>
         </FormProvider>
     )

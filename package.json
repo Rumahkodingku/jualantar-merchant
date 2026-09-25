@@ -8,6 +8,8 @@
         "dev": "react-router dev --port 5174",
         "start": "react-router-serve ./build/server/index.js",
         "typecheck": "react-router typegen && tsc && tsc -p tsconfig.sw.json",
+        "lint": "eslint .",
+        "check": "bun run typecheck && bun run lint && bun run test:run",
         "test": "vitest",
         "test:run": "vitest run",
         "format": "prettier --write \"**/*.{ts,tsx}\""
@@ -56,11 +58,15 @@
         "@types/react-dom": "^19",
         "@vitejs/plugin-react": "^6.1.1",
         "esbuild": "^0.28.2",
+        "eslint": "^10.11.0",
+        "eslint-import-resolver-typescript": "^4.4.5",
+        "eslint-plugin-boundaries": "^7.2.0",
         "jsdom": "^30.0.1",
         "prettier": "^3.8.3",
         "prettier-plugin-tailwindcss": "^0.8.0",
         "tailwindcss": "^4",
         "typescript": "^6",
+        "typescript-eslint": "^8.70.1",
         "vite": "^8",
         "vitest": "^5.0.0"
     }

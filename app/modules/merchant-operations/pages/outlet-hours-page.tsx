@@ -4,7 +4,7 @@ import { ErrorState } from "~/components/error-state"
 import { getApiErrorMessage } from "~/lib/api-form"
 import { CAP } from "~/modules/authorization"
 
-import { ListSkeleton } from "../components/common/list-skeleton"
+import { ListSkeleton } from "~/components/list-skeleton"
 import { OperatingHoursForm } from "../components/hours/operating-hours-form"
 import { OperatingHoursReadOnly } from "../components/hours/operating-hours-readonly"
 import { OutletScopedPage } from "../components/layout/outlet-scoped-page"

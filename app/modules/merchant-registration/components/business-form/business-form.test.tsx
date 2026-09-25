@@ -7,7 +7,7 @@ const { mutate, goNext } = vi.hoisted(() => ({
     goNext: vi.fn(),
 }))
 
-vi.mock("./registration-context", () => ({
+vi.mock("../registration-context", () => ({
     useRegistrationContext: () => ({
         registration: {
             business_name: null,
@@ -22,7 +22,7 @@ vi.mock("./registration-context", () => ({
     }),
 }))
 
-vi.mock("../services/merchant-registration.mutations", () => ({
+vi.mock("../../services/merchant-registration.mutations", () => ({
     useUpdateBusinessProfile: () => ({ mutate, isPending: false }),
 }))
 
@@ -43,7 +43,7 @@ describe("BusinessForm", () => {
         const user = userEvent.setup()
         render(<BusinessForm />)
 
-        await user.type(screen.getByLabelText("Nama usaha"), "Warung Sari")
+        await user.type(screen.getByLabelText(/Nama usaha/), "Warung Sari")
         await user.click(screen.getByRole("radio", { name: /^badan usaha/i }))
         await user.click(screen.getByRole("button", { name: /simpan & lanjut/i }))
 

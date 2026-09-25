@@ -3,7 +3,7 @@ import { Link } from "react-router"
 
 import { Button } from "~/components/ui/button"
 
-import { ForbiddenState } from "../components/forbidden-state"
+import { ForbiddenState } from "~/components/forbidden-state"
 
 /** Route-level 403 page (`/403`). Authorization failure only — never a 404. */
 export function ForbiddenPage() {

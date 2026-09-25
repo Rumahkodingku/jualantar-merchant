@@ -7,11 +7,11 @@ import { Button } from "~/components/ui/button"
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
 import { Textarea } from "~/components/ui/textarea"
-import { ChoiceCards } from "../ui/choice-cards"
+import { ChoiceCards } from "~/components/ui/choice-cards"
 import { GeographyFields } from "./geography-fields"
 import { OperatingHoursField } from "./operating-hours-field"
 import { OutletPhotosField } from "./outlet-photos-field"
-import { RegistrationActions } from "../ui/registration-actions"
+import { FormActions } from "~/components/form-actions"
 import {
     hoursToPayload,
     outletSchema,
@@ -402,7 +402,7 @@ export function OutletForm({
                     </Field>
                 </div>
 
-                <RegistrationActions
+                <FormActions
                     form="outlet-form"
                     submitLabel={isEditing ? "Simpan perubahan" : "Simpan outlet"}
                     isSubmitting={mutation.isPending}

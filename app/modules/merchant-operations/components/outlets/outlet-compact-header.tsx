@@ -2,7 +2,7 @@ import { StoreIcon } from "lucide-react"
 
 import { Text } from "~/components/ui/text"
 
-import { StatusBadge } from "../common/status-badge"
+import { StatusBadge } from "~/components/status-badge"
 import { outletStatusLabel } from "../../utils/outlet-status"
 import { outletServiceAreaSummary } from "../../utils/service-area-summary"
 import type { OperationalOutlet } from "../../types/merchant-operations.types"

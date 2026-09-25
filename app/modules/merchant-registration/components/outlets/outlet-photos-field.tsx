@@ -7,7 +7,7 @@ import type { PresignedUploadController } from "~/hooks/use-presigned-upload"
 import { cn } from "~/lib/utils"
 
 import { useRegistrationUpload, type UploadState } from "../../hooks/use-registration-upload"
-import { MAX_UPLOAD_SIZE_LABEL } from "../../schemas/upload.schema"
+import { MAX_UPLOAD_SIZE_LABEL } from "~/lib/upload"
 
 const ACCEPT = "image/jpeg,image/png,image/webp"
 

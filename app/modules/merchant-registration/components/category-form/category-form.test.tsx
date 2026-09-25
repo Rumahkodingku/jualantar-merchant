@@ -14,7 +14,7 @@ const { mutate, goNext, categories } = vi.hoisted(() => ({
     ],
 }))
 
-vi.mock("./registration-context", () => ({
+vi.mock("../registration-context", () => ({
     useRegistrationContext: () => ({
         registration: {
             service: { id: "s1", name: "JAfood", slug: "jafood" },
@@ -31,7 +31,7 @@ vi.mock("~/modules/service-catalog", () => ({
     useCategories: () => ({ data: categories, isPending: false }),
 }))
 
-vi.mock("../services/merchant-registration.mutations", () => ({
+vi.mock("../../services/merchant-registration.mutations", () => ({
     useSaveCategories: () => ({ mutate, isPending: false }),
 }))
 

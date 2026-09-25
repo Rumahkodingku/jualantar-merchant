@@ -5,30 +5,20 @@ import { ErrorState } from "~/components/error-state"
 import { Button } from "~/components/ui/button"
 import { useDebouncedValue } from "~/hooks/use-debounced-value"
 import { CatalogEmptyState } from "../components/catalog-empty-state"
-import { ListSkeleton } from "../components/list-skeleton"
-import { ProductFilters, type ProductFilterValues } from "../components/product-filters"
-import { ProductList } from "../components/product-list"
-import { useReorderProducts } from "../services/catalog.mutations"
-import { useCategories, useProducts } from "../services/catalog.queries"
-import { notifyError, notifySuccess } from "../utils/notify"
+import { ListSkeleton } from "~/components/list-skeleton"
+import { ProductFilters } from "../components/product/product-filters"
+import { ProductList } from "../components/product/product-list"
+import { useCategories } from "../services/categories/category.queries"
+import { useReorderProducts } from "../services/products/product.mutations"
+import { useProducts } from "../services/products/product.queries"
+import { notifyError, notifySuccess } from "~/lib/notify"
 import { CATALOGS_PATHS } from "../utils/paths"
+import { readProductFilters, type ProductFilterValues } from "../utils/product-filters"
 import type { CatalogStatus, ProductIndexParams, ProductType } from "../types/catalog.types"
-
-function readFilters(searchParams: URLSearchParams): ProductFilterValues {
-    const status = searchParams.get("status") ?? ""
-    const productType = searchParams.get("product_type") ?? ""
-
-    return {
-        search: searchParams.get("q") ?? "",
-        category_id: searchParams.get("category_id") ?? "",
-        status: status === "active" || status === "inactive" ? status : "",
-        product_type: productType === "simple" || productType === "variable" ? productType : "",
-    }
-}
 
 export function CatalogsPage() {
     const [searchParams, setSearchParams] = useSearchParams()
-    const filters = readFilters(searchParams)
+    const filters = readProductFilters(searchParams)
 
     const [searchInput, setSearchInput] = useState(filters.search)
     const debouncedSearch = useDebouncedValue(searchInput, 300)

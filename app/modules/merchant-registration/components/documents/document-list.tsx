@@ -5,7 +5,7 @@ import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 
 import { documentTypeLabel } from "../../schemas/document.schema"
-import { formatFileSize } from "../../schemas/upload.schema"
+import { formatFileSize } from "~/lib/upload"
 import { useDeleteDocument } from "../../services/merchant-registration.mutations"
 import type { MerchantDocument } from "../../types/merchant-registration.types"
 import { getApiErrorMessage } from "../../utils/api-error"

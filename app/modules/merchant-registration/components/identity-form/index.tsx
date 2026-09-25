@@ -3,8 +3,8 @@ import { Controller, useForm } from "react-hook-form"
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Field, FieldDescription, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
-import { ChoiceCards } from "../ui/choice-cards"
-import { RegistrationActions } from "../ui/registration-actions"
+import { ChoiceCards } from "~/components/ui/choice-cards"
+import { FormActions } from "~/components/form-actions"
 import { useRegistrationContext } from "../registration-context"
 import { IDENTITY_TYPE_OPTIONS, identitySchema, type IdentityFormValues } from "../../schemas/identity.schema"
 import { useSaveIdentity } from "../../services/merchant-registration.mutations"
@@ -140,7 +140,7 @@ export function IdentityForm() {
                 </Field>
             </div>
 
-            <RegistrationActions form="identity-form" isSubmitting={mutation.isPending} onBack={navigation.goBack} />
+            <FormActions form="identity-form" isSubmitting={mutation.isPending} onBack={navigation.goBack} />
         </form>
     )
 }

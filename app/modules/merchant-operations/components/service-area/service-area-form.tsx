@@ -7,7 +7,8 @@ import { Field, FieldDescription, FieldError, FieldLabel } from "~/components/ui
 import { Input } from "~/components/ui/input"
 import { Text } from "~/components/ui/text"
 import { getApiErrorMessage } from "~/lib/api-form"
-import { ChoiceCards, RegistrationActions as FormActions } from "~/modules/merchant-registration"
+import { FormActions } from "~/components/form-actions"
+import { ChoiceCards } from "~/components/ui/choice-cards"
 
 import {
     SERVICE_AREA_TYPE_OPTIONS,
@@ -15,7 +16,7 @@ import {
     type ServiceAreaFormValues,
 } from "../../schemas/service-area.schema"
 import { useUpdateServiceArea } from "../../services/merchant-operations.mutations"
-import { notifyError, notifySuccess } from "../../utils/notify"
+import { notifyError, notifySuccess } from "~/lib/notify"
 import {
     outletRegionId,
     outletRegionName,

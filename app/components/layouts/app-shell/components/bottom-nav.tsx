@@ -1,5 +1,4 @@
 import { NavLink } from "react-router"
-import { Banknote, HomeIcon, NotebookPen, Package, SettingsIcon } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { cn } from "~/lib/utils"
 import { Text } from "~/components/ui/text"
@@ -11,40 +10,7 @@ export interface AppNavItem {
     end: boolean
 }
 
-export const APP_NAV_ITEMS: AppNavItem[] = [
-    {
-        to: "/",
-        label: "Beranda",
-        icon: HomeIcon,
-        end: true,
-    },
-    {
-        to: "/catalogs",
-        label: "Katalog",
-        icon: Package,
-        end: false,
-    },
-    {
-        to: "/orders",
-        label: "Pesanan",
-        icon: NotebookPen,
-        end: false,
-    },
-    {
-        to: "/finances",
-        label: "Keuangan",
-        icon: Banknote,
-        end: false,
-    },
-    {
-        to: "/settings",
-        label: "Pengaturan",
-        icon: SettingsIcon,
-        end: false,
-    },
-]
-
-export function BottomNav() {
+export function BottomNav({ items }: { items: AppNavItem[] }) {
     return (
         <nav
             aria-label="Navigasi utama"
@@ -52,7 +18,7 @@ export function BottomNav() {
         >
             <div className="relative mx-auto w-full max-w-md md:max-w-2xl lg:max-w-3xl">
                 <ul className="flex w-full items-stretch">
-                    {APP_NAV_ITEMS.map((item) => (
+                    {items.map((item) => (
                         <NavItem key={item.to} item={item} />
                     ))}
                 </ul>

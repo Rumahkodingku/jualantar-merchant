@@ -6,10 +6,11 @@ import { Progress } from "~/components/ui/progress"
 import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { ApiError } from "~/lib/api"
+import { AdminNote } from "~/components/admin-note"
+import { ForbiddenState } from "~/components/forbidden-state"
 import { useSession } from "~/modules/auth"
-import { ForbiddenState, useAuthorization } from "~/modules/authorization"
+import { useAuthorization } from "~/modules/authorization"
 import {
-    AdminNote,
     REGISTRATION_BASE,
     rejectionNote,
     rejectionStageLabel,

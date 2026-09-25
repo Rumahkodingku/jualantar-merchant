@@ -2,18 +2,18 @@ import type { ReactNode } from "react"
 import { useLocation } from "react-router"
 import { Brand } from "~/components/brand"
 import { Text } from "~/components/ui/text"
-import { APP_NAV_ITEMS, BottomNav } from "./bottom-nav"
+import { BottomNav, type AppNavItem } from "./bottom-nav"
 
-function usePageTitle(): string {
+function usePageTitle(items: AppNavItem[]): string {
     const { pathname } = useLocation()
 
-    const navMatch = APP_NAV_ITEMS.find((item) => (item.end ? pathname === item.to : pathname.startsWith(item.to)))
+    const navMatch = items.find((item) => (item.end ? pathname === item.to : pathname.startsWith(item.to)))
 
     return navMatch?.label ?? "JualAntar Merchant"
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
-    const title = usePageTitle()
+export function AppShell({ items, children }: { items: AppNavItem[]; children: ReactNode }) {
+    const title = usePageTitle(items)
 
     return (
         <div className="flex min-h-svh flex-col bg-muted/40">
@@ -30,7 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {children}
             </main>
 
-            <BottomNav />
+            <BottomNav items={items} />
         </div>
     )
 }

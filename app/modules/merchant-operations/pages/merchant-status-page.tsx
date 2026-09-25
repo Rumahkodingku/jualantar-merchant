@@ -3,7 +3,7 @@ import { getApiErrorMessage } from "~/lib/api-form"
 
 import { SubpageHeader } from "~/components/layouts/subpage-header"
 
-import { ListSkeleton } from "../components/common/list-skeleton"
+import { ListSkeleton } from "~/components/list-skeleton"
 import { MerchantStatusActions } from "../components/status/merchant-status-actions"
 import { MerchantStatusHero } from "../components/status/merchant-status-hero"
 import {
@@ -12,7 +12,7 @@ import {
     useSuspendMerchant,
 } from "../services/merchant-operations.mutations"
 import { useOperationsSummary } from "../services/merchant-operations.queries"
-import { notifyError, notifySuccess } from "../utils/notify"
+import { notifyError, notifySuccess } from "~/lib/notify"
 import { useOperationsPermissions } from "../utils/permissions"
 import { SETTINGS_HOME_PATH } from "../utils/routes"
 

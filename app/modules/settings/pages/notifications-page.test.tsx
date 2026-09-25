@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { useNotificationStore } from "~/stores"
+import { useNotificationStore } from "../hooks/use-notification-store"
 
 import { NotificationsPage } from "./notifications-page"
 

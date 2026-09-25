@@ -1,199 +1,38 @@
 import { useEffect, useRef, useState } from "react"
-import { Link, useNavigate } from "react-router"
-import { SubpageHeader } from "~/components/layouts/subpage-header"
+import { useNavigate } from "react-router"
+import { MoveLeft, MoveRight } from "lucide-react"
+
 import { ErrorState } from "~/components/error-state"
+import { SubpageHeader } from "~/components/layouts/subpage-header"
 import { Button } from "~/components/ui/button"
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
-import { Textarea } from "~/components/ui/textarea"
 import { cn } from "~/lib/utils"
-import { ListSkeleton } from "../components/list-skeleton"
-import { ReviewSection } from "../components/review-section"
+
+import { ListSkeleton } from "~/components/list-skeleton"
 import {
-    GroupDraftEditor,
+    BundleStatusPanel,
     MediaDraftPicker,
+    ModifierGroupDraftEditor,
     OutletDraftPicker,
+    ProductInfoStep,
+    ProductReviewSections,
+    STEPS,
     VariantDraftEditor,
+    WizardStepShell,
     type GroupDraft,
     type MediaDraft,
     type VariantDraft,
-} from "../components/wizard/wizard-drafts"
-import { useCreateProductBundle } from "../services/catalog.mutations"
-import { useCategories, useOutlets } from "../services/catalog.queries"
+} from "../components/product-wizard"
+import { useCreateProductBundle } from "../services/product-bundle/product-bundle.mutation"
+import { useCategories } from "../services/categories/category.queries"
+import { useOutlets } from "../services/product-outlets/product-outlet.queries"
 import { productInfoSchema, simplePriceSchema, type ProductInfoFormValues } from "../schemas/catalog.schema"
-import { catalogErrorMessage } from "../utils/api-error"
-import { formatCurrency } from "../utils/format-currency"
-import { PRODUCT_TYPE_FORM_LABEL, PRODUCT_TYPE_LABEL } from "../utils/labels"
-import { notifySuccess } from "../utils/notify"
+import { issuesToMessages } from "../utils/issues"
+import { notifySuccess } from "~/lib/notify"
 import { CATALOGS_PATHS } from "../utils/paths"
-import type { ProductType } from "../types/catalog.types"
-import { MoveLeft, MoveRight } from "lucide-react"
-
-const BUNDLE_STATUS_LABEL = {
-    pending: "Menunggu",
-    running: "Diproses…",
-    success: "Berhasil",
-    skipped: "Tidak ada",
-    failed: "Gagal",
-} as const
-
-const STEPS = [
-    { id: "info", label: "Informasi" },
-    { id: "price", label: "Harga / Variant" },
-    { id: "customization", label: "Customization" },
-    { id: "media", label: "Media" },
-    { id: "outlet", label: "Outlet" },
-    { id: "review", label: "Review" },
-] as const
-
-type StepId = (typeof STEPS)[number]["id"]
-
-function issuesToMessages(issues: { path: PropertyKey[]; message: string }[]) {
-    const next: Record<string, string> = {}
-
-    for (const issue of issues) {
-        const key = String(issue.path[0] ?? "")
-
-        if (next[key] === undefined) {
-            next[key] = issue.message
-        }
-    }
-
-    return next
-}
-
-function StepShell({
-    title,
-    description,
-    children,
-}: {
-    title: string
-    description?: string
-    children: React.ReactNode
-}) {
-    return (
-        <section className="flex flex-col gap-4">
-            <div className="mb-4 flex flex-col gap-1">
-                <Text as="h2" variant="lg" weight="bold">
-                    {title}
-                </Text>
-                {description !== undefined ? (
-                    <Text variant="sm" className="text-muted-foreground">
-                        {description}
-                    </Text>
-                ) : null}
-            </div>
-            {children}
-        </section>
-    )
-}
-
-function InfoStep({
-    values,
-    errors,
-    categories,
-    onChange,
-}: {
-    values: ProductInfoFormValues
-    errors: Record<string, string>
-    categories: Array<{ id: string; name: string }>
-    onChange: (patch: Partial<ProductInfoFormValues>) => void
-}) {
-    return (
-        <div className="flex flex-col gap-4">
-            <Field>
-                <FieldLabel htmlFor="product-name">
-                    Nama Produk <span className="text-red-600">*</span>
-                </FieldLabel>
-                <Input
-                    id="product-name"
-                    value={values.name}
-                    onChange={(event) => onChange({ name: event.target.value })}
-                    placeholder="cth. Ayam Geprek"
-                    aria-invalid={errors.name !== undefined}
-                    className="h-11"
-                />
-                {errors.name !== undefined ? <FieldError>{errors.name}</FieldError> : null}
-            </Field>
-
-            <Field>
-                <FieldLabel htmlFor="product-category">
-                    Kategori Produk<span className="text-red-600">*</span>
-                </FieldLabel>
-                <Select
-                    value={values.category_id === "" ? "" : values.category_id}
-                    onValueChange={(value) => onChange({ category_id: value ?? "" })}
-                >
-                    <SelectTrigger
-                        id="product-category"
-                        className="h-11 w-full"
-                        aria-invalid={errors.category_id !== undefined}
-                    >
-                        <SelectValue placeholder="Pilih kategori" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.id} className="p-3">
-                                {category.name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                {errors.category_id !== undefined ? <FieldError>{errors.category_id}</FieldError> : null}
-            </Field>
-
-            <Field>
-                <FieldLabel htmlFor="product-description">Deskripsi</FieldLabel>
-                <Textarea
-                    id="product-description"
-                    value={values.description ?? ""}
-                    onChange={(event) => onChange({ description: event.target.value })}
-                    placeholder="cth. Ayam goreng crispy dengan sambal khas JualAntar."
-                    rows={3}
-                    aria-invalid={errors.description !== undefined}
-                />
-                {errors.description !== undefined ? <FieldError>{errors.description}</FieldError> : null}
-            </Field>
-
-            <div className="flex flex-col gap-2">
-                <FieldLabel id="product-type-label">
-                    Tipe Produk <span className="text-red-600">*</span>
-                </FieldLabel>
-                <RadioGroup
-                    value={values.product_type}
-                    onValueChange={(value) => onChange({ product_type: value as ProductType })}
-                    aria-labelledby="product-type-label"
-                    className="gap-2"
-                >
-                    {(["simple", "variable"] as const).map((type) => (
-                        <label
-                            key={type}
-                            className={cn(
-                                "flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors hover:bg-muted/50",
-                                values.product_type === type && "border-primary bg-primary/5"
-                            )}
-                        >
-                            <RadioGroupItem value={type} id={`product-type-${type}`} />
-                            <span className="flex min-w-0 flex-col gap-0.5">
-                                <Text variant="sm" weight="semibold">
-                                    {PRODUCT_TYPE_FORM_LABEL[type]}
-                                </Text>
-                                <Text variant="xs" className="text-muted-foreground">
-                                    {type === "simple" ? "Satu harga untuk seluruh produk" : "Harga per variant"}
-                                </Text>
-                            </span>
-                        </label>
-                    ))}
-                </RadioGroup>
-                {errors.product_type !== undefined ? <FieldError>{errors.product_type}</FieldError> : null}
-            </div>
-        </div>
-    )
-}
 
 export function ProductNewPage() {
     const navigate = useNavigate()
@@ -352,139 +191,6 @@ export function ProductNewPage() {
         })
     }
 
-    const reviewSections = [
-        {
-            id: "info",
-            title: "Informasi",
-            summary: [
-                info.name,
-                categories.find((category) => category.id === info.category_id)?.name ?? "Tanpa kategori",
-            ]
-                .filter((part) => part !== "")
-                .join(" • "),
-            content: (
-                <dl className="flex flex-col divide-y rounded-xl border">
-                    {[
-                        { term: "Nama", value: info.name || "-" },
-                        {
-                            term: "Kategori",
-                            value: categories.find((category) => category.id === info.category_id)?.name ?? "-",
-                        },
-                        { term: "Deskripsi", value: info.description ?? "-" },
-                        { term: "Tipe produk", value: PRODUCT_TYPE_LABEL[info.product_type] },
-                        {
-                            term: "Harga",
-                            value:
-                                info.product_type === "simple"
-                                    ? formatCurrency(Number(priceRaw))
-                                    : variants.length > 0
-                                      ? `Mulai ${formatCurrency(Math.min(...variants.map((variant) => variant.price)))}`
-                                      : "-",
-                        },
-                    ].map((row) => (
-                        <div key={row.term} className="flex items-start justify-between gap-4 px-3 py-2">
-                            <dt className="shrink-0 text-sm text-muted-foreground">{row.term}</dt>
-                            <dd className="text-right text-sm font-medium wrap-break-word">{row.value}</dd>
-                        </div>
-                    ))}
-                </dl>
-            ),
-        },
-        {
-            id: "variant",
-            title: info.product_type === "simple" ? "Harga" : "Variant",
-            summary: info.product_type === "simple" ? formatCurrency(Number(priceRaw)) : `${variants.length} variant`,
-            content:
-                info.product_type === "simple" ? (
-                    <Text variant="sm">{formatCurrency(Number(priceRaw))}</Text>
-                ) : (
-                    <ul className="flex flex-col gap-1.5">
-                        {variants.map((variant) => (
-                            <li
-                                key={variant.key}
-                                className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2"
-                            >
-                                <Text variant="sm" truncate>
-                                    {variant.name}
-                                    {variant.is_default ? " (default)" : ""}
-                                </Text>
-                                <Text variant="sm" className="shrink-0">
-                                    {formatCurrency(variant.price)}
-                                </Text>
-                            </li>
-                        ))}
-                    </ul>
-                ),
-        },
-        {
-            id: "customization",
-            title: "Customization",
-            summary: groups.length > 0 ? `${groups.length} modifier group` : "Tidak ada customization",
-            content: (
-                <div className="flex flex-col gap-3">
-                    {groups.length === 0 ? (
-                        <Text variant="sm" className="text-muted-foreground">
-                            Tidak ada modifier group.
-                        </Text>
-                    ) : (
-                        groups.map((group) => (
-                            <div key={group.key} className="rounded-xl border p-3">
-                                <Text variant="sm" weight="semibold">
-                                    {group.name}
-                                </Text>
-                                <Text variant="xs" className="text-muted-foreground">
-                                    {group.modifiers.length} modifier • {group.is_required ? "Wajib" : "Opsional"}
-                                </Text>
-                            </div>
-                        ))
-                    )}
-                </div>
-            ),
-        },
-        {
-            id: "media",
-            title: "Media",
-            summary: `${media.length} foto`,
-            content: (
-                <div className="flex flex-wrap gap-2">
-                    {media.length === 0 ? (
-                        <Text variant="sm" className="text-muted-foreground">
-                            Belum ada foto.
-                        </Text>
-                    ) : (
-                        media.map((item) => (
-                            <div key={item.key} className="relative size-16 overflow-hidden rounded-lg border bg-muted">
-                                <img src={item.previewUrl} alt={item.alt_text} className="size-full object-cover" />
-                            </div>
-                        ))
-                    )}
-                </div>
-            ),
-        },
-        {
-            id: "outlet",
-            title: "Outlet",
-            summary: `${outletIds.length} outlet`,
-            content: (
-                <ul className="flex flex-col gap-1.5">
-                    {outletIds.length === 0 ? (
-                        <Text variant="sm" className="text-muted-foreground">
-                            Belum ada outlet dipilih.
-                        </Text>
-                    ) : (
-                        outlets
-                            .filter((outlet) => outletIds.includes(outlet.id))
-                            .map((outlet) => (
-                                <li key={outlet.id} className="rounded-lg border px-3 py-2">
-                                    <Text variant="sm">{outlet.name}</Text>
-                                </li>
-                            ))
-                    )}
-                </ul>
-            ),
-        },
-    ]
-
     if (categoriesQuery.isPending) {
         return (
             <div className="flex flex-1 flex-col gap-5">
@@ -541,13 +247,18 @@ export function ProductNewPage() {
 
             <div className="flex flex-1 flex-col rounded-2xl">
                 {step.id === "info" ? (
-                    <StepShell title="Informasi produk" description="Nama, kategori, dan tipe produk.">
-                        <InfoStep values={info} errors={infoErrors} categories={categories} onChange={patchInfo} />
-                    </StepShell>
+                    <WizardStepShell title="Informasi produk" description="Nama, kategori, dan tipe produk.">
+                        <ProductInfoStep
+                            values={info}
+                            errors={infoErrors}
+                            categories={categories}
+                            onChange={patchInfo}
+                        />
+                    </WizardStepShell>
                 ) : null}
 
                 {step.id === "price" ? (
-                    <StepShell
+                    <WizardStepShell
                         title={info.product_type === "simple" ? "Harga" : "Variant"}
                         description={
                             info.product_type === "simple"
@@ -576,29 +287,29 @@ export function ProductNewPage() {
                         ) : (
                             <VariantDraftEditor variants={variants} onChange={setVariants} />
                         )}
-                    </StepShell>
+                    </WizardStepShell>
                 ) : null}
 
                 {step.id === "customization" ? (
-                    <StepShell
+                    <WizardStepShell
                         title="Customization"
                         description="Tambahkan pilihan yang dapat dipilih pelanggan. Opsional."
                     >
-                        <GroupDraftEditor groups={groups} onChange={setGroups} />
-                    </StepShell>
+                        <ModifierGroupDraftEditor groups={groups} onChange={setGroups} />
+                    </WizardStepShell>
                 ) : null}
 
                 {step.id === "media" ? (
-                    <StepShell
+                    <WizardStepShell
                         title="Foto Produk"
                         description="Pilih foto produk. Unggahan diproses saat produk disimpan."
                     >
                         <MediaDraftPicker media={media} onChange={setMedia} />
-                    </StepShell>
+                    </WizardStepShell>
                 ) : null}
 
                 {step.id === "outlet" ? (
-                    <StepShell title="Outlet" description="Pilih outlet tempat produk ini dijual.">
+                    <WizardStepShell title="Outlet" description="Pilih outlet tempat produk ini dijual.">
                         {outletsQuery.isPending ? (
                             <ListSkeleton rows={2} className="h-16" />
                         ) : outletsQuery.isError ? (
@@ -606,89 +317,35 @@ export function ProductNewPage() {
                         ) : (
                             <OutletDraftPicker outlets={outlets} selectedIds={outletIds} onChange={setOutletIds} />
                         )}
-                    </StepShell>
+                    </WizardStepShell>
                 ) : null}
 
                 {step.id === "review" ? (
-                    <StepShell title="Review Product" description="Periksa kembali sebelum menyimpan.">
-                        <div className="flex flex-col gap-3">
-                            {reviewSections.map((section) => (
-                                <ReviewSection
-                                    key={section.id}
-                                    title={section.title}
-                                    summary={section.summary}
-                                    expanded={expandedReview === section.id}
-                                    onToggle={() =>
-                                        setExpandedReview((current) => (current === section.id ? null : section.id))
-                                    }
-                                >
-                                    {section.content}
-                                </ReviewSection>
-                            ))}
-                        </div>
+                    <WizardStepShell title="Review Product" description="Periksa kembali sebelum menyimpan.">
+                        <ProductReviewSections
+                            info={info}
+                            priceRaw={priceRaw}
+                            variants={variants}
+                            groups={groups}
+                            media={media}
+                            outlets={outlets}
+                            outletIds={outletIds}
+                            categories={categories}
+                            expandedId={expandedReview}
+                            onToggle={(id) => setExpandedReview((current) => (current === id ? null : id))}
+                        />
 
                         {saveAttempted ? (
-                            <div className="mt-4 flex flex-col gap-3 rounded-xl border p-3">
-                                <Text variant="sm" weight="semibold">
-                                    Status penyimpanan
-                                </Text>
-                                <ul className="flex flex-col gap-1.5">
-                                    {createBundle.steps.map((entry) => (
-                                        <li key={entry.key} className="flex items-center justify-between gap-3">
-                                            <Text variant="sm">{entry.label}</Text>
-                                            <Text
-                                                variant="xs"
-                                                className={
-                                                    entry.status === "failed"
-                                                        ? "font-semibold text-destructive"
-                                                        : "text-muted-foreground"
-                                                }
-                                            >
-                                                {BUNDLE_STATUS_LABEL[entry.status]}
-                                            </Text>
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                {createBundle.hasFailure ? (
-                                    <div className="flex flex-col gap-2">
-                                        <p role="alert" className="text-sm font-semibold text-destructive">
-                                            {catalogErrorMessage(
-                                                firstFailedError,
-                                                "Sebagian data gagal disimpan. Coba lagi hanya langkah yang gagal."
-                                            )}
-                                        </p>
-                                        <div className="flex flex-wrap gap-2">
-                                            <Button
-                                                type="button"
-                                                size="sm"
-                                                disabled={createBundle.isPending}
-                                                onClick={createBundle.retry}
-                                            >
-                                                {createBundle.isPending ? (
-                                                    <>
-                                                        <Spinner /> Mencoba…
-                                                    </>
-                                                ) : (
-                                                    "Coba lagi"
-                                                )}
-                                            </Button>
-                                            {createBundle.productId !== null ? (
-                                                <Button
-                                                    type="button"
-                                                    size="sm"
-                                                    variant="outline"
-                                                    render={<Link to={CATALOGS_PATHS.detail(createBundle.productId)} />}
-                                                >
-                                                    Buka Product Detail
-                                                </Button>
-                                            ) : null}
-                                        </div>
-                                    </div>
-                                ) : null}
-                            </div>
+                            <BundleStatusPanel
+                                steps={createBundle.steps}
+                                hasFailure={createBundle.hasFailure}
+                                firstFailedError={firstFailedError}
+                                isPending={createBundle.isPending}
+                                productId={createBundle.productId}
+                                onRetry={createBundle.retry}
+                            />
                         ) : null}
-                    </StepShell>
+                    </WizardStepShell>
                 ) : null}
 
                 {stepError !== null ? (

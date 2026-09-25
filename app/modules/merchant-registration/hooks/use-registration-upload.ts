@@ -2,7 +2,7 @@ import { useCallback } from "react"
 
 import { usePresignedUpload, type UploadState } from "~/hooks/use-presigned-upload"
 
-import { validateUploadFile, type UploadValidationOptions } from "../schemas/upload.schema"
+import { validateUploadFile, type UploadValidationOptions } from "~/lib/upload"
 import { useCreateRegistrationUpload } from "../services/merchant-registration.mutations"
 import type { PresignedUpload, UploadPurpose } from "../types/merchant-registration.types"
 

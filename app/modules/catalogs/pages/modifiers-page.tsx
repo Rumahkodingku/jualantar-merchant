@@ -9,69 +9,12 @@ import { Skeleton } from "~/components/ui/skeleton"
 import { Text } from "~/components/ui/text"
 
 import { CatalogEmptyState } from "../components/catalog-empty-state"
-import { ListSkeleton } from "../components/list-skeleton"
-import { ModifierEditor } from "../components/modifier-editor"
-import { StatusBadge } from "../components/status-badge"
-import { useProductDetail, useProducts } from "../services/catalog.queries"
-import { formatCurrency } from "../utils/format-currency"
-import { SELECTION_TYPE_LABEL } from "../utils/labels"
+import { ListSkeleton } from "~/components/list-skeleton"
+import { ModifierEditor } from "../components/modifiers/modifier-editor"
+import { ModifierGroupSummaryCard } from "../components/modifiers/modifier-group-summary-card"
+import { useProductDetail, useProducts } from "../services/products/product.queries"
 
 const EMPTY = "none"
-
-function GroupSummaryCard({
-    group,
-}: {
-    group: {
-        id: string
-        name: string
-        status: "active" | "inactive"
-        selection_type: "single" | "multiple"
-        is_required: boolean
-        min_selection: number
-        max_selection: number | null
-        modifiers: Array<{ id: string; name: string; price: number }>
-    }
-}) {
-    return (
-        <div className="flex flex-col gap-2 rounded-2xl border bg-card p-4 ring-1 ring-foreground/5">
-            <div className="flex items-center justify-between gap-2">
-                <Text variant="sm" weight="semibold" truncate>
-                    {group.name}
-                </Text>
-                <StatusBadge status={group.status} />
-            </div>
-            <Text variant="xs" className="text-muted-foreground">
-                {(group.is_required ? "Wajib" : "Opsional") +
-                    " • " +
-                    SELECTION_TYPE_LABEL[group.selection_type] +
-                    " • " +
-                    (group.max_selection != null
-                        ? `${group.max_selection} pilihan`
-                        : `${group.min_selection}+ pilihan`)}
-            </Text>
-            <ul className="flex flex-col gap-1.5 border-t pt-2">
-                {group.modifiers.length === 0 ? (
-                    <li>
-                        <Text variant="xs" className="text-muted-foreground">
-                            Belum ada modifier.
-                        </Text>
-                    </li>
-                ) : (
-                    group.modifiers.map((modifier) => (
-                        <li key={modifier.id} className="flex items-center justify-between gap-3">
-                            <Text variant="sm" truncate>
-                                {modifier.name}
-                            </Text>
-                            <Text variant="sm" className="shrink-0">
-                                {formatCurrency(modifier.price)}
-                            </Text>
-                        </li>
-                    ))
-                )}
-            </ul>
-        </div>
-    )
-}
 
 export function CatalogModifiersPage() {
     const [selectedId, setSelectedId] = useState<string>(EMPTY)
@@ -203,7 +146,7 @@ export function CatalogModifiersPage() {
                     ) : (
                         <div className="flex flex-col gap-3">
                             {(product.modifier_groups ?? []).map((group) => (
-                                <GroupSummaryCard key={group.id} group={group} />
+                                <ModifierGroupSummaryCard key={group.id} group={group} />
                             ))}
                         </div>
                     )}

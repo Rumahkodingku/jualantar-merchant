@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 
 import { usePresignedUpload, type PresignedUploadController } from "~/hooks/use-presigned-upload"
-import { validateUploadFile } from "~/modules/merchant-registration"
+import { validateUploadFile } from "~/lib/upload"
 
 import { createOperationalUpload } from "../services/merchant-operations.api"
 import type { OperationalUpload, OperationalUploadPurpose } from "../types/merchant-operations.types"

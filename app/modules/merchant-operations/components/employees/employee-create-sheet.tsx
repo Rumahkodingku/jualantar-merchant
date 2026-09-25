@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
 import { Controller, useForm, type Resolver } from "react-hook-form"
-
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
 import { Field, FieldDescription, FieldError, FieldLabel } from "~/components/ui/field"
@@ -10,11 +9,10 @@ import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetT
 import { Spinner } from "~/components/ui/spinner"
 import { applyApiFieldErrors } from "~/lib/api-form"
 import { authorizationErrorMessage } from "~/modules/authorization"
-import { ChoiceCards } from "~/modules/merchant-registration"
-
+import { ChoiceCards } from "~/components/ui/choice-cards"
 import { employeePayload, employeeSchema, type EmployeeFormValues } from "../../schemas/employee.schema"
 import { useCreateOutletEmployee } from "../../services/merchant-operations.mutations"
-import { notifySuccess } from "../../utils/notify"
+import { notifySuccess } from "~/lib/notify"
 import { OUTLET_ROLE_DESCRIPTION, OUTLET_ROLE_OPTIONS } from "../../utils/outlet-status"
 
 const FIELDS = ["email", "phone", "password", "password_confirmation", "role"] as const

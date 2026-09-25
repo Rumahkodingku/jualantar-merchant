@@ -1,6 +1,0 @@
-export { dummyCategories } from "./categories"
-export { dummyProducts } from "./products"
-export { dummyVariantsByProduct } from "./variants"
-export { dummyMediaByProduct } from "./media"
-export { dummyModifierGroupsByProduct } from "./modifiers"
-export { dummyAssignmentsByProduct, dummyOutlets } from "./outlets"

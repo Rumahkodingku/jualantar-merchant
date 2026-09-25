@@ -4,7 +4,7 @@ import { Button } from "~/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
 import { Text } from "~/components/ui/text"
 
-import { StatusBadge } from "../common/status-badge"
+import { StatusBadge } from "~/components/status-badge"
 import { OUTLET_ROLE_LABEL } from "../../utils/outlet-status"
 import { formatDate } from "../../utils/format"
 import type { OutletEmployee } from "../../types/merchant-operations.types"

@@ -3,7 +3,7 @@ import type { ReactNode } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { cn } from "~/lib/utils"
 
-import { StatusBadge, type StatusTone } from "./status-badge"
+import { StatusBadge, type StatusTone } from "~/components/status-badge"
 
 const TONE_ICON_CLASS: Record<StatusTone, string> = {
     positive: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",

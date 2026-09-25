@@ -1,0 +1,6 @@
+export { dummyCategories } from "./categories"
+export { dummyProducts } from "./products"
+export { dummyVariantsByProduct } from "./variants"
+export { dummyMediaByProduct, mediaPlaceholderPool } from "./media"
+export { dummyModifierGroupsByProduct } from "./modifiers"
+export { dummyAssignmentsByProduct, dummyOutlets } from "./outlets"

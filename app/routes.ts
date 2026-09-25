@@ -15,8 +15,14 @@ export default [
             route("", "modules/merchant-registration/routes/approved-guard-route.tsx", [
                 route("orders", "modules/orders/routes/index.tsx"),
                 route("finances", "modules/finances/routes/index.tsx"),
-                route("catalogs", "modules/catalogs/routes/index.tsx"),
+                route("catalogs", "modules/catalogs/routes/catalogs-layout.tsx", [
+                    index("modules/catalogs/routes/index.tsx"),
+                    route("categories", "modules/catalogs/routes/categories.tsx"),
+                    route("modifiers", "modules/catalogs/routes/modifiers.tsx"),
+                ]),
                 route("catalogs/new", "modules/catalogs/routes/new.tsx"),
+                route("catalogs/products/:productId", "modules/catalogs/routes/product-detail.tsx"),
+                route("catalogs/products/:productId/edit", "modules/catalogs/routes/product-edit.tsx"),
                 route("promotions", "modules/promotions/routes/index.tsx"),
                 route("promotions/new", "modules/promotions/routes/new.tsx"),
 

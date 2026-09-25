@@ -1,5 +1,5 @@
-import { CatalogNewPage } from "../pages/catalog-new-page"
+import { ProductNewPage } from "../pages/product-new-page"
 
-export default function CatalogNewRoute() {
-    return <CatalogNewPage />
+export default function ProductNewRoute() {
+    return <ProductNewPage />
 }

@@ -8,3 +8,13 @@ build
 
 # typescript
 *.tsbuildinfo
+
+# Playwright
+/test-results
+/playwright-report
+/blob-report
+/.playwright
+/e2e/.auth
+
+# agent-browser
+.agent-browser

@@ -25,7 +25,7 @@ function SortableProductCard({
         <div
             ref={setNodeRef}
             style={{ transform: CSS.Transform.toString(transform), transition }}
-            className={cn(isDragging && "relative z-10 opacity-70")}
+            className={cn("rounded-2xl", isDragging && "relative z-10 opacity-80 shadow-lg ring-2 ring-primary/40")}
             {...attributes}
         >
             <ProductCard
@@ -89,7 +89,7 @@ export function ProductList({
         return (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={products.map((product) => product.id)} strategy={verticalListSortingStrategy}>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-4">
                         {products.map((product) => (
                             <SortableProductCard
                                 key={product.id}
@@ -105,7 +105,7 @@ export function ProductList({
     }
 
     return (
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {products.map((product) => (
                 <ProductCard
                     key={product.id}

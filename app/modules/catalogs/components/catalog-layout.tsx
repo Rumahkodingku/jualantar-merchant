@@ -3,6 +3,7 @@ import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { Text } from "~/components/ui/text"
 import { CATALOGS_PATHS } from "../utils/paths"
 import { Package, Tags, SlidersHorizontal } from "lucide-react"
+import { PageHeader } from "~/components/page-header"
 
 const TABS = [
     {
@@ -72,16 +73,13 @@ export function CatalogTabs() {
 export function CatalogLayout({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex flex-1 flex-col gap-5">
-            <section className="mb-4 flex flex-col gap-1">
-                <Text as="h1" variant="2xl" weight="semibold" className="tracking-tight">
-                    Katalog
-                </Text>
-                <Text variant="sm" className="text-muted-foreground">
-                    Kelola produk, kategori, dan kustomisasi katalog Anda.
-                </Text>
+            <section className="mb-4">
+                <PageHeader title="Katalog" description="Kelola dan kustomisasi katalog anda" />
             </section>
 
-            <CatalogTabs />
+            <section>
+                <CatalogTabs />
+            </section>
 
             {children}
         </div>

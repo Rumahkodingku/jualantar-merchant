@@ -36,67 +36,73 @@ export function ProductCard({
         : formatCurrency(product.price)
     const variantCount = summary?.variant_count ?? 0
     const detailPath = CATALOGS_PATHS.detail(product.id)
+    const overlayActions = actionMenu ?? dragHandle
 
     return (
         <div
             className={cn(
-                "relative flex h-full flex-col gap-3 rounded-2xl border bg-card p-3 ring-1 ring-foreground/5 transition-[border-color,box-shadow] duration-200",
-                !reorderMode && "hover:border-primary/30 hover:shadow-sm",
+                "group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card ring-1 ring-foreground/5 transition-[border-color,box-shadow] duration-200",
+                !reorderMode && "hover:border-primary/30 hover:shadow-md",
                 className
             )}
         >
-            <div className="flex items-start gap-3">
-                {dragHandle}
+            <div className="relative aspect-video overflow-hidden bg-muted">
+                {summary?.primary_media_url != null ? (
+                    <img
+                        src={summary.primary_media_url}
+                        alt=""
+                        loading="lazy"
+                        className="size-full object-cover"
+                        width={480}
+                        height={270}
+                    />
+                ) : (
+                    <span className="flex size-full items-center justify-center">
+                        <PackageIcon aria-hidden="true" className="size-8 text-muted-foreground/70" />
+                    </span>
+                )}
 
-                <div
-                    aria-hidden="true"
-                    className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted ring-1 ring-foreground/5"
-                >
-                    {summary?.primary_media_url != null ? (
-                        <img
-                            src={summary.primary_media_url}
-                            alt=""
-                            loading="lazy"
-                            className="size-full object-cover"
-                            width={64}
-                            height={64}
-                        />
-                    ) : (
-                        <PackageIcon className="size-6 text-muted-foreground" />
-                    )}
+                <div className="absolute top-2 left-2 rounded-full bg-background/85 p-1 ring-1 ring-foreground/10 backdrop-blur-sm">
+                    <StatusBadge status={product.status} />
                 </div>
 
-                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    {reorderMode ? (
-                        <Text as="p" variant="sm" weight="semibold" className="line-clamp-2">
-                            {product.name}
-                        </Text>
-                    ) : (
-                        <Link
-                            to={detailPath}
-                            className="block rounded-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-                        >
-                            <Text as="span" variant="sm" weight="semibold" className="line-clamp-2 hover:text-primary">
-                                {product.name}
-                            </Text>
-                        </Link>
-                    )}
-                    <Text variant="xs" className="truncate text-muted-foreground">
-                        {[categoryName ?? "Tanpa kategori", PRODUCT_TYPE_LABEL[product.product_type]].join(" • ")}
-                        {isVariable && variantCount > 0 ? ` • ${variantCount} variant` : ""}
-                    </Text>
-                </div>
-
-                {actionMenu !== undefined ? (
-                    <div className="relative z-10 flex shrink-0 items-center">{actionMenu}</div>
+                {overlayActions !== undefined ? (
+                    <div className="absolute top-1.5 right-1.5 z-10 rounded-full bg-background/80 p-1 ring-1 ring-foreground/10 backdrop-blur-sm">
+                        {overlayActions}
+                    </div>
                 ) : null}
             </div>
 
-            <div className="mt-auto flex items-center justify-between gap-2 border-t pt-2">
-                <Text variant="sm" weight="semibold" className="tabular-nums">
-                    {priceLabel}
+            <div className="flex flex-1 flex-col gap-1 p-3">
+                {reorderMode ? (
+                    <Text as="p" variant="sm" weight="semibold" className="line-clamp-2 leading-snug">
+                        {product.name}
+                    </Text>
+                ) : (
+                    <Link
+                        to={detailPath}
+                        className="block rounded-sm outline-none after:absolute after:inset-0 after:content-[''] hover:text-primary focus-visible:ring-3 focus-visible:ring-ring/50"
+                    >
+                        <Text as="span" variant="sm" weight="semibold" className="line-clamp-2 leading-snug">
+                            {product.name}
+                        </Text>
+                    </Link>
+                )}
+
+                <Text variant="xs" className="truncate text-muted-foreground">
+                    {[categoryName ?? "Tanpa kategori", PRODUCT_TYPE_LABEL[product.product_type]].join(" • ")}
                 </Text>
-                <StatusBadge status={product.status} />
+
+                <div className="mt-auto flex items-center justify-between gap-2 border-t pt-2">
+                    <Text variant="base" weight="semibold" className="tabular-nums">
+                        {priceLabel}
+                    </Text>
+                    {variantCount > 0 ? (
+                        <Text variant="xs" className="shrink-0 text-muted-foreground">
+                            {variantCount} varian
+                        </Text>
+                    ) : null}
+                </div>
             </div>
         </div>
     )

@@ -19,7 +19,7 @@ export function PageHeader({ title, description, action, className }: PageHeader
                     </Text>
 
                     {description && (
-                        <Text variant="sm" className="text-muted-foreground">
+                        <Text variant="sm" className="mt-1 text-muted-foreground">
                             {description}
                         </Text>
                     )}

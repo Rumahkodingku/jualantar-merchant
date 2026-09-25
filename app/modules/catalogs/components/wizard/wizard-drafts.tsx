@@ -3,7 +3,14 @@ import { ArrowDownIcon, ArrowUpIcon, PencilIcon, PlusIcon, StarIcon, Trash2Icon 
 
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "~/components/ui/dialog"
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
@@ -255,8 +262,15 @@ export function VariantDraftEditor({
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{editingKey === null ? "Tambah variant" : "Edit variant"}</DialogTitle>
+                    <DialogHeader className="flex flex-col gap-0.5">
+                        <DialogTitle className="text-lg font-semibold">
+                            {editingKey === null ? "Tambah variant" : "Edit variant"}
+                        </DialogTitle>
+                        <DialogDescription className="text-xs">
+                            {editingKey === null
+                                ? "Tambahkan variant sesuai yang anda inginkan"
+                                : "edit variant sesuai yang anda inginkan"}
+                        </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
                         <Field>
@@ -293,8 +307,8 @@ export function VariantDraftEditor({
                             />
                             {errors.price !== undefined ? <FieldError>{errors.price}</FieldError> : null}
                         </Field>
-                        <div className="flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5">
-                            <Text variant="sm" weight="medium">
+                        <div className="flex items-center justify-between gap-3 px-1 py-2.5">
+                            <Text variant="sm" weight="semibold">
                                 Variant utama
                             </Text>
                             <Switch
@@ -305,10 +319,12 @@ export function VariantDraftEditor({
                             />
                         </div>
                         <DialogFooter>
-                            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                            <Button type="button" size="lg" variant="outline" onClick={() => setDialogOpen(false)}>
                                 Batal
                             </Button>
-                            <Button type="submit">Simpan</Button>
+                            <Button type="submit" size="lg">
+                                Simpan
+                            </Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>

@@ -1,19 +1,16 @@
 import { useState } from "react"
 import { useNavigate } from "react-router"
-
 import { SubpageHeader } from "~/components/layouts/subpage-header"
 import { ErrorState } from "~/components/error-state"
 import { Button } from "~/components/ui/button"
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { Textarea } from "~/components/ui/textarea"
 import { cn } from "~/lib/utils"
-
 import { ListSkeleton } from "../components/list-skeleton"
 import { ReviewSection } from "../components/review-section"
 import {
@@ -33,6 +30,7 @@ import { PRODUCT_TYPE_FORM_LABEL, PRODUCT_TYPE_LABEL } from "../utils/labels"
 import { notifyError, notifySuccess } from "../utils/notify"
 import { CATALOGS_PATHS } from "../utils/paths"
 import type { ProductType } from "../types/catalog.types"
+import { MoveLeft, MoveRight } from "lucide-react"
 
 const STEPS = [
     { id: "info", label: "Informasi" },
@@ -70,8 +68,8 @@ function StepShell({
 }) {
     return (
         <section className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-                <Text as="h2" variant="lg" weight="semibold">
+            <div className="mb-4 flex flex-col gap-1">
+                <Text as="h2" variant="lg" weight="bold">
                     {title}
                 </Text>
                 {description !== undefined ? (
@@ -99,7 +97,9 @@ function InfoStep({
     return (
         <div className="flex flex-col gap-4">
             <Field>
-                <FieldLabel htmlFor="product-name">Nama Produk</FieldLabel>
+                <FieldLabel htmlFor="product-name">
+                    Nama Produk <span className="text-red-600">*</span>
+                </FieldLabel>
                 <Input
                     id="product-name"
                     value={values.name}
@@ -112,7 +112,9 @@ function InfoStep({
             </Field>
 
             <Field>
-                <FieldLabel htmlFor="product-category">Kategori</FieldLabel>
+                <FieldLabel htmlFor="product-category">
+                    Kategori Produk<span className="text-red-600">*</span>
+                </FieldLabel>
                 <Select
                     value={values.category_id === "" ? "" : values.category_id}
                     onValueChange={(value) => onChange({ category_id: value ?? "" })}
@@ -126,7 +128,7 @@ function InfoStep({
                     </SelectTrigger>
                     <SelectContent>
                         {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.id}>
+                            <SelectItem key={category.id} value={category.id} className="p-3">
                                 {category.name}
                             </SelectItem>
                         ))}
@@ -136,7 +138,7 @@ function InfoStep({
             </Field>
 
             <Field>
-                <FieldLabel htmlFor="product-description">Deskripsi (opsional)</FieldLabel>
+                <FieldLabel htmlFor="product-description">Deskripsi</FieldLabel>
                 <Textarea
                     id="product-description"
                     value={values.description ?? ""}
@@ -149,7 +151,9 @@ function InfoStep({
             </Field>
 
             <div className="flex flex-col gap-2">
-                <FieldLabel id="product-type-label">Tipe Produk</FieldLabel>
+                <FieldLabel id="product-type-label">
+                    Tipe Produk <span className="text-red-600">*</span>
+                </FieldLabel>
                 <RadioGroup
                     value={values.product_type}
                     onValueChange={(value) => onChange({ product_type: value as ProductType })}
@@ -160,13 +164,13 @@ function InfoStep({
                         <label
                             key={type}
                             className={cn(
-                                "flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors hover:bg-muted/50",
+                                "flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors hover:bg-muted/50",
                                 values.product_type === type && "border-primary bg-primary/5"
                             )}
                         >
                             <RadioGroupItem value={type} id={`product-type-${type}`} />
-                            <span className="flex min-w-0 flex-col">
-                                <Text variant="sm" weight="medium">
+                            <span className="flex min-w-0 flex-col gap-0.5">
+                                <Text variant="sm" weight="semibold">
                                     {PRODUCT_TYPE_FORM_LABEL[type]}
                                 </Text>
                                 <Text variant="xs" className="text-muted-foreground">
@@ -362,7 +366,7 @@ export function ProductNewPage() {
                     ].map((row) => (
                         <div key={row.term} className="flex items-start justify-between gap-4 px-3 py-2">
                             <dt className="shrink-0 text-sm text-muted-foreground">{row.term}</dt>
-                            <dd className="text-right text-sm font-medium break-words">{row.value}</dd>
+                            <dd className="text-right text-sm font-medium wrap-break-word">{row.value}</dd>
                         </div>
                     ))}
                 </dl>
@@ -487,35 +491,37 @@ export function ProductNewPage() {
     }
 
     return (
-        <div className="flex flex-1 flex-col gap-5">
+        <div className="flex flex-1 flex-col gap-4">
             <SubpageHeader
                 title="Tambah Produk"
                 description="Lengkapi langkah untuk menambahkan produk."
                 backTo={CATALOGS_PATHS.home}
             />
 
-            <div className="flex items-center justify-between gap-3">
-                <Text variant="sm" className="text-muted-foreground">
-                    Langkah {stepIndex + 1} dari {STEPS.length}
-                </Text>
-                <Text variant="sm" weight="medium">
-                    {step.label}
-                </Text>
+            <div className="mt-2 flex flex-col gap-4">
+                <div className="flex items-center justify-between gap-3">
+                    <Text variant="xs" weight="semibold" className="text-muted-foreground">
+                        Langkah {stepIndex + 1} dari {STEPS.length}
+                    </Text>
+                    <Text variant="xs" weight="semibold">
+                        {step.label}
+                    </Text>
+                </div>
+
+                <div className="flex gap-1.5" aria-hidden="true">
+                    {STEPS.map((item, index) => (
+                        <span
+                            key={item.id}
+                            className={cn(
+                                "h-1.5 flex-1 rounded-full transition-colors",
+                                index <= stepIndex ? "bg-primary" : "bg-muted"
+                            )}
+                        />
+                    ))}
+                </div>
             </div>
 
-            <div className="flex gap-1.5" aria-hidden="true">
-                {STEPS.map((item, index) => (
-                    <span
-                        key={item.id}
-                        className={cn(
-                            "h-1.5 flex-1 rounded-full transition-colors",
-                            index <= stepIndex ? "bg-primary" : "bg-muted"
-                        )}
-                    />
-                ))}
-            </div>
-
-            <div className="flex flex-1 flex-col rounded-2xl border bg-card p-4 ring-1 ring-foreground/5 sm:p-6">
+            <div className="flex flex-1 flex-col rounded-2xl">
                 {step.id === "info" ? (
                     <StepShell title="Informasi produk" description="Nama, kategori, dan tipe produk.">
                         <InfoStep values={info} errors={infoErrors} categories={categories} onChange={patchInfo} />
@@ -613,15 +619,17 @@ export function ProductNewPage() {
                 <Button
                     type="button"
                     variant="outline"
-                    className="flex-1"
+                    className="flex-1 font-semibold"
                     disabled={isPending || stepIndex === 0}
                     onClick={handleBack}
+                    size="lg"
                 >
+                    <MoveLeft />
                     Kembali
                 </Button>
 
                 {step.id === "review" ? (
-                    <Button type="button" className="flex-1" disabled={isPending} onClick={handleSave}>
+                    <Button type="button" className="flex-1" size="lg" disabled={isPending} onClick={handleSave}>
                         {isPending ? (
                             <>
                                 <Spinner /> Menyimpan…
@@ -631,8 +639,15 @@ export function ProductNewPage() {
                         )}
                     </Button>
                 ) : (
-                    <Button type="button" className="flex-1" disabled={isPending} onClick={handleNext}>
+                    <Button
+                        type="button"
+                        className="flex-1 font-semibold"
+                        size="lg"
+                        disabled={isPending}
+                        onClick={handleNext}
+                    >
                         Lanjut
+                        <MoveRight />
                     </Button>
                 )}
             </div>

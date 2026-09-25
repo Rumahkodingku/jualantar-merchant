@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { PlusIcon, SearchIcon, SlidersHorizontalIcon, XIcon } from "lucide-react"
+import { CircleCheck, PlusIcon, RotateCcw, SearchIcon, SlidersHorizontalIcon, XIcon } from "lucide-react"
 import { Link } from "react-router"
 
 import { Button } from "~/components/ui/button"
@@ -17,7 +17,6 @@ import {
 } from "~/components/ui/sheet"
 import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
-
 import { CATALOGS_PATHS } from "../utils/paths"
 import type { CatalogCategory, CatalogStatus, ProductType } from "../types/catalog.types"
 
@@ -141,7 +140,7 @@ export function ProductFilters({
                     ) : null}
                 </div>
 
-                <Button render={<Link to={CATALOGS_PATHS.new} />} size="lg" className="h-10 shrink-0">
+                <Button render={<Link to={CATALOGS_PATHS.new} />} size="lg" className="shrink-0">
                     <PlusIcon aria-hidden="true" />
                     <span className="hidden sm:inline">Tambah Produk</span>
                     <span className="sm:hidden">Tambah</span>
@@ -184,13 +183,15 @@ export function ProductFilters({
                                     type="button"
                                     variant={activeFacetCount > 0 ? "secondary" : "outline"}
                                     size="sm"
-                                    className="h-10 shrink-0 gap-1.5"
+                                    className="h-10 shrink-0 gap-1.5 rounded-xl"
                                     aria-label="Filter produk"
                                 />
                             }
                         >
                             <SlidersHorizontalIcon aria-hidden="true" />
-                            <span>Filter</span>
+                            <Text variant="xs" weight="medium">
+                                Filter
+                            </Text>
                             {activeFacetCount > 0 ? (
                                 <>
                                     <span
@@ -203,19 +204,23 @@ export function ProductFilters({
                                 </>
                             ) : null}
                         </SheetTrigger>
-                        <SheetContent side="bottom" className="rounded-t-2xl md:mx-auto md:max-w-md">
+                        <SheetContent side="bottom" className="rounded-t-4xl md:mx-auto md:max-w-md">
                             <SheetHeader>
-                                <SheetTitle>Filter produk</SheetTitle>
-                                <SheetDescription>Saring daftar produk berdasarkan kategori dan tipe.</SheetDescription>
+                                <SheetTitle className="text-lg font-bold">Filter produk</SheetTitle>
+                                <SheetDescription className="text-xs">
+                                    Saring daftar produk berdasarkan kategori dan tipe.
+                                </SheetDescription>
                             </SheetHeader>
                             <div className="flex flex-col gap-4 px-4">
                                 <FilterFields values={values} categories={categories} onChange={onChange} />
                             </div>
                             <SheetFooter className="flex-row">
-                                <Button type="button" variant="outline" className="flex-1" onClick={onReset}>
+                                <Button size="lg" type="button" variant="outline" className="flex-1" onClick={onReset}>
+                                    <RotateCcw />
                                     Reset
                                 </Button>
-                                <Button type="button" className="flex-1" onClick={() => setSheetOpen(false)}>
+                                <Button size="lg" type="button" className="flex-1" onClick={() => setSheetOpen(false)}>
+                                    <CircleCheck />
                                     Terapkan
                                 </Button>
                             </SheetFooter>

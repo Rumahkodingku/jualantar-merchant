@@ -135,7 +135,7 @@ export function CatalogsPage() {
             />
 
             {productsQuery.isPending ? (
-                <ListSkeleton rows={4} className="h-28" layout="grid" />
+                <ListSkeleton rows={4} className="h-72 md:h-64" layout="grid" />
             ) : productsQuery.isError ? (
                 <ErrorState
                     title="Gagal memuat produk"

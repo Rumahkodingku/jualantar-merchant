@@ -21,21 +21,33 @@ export function catalogErrorMessage(error: unknown, fallback = "Terjadi kesalaha
     return MESSAGES[error.kind] ?? fallback
 }
 
-export function applyServerFieldErrors(error: unknown, knownFields: readonly string[]): Record<string, string> {
+export function applyServerFieldErrors(
+    error: unknown,
+    knownFields: readonly string[],
+    fieldMap: Readonly<Record<string, string>> = {}
+): Record<string, string> {
     if (!(error instanceof ApiError)) {
         return {}
     }
 
-    const fieldErrors = error.fieldErrors()
+    const serverErrors = error.fieldErrors()
     const applied: Record<string, string> = {}
 
     for (const field of knownFields) {
-        const message = fieldErrors[field]
+        const message = serverErrors[field]
 
         if (message !== undefined) {
-            applied[field] = message
+            applied[fieldMap[field] ?? field] = message
         }
     }
 
     return applied
+}
+
+export function firstServerFieldError(error: unknown): string | undefined {
+    if (!(error instanceof ApiError)) {
+        return undefined
+    }
+
+    return Object.values(error.fieldErrors()).find((message) => message !== undefined)
 }

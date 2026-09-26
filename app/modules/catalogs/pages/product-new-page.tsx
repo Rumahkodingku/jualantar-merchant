@@ -67,23 +67,16 @@ export function ProductNewPage() {
     const discard = draft.discard
     const infoCategoryId = draft.info.category_id
 
-    // Autosave has to stand down for the duration of a create, and the hook
-    // cannot see the bundle state, so the two are wired together here.
     useEffect(() => {
         setSubmitting(createBundle.isPending)
     }, [createBundle.isPending])
 
-    // Persist the create cursors the moment a step settles, so a reload between
-    // two bundle steps resumes instead of starting a second product. Comparing
-    // the serialised form keeps this to one write per actual change, and nothing
-    // is written before a create has actually started.
     useEffect(() => {
         if (!draft.hydrated || !createBundle.hasStarted) {
             return
         }
 
         draft.setSubmission(JSON.parse(submissionKey))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [submissionKey, draft.hydrated, createBundle.hasStarted])
 
     useEffect(() => {
@@ -101,16 +94,8 @@ export function ProductNewPage() {
         notifySuccess("Produk dibuat", `"${draft.info.name}" ditambahkan ke katalog.`)
         void discard()
         void navigate(CATALOGS_PATHS.detail(createBundle.productId))
-        // `draft` is intentionally excluded: the navigation above ends the route, and
-        // re-running on a draft change would re-fire the toast.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [createBundle, draft.info.name, navigate])
 
-    /**
-     * A draft can be days old, so the category or the outlets it references may
-     * be gone by the time the merchant comes back. Drop what cannot be honoured
-     * and say so, rather than failing validation on submit with no explanation.
-     */
     useEffect(() => {
         if (reconciled || !draft.hydrated || categoriesQuery.isPending || outletsQuery.isPending) {
             return
@@ -218,7 +203,6 @@ export function ProductNewPage() {
 
         setStepError(null)
         draft.setStepIndex(Math.min(draft.stepIndex + 1, STEPS.length - 1))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [draft.setStepIndex, draft.stepIndex, step.id])
 
     const handleBack = useCallback(() => {
@@ -251,11 +235,6 @@ export function ProductNewPage() {
         [draft.setPriceRaw]
     )
 
-    /**
-     * The create payload as the form stands right now. Rebuilt on every retry
-     * rather than remembered, so edits made after a failure are included and a
-     * retry still works after a reload wiped the in-memory input.
-     */
     function buildBundleInput(): ProductBundleInput {
         const price = draft.info.product_type === "simple" ? Number(draft.priceRaw) : null
 

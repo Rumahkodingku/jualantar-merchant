@@ -17,3 +17,7 @@ export function invalidateCategories(queryClient: QueryClient, categoryId?: stri
         void queryClient.invalidateQueries({ queryKey: catalogKeys.category(categoryId) })
     }
 }
+
+export function invalidateProductDraft(queryClient: QueryClient) {
+    return queryClient.invalidateQueries({ queryKey: catalogKeys.productDraft() })
+}

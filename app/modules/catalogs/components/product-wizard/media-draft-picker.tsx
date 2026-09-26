@@ -1,21 +1,30 @@
 import { useRef } from "react"
-import { ArrowDownIcon, ArrowUpIcon, PlusIcon, StarIcon, Trash2Icon } from "lucide-react"
+import { ArrowDownIcon, ArrowUpIcon, ImageIcon, PlusIcon, StarIcon, Trash2Icon } from "lucide-react"
 
 import { Button } from "~/components/ui/button"
+import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
-import { MAX_UPLOAD_SIZE_LABEL, validateUploadFile } from "~/lib/upload"
+import { MAX_UPLOAD_SIZE_LABEL } from "~/lib/upload"
 
-import { notifyError } from "~/lib/notify"
 import { MAX_PRODUCT_MEDIA, MEDIA_ACCEPT } from "../../hooks/use-catalog-media-upload"
-import { draftKey } from "./utils"
 import type { MediaDraft } from "./types"
 
 export function MediaDraftPicker({
     media,
-    onChange,
+    busy,
+    onSelectFile,
+    onRemove,
+    onSetPrimary,
+    onMove,
+    onPreviewError,
 }: {
     media: MediaDraft[]
-    onChange: (media: MediaDraft[]) => void
+    busy: boolean
+    onSelectFile: (file: File) => void
+    onRemove: (key: string) => void
+    onSetPrimary: (key: string) => void
+    onMove: (index: number, direction: -1 | 1) => void
+    onPreviewError: () => void
 }) {
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -28,56 +37,7 @@ export function MediaDraftPicker({
             return
         }
 
-        const validation = validateUploadFile(selected, { imagesOnly: true })
-
-        if (validation !== null) {
-            notifyError("Foto tidak dapat digunakan", validation)
-            return
-        }
-
-        if (media.length >= MAX_PRODUCT_MEDIA) {
-            notifyError("Batas foto tercapai", `Maksimal ${MAX_PRODUCT_MEDIA} foto per produk.`)
-            return
-        }
-
-        onChange([
-            ...media,
-            {
-                key: draftKey("med"),
-                file: selected,
-                previewUrl: URL.createObjectURL(selected),
-                alt_text: "",
-                is_primary: media.length === 0,
-            },
-        ])
-    }
-
-    function remove(key: string) {
-        const target = media.find((item) => item.key === key)
-
-        if (target !== undefined) {
-            URL.revokeObjectURL(target.previewUrl)
-        }
-
-        onChange(media.filter((item) => item.key !== key))
-    }
-
-    function setPrimary(key: string) {
-        onChange(media.map((item) => ({ ...item, is_primary: item.key === key })))
-    }
-
-    function move(index: number, direction: -1 | 1) {
-        const next = [...media]
-        const target = index + direction
-
-        if (target < 0 || target >= next.length) {
-            return
-        }
-
-        const [item] = next.splice(index, 1)
-
-        next.splice(target, 0, item)
-        onChange(next)
+        onSelectFile(selected)
     }
 
     return (
@@ -88,7 +48,28 @@ export function MediaDraftPicker({
                 {media.map((item, index) => (
                     <div key={item.key} className="flex flex-col gap-1">
                         <div className="relative aspect-square overflow-hidden rounded-xl border bg-muted">
-                            <img src={item.previewUrl} alt={item.alt_text} className="size-full object-cover" />
+                            {item.status === "ready" && item.preview_url !== null ? (
+                                <img
+                                    src={item.preview_url}
+                                    alt={item.alt_text}
+                                    className="size-full object-cover"
+                                    onError={onPreviewError}
+                                />
+                            ) : (
+                                <div className="flex size-full flex-col items-center justify-center gap-1 text-muted-foreground">
+                                    {item.status === "uploading" ? (
+                                        <>
+                                            <Spinner />
+                                            <Text variant="xs">Mengunggah</Text>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <ImageIcon aria-hidden="true" className="size-5" />
+                                            <Text variant="xs">Gagal</Text>
+                                        </>
+                                    )}
+                                </div>
+                            )}
                             {item.is_primary ? (
                                 <span className="absolute top-1.5 left-1.5 flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">
                                     <StarIcon aria-hidden="true" className="size-3" /> Utama
@@ -100,8 +81,8 @@ export function MediaDraftPicker({
                                     size="icon-xs"
                                     variant="secondary"
                                     aria-label={`Foto utama ${index + 1}`}
-                                    disabled={item.is_primary}
-                                    onClick={() => setPrimary(item.key)}
+                                    disabled={item.is_primary || item.status !== "ready"}
+                                    onClick={() => onSetPrimary(item.key)}
                                 >
                                     <StarIcon />
                                 </Button>
@@ -111,7 +92,7 @@ export function MediaDraftPicker({
                                     variant="secondary"
                                     aria-label={`Naikkan foto ${index + 1}`}
                                     disabled={index === 0}
-                                    onClick={() => move(index, -1)}
+                                    onClick={() => onMove(index, -1)}
                                 >
                                     <ArrowUpIcon />
                                 </Button>
@@ -121,7 +102,7 @@ export function MediaDraftPicker({
                                     variant="secondary"
                                     aria-label={`Turunkan foto ${index + 1}`}
                                     disabled={index === media.length - 1}
-                                    onClick={() => move(index, 1)}
+                                    onClick={() => onMove(index, 1)}
                                 >
                                     <ArrowDownIcon />
                                 </Button>
@@ -130,7 +111,8 @@ export function MediaDraftPicker({
                                     size="icon-xs"
                                     variant="destructive"
                                     aria-label={`Hapus foto ${index + 1}`}
-                                    onClick={() => remove(item.key)}
+                                    disabled={item.status === "uploading"}
+                                    onClick={() => onRemove(item.key)}
                                 >
                                     <Trash2Icon />
                                 </Button>
@@ -143,8 +125,9 @@ export function MediaDraftPicker({
                     <button
                         type="button"
                         onClick={() => inputRef.current?.click()}
+                        disabled={busy}
                         aria-label="Tambah foto"
-                        className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+                        className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                     >
                         <PlusIcon aria-hidden="true" className="size-5" />
                         <Text variant="xs">Tambah</Text>
@@ -153,8 +136,8 @@ export function MediaDraftPicker({
             </div>
 
             <Text variant="xs" className="text-muted-foreground">
-                Foto baru diunggah setelah produk dibuat. Format JPG, PNG, atau WEBP, maksimal {MAX_UPLOAD_SIZE_LABEL}{" "}
-                per foto.
+                Foto diunggah langsung saat dipilih, lalu disimpan bersama draft. Foto tidak lagi tersedia akan hilang
+                setelah 7 hari. Format JPG, PNG, atau WEBP, maksimal {MAX_UPLOAD_SIZE_LABEL} per foto.
             </Text>
         </div>
     )

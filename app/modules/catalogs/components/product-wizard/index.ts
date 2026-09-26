@@ -1,4 +1,7 @@
 export { BundleStatusPanel } from "./bundle-status-panel"
+export { DraftConflictAlert } from "./draft-conflict-alert"
+export { DraftResumeBanner, relativeTime } from "./draft-resume-banner"
+export { DraftSaveIndicator } from "./draft-save-indicator"
 export { MediaDraftPicker } from "./media-draft-picker"
 export { ModifierGroupDraftEditor } from "./modifier-group-draft-editor"
 export { OutletDraftPicker } from "./outlet-draft-picker"

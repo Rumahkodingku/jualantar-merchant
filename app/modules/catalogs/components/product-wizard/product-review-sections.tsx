@@ -1,3 +1,5 @@
+import { ImageIcon } from "lucide-react"
+
 import { Text } from "~/components/ui/text"
 
 import { ReviewSection } from "../review-section"
@@ -126,7 +128,17 @@ export function ProductReviewSections({
                     ) : (
                         media.map((item) => (
                             <div key={item.key} className="relative size-16 overflow-hidden rounded-lg border bg-muted">
-                                <img src={item.previewUrl} alt={item.alt_text} className="size-full object-cover" />
+                                {item.preview_url === null ? (
+                                    <div className="flex size-full items-center justify-center text-muted-foreground">
+                                        <ImageIcon aria-hidden="true" className="size-4" />
+                                    </div>
+                                ) : (
+                                    <img
+                                        src={item.preview_url}
+                                        alt={item.alt_text}
+                                        className="size-full object-cover"
+                                    />
+                                )}
                             </div>
                         ))
                     )}

@@ -32,6 +32,7 @@ export class ApiError extends Error {
     readonly detail: string
     readonly errors: Record<string, string[]>
     readonly traceId?: string
+    readonly context: Record<string, unknown>
 
     constructor(problem: {
         status: number
@@ -40,6 +41,7 @@ export class ApiError extends Error {
         detail: string
         errors?: Record<string, string[]>
         traceId?: string
+        context?: Record<string, unknown>
     }) {
         super(problem.detail)
         this.name = "ApiError"
@@ -49,6 +51,7 @@ export class ApiError extends Error {
         this.detail = problem.detail
         this.errors = problem.errors ?? {}
         this.traceId = problem.traceId
+        this.context = problem.context ?? {}
     }
 
     get kind(): ApiErrorKind {
@@ -151,6 +154,11 @@ export function normalizeApiError(error: unknown): ApiError {
         const problem = error.response?.data as ProblemDetails | undefined
 
         if (problem !== undefined && typeof problem === "object") {
+            const context =
+                typeof problem.context === "object" && problem.context !== null
+                    ? (problem.context as Record<string, unknown>)
+                    : undefined
+
             return new ApiError({
                 status: problem.status ?? error.response?.status ?? 500,
                 code: problem.code ?? "unknown_error",
@@ -158,6 +166,7 @@ export function normalizeApiError(error: unknown): ApiError {
                 detail: problem.detail ?? problem.title ?? "Terjadi kesalahan.",
                 errors: problem.errors,
                 traceId: problem.trace_id,
+                context,
             })
         }
 

@@ -1,3 +1,5 @@
+import { useCallback, useMemo } from "react"
+
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
@@ -20,10 +22,23 @@ export function ProductInfoStep({
     categories: Array<{ id: string; name: string }>
     onChange: (patch: Partial<ProductInfoFormValues>) => void
 }) {
-    const categoryItems = categories.map((category) => ({
-        value: category.id,
-        label: category.name,
-    }))
+    // base-ui mirrors `items` and the change handlers into an internal store and
+    // re-renders from it, so a new array or a new function identity on every
+    // render feeds that store and spins. Both are pinned to their real inputs.
+    const categoryItems = useMemo(
+        () => categories.map((category) => ({ value: category.id, label: category.name })),
+        [categories]
+    )
+
+    const handleCategoryChange = useCallback(
+        (value: string | null) => onChange({ category_id: value ?? "" }),
+        [onChange]
+    )
+
+    const handleProductTypeChange = useCallback(
+        (value: string) => onChange({ product_type: value as ProductType }),
+        [onChange]
+    )
 
     return (
         <div className="flex flex-col gap-4">
@@ -49,7 +64,7 @@ export function ProductInfoStep({
                 <Select
                     items={categoryItems}
                     value={values.category_id === "" ? "" : values.category_id}
-                    onValueChange={(value) => onChange({ category_id: value ?? "" })}
+                    onValueChange={handleCategoryChange}
                 >
                     <SelectTrigger
                         id="product-category"
@@ -88,7 +103,7 @@ export function ProductInfoStep({
                 </FieldLabel>
                 <RadioGroup
                     value={values.product_type}
-                    onValueChange={(value) => onChange({ product_type: value as ProductType })}
+                    onValueChange={handleProductTypeChange}
                     aria-labelledby="product-type-label"
                     className="gap-2"
                 >

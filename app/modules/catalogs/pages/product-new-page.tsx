@@ -222,6 +222,7 @@ export function ProductNewPage() {
                 backTo={CATALOGS_PATHS.home}
             />
 
+            {/* Stepper */}
             <div className="mt-2 flex flex-col gap-4">
                 <div className="flex items-center justify-between gap-3">
                     <Text variant="xs" weight="semibold" className="text-muted-foreground">
@@ -245,7 +246,9 @@ export function ProductNewPage() {
                 </div>
             </div>
 
+            {/* UI dari setiap step */}
             <div className="flex flex-1 flex-col rounded-2xl">
+                {/* ---- Step Info ---- */}
                 {step.id === "info" ? (
                     <WizardStepShell title="Informasi produk" description="Nama, kategori, dan tipe produk.">
                         <ProductInfoStep
@@ -257,6 +260,7 @@ export function ProductNewPage() {
                     </WizardStepShell>
                 ) : null}
 
+                {/* ---- Step Price ---- */}
                 {step.id === "price" ? (
                     <WizardStepShell
                         title={info.product_type === "simple" ? "Harga" : "Variant"}
@@ -266,6 +270,7 @@ export function ProductNewPage() {
                                 : "Tambahkan minimal satu variant sebelum melanjutkan."
                         }
                     >
+                        {/* Jika Produk simple */}
                         {info.product_type === "simple" ? (
                             <Field>
                                 <FieldLabel htmlFor="product-price">Harga (Rp)</FieldLabel>
@@ -285,6 +290,7 @@ export function ProductNewPage() {
                                 {priceErrors.price !== undefined ? <FieldError>{priceErrors.price}</FieldError> : null}
                             </Field>
                         ) : (
+                            // Jika product variant
                             <VariantDraftEditor variants={variants} onChange={setVariants} />
                         )}
                     </WizardStepShell>

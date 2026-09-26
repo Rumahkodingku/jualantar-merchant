@@ -216,6 +216,30 @@ describe("ProductNewPage", () => {
         expect(await screen.findByText("Kategori wajib dipilih.")).toBeInTheDocument()
         expect(screen.getByText("Langkah 1 dari 6")).toBeInTheDocument()
     })
+
+    it("shows the selected category name instead of its id", async () => {
+        const user = userEvent.setup()
+
+        renderWithProviders(
+            <Routes>
+                <Route path="/catalogs/new" element={<ProductNewPage />} />
+            </Routes>,
+            ["/catalogs/new"]
+        )
+
+        const trigger = await screen.findByRole("combobox", { name: /Kategori Produk/ })
+
+        expect(trigger).toHaveTextContent("Pilih kategori")
+
+        await user.click(trigger)
+        await user.click(await screen.findByRole("option", { name: "Makanan" }))
+
+        await waitFor(() => {
+            expect(trigger).toHaveTextContent("Makanan")
+        })
+
+        expect(trigger).not.toHaveTextContent("cat-001")
+    })
 })
 
 describe("CatalogCategoriesPage", () => {

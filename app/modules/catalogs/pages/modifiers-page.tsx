@@ -25,6 +25,7 @@ export function CatalogModifiersPage() {
 
     const products = productsQuery.data?.data ?? []
     const product = detailQuery.data
+    const productItems = products.map((item) => ({ value: item.id, label: item.name }))
 
     function handleValueChange(value: string | null) {
         setSelectedId(value ?? EMPTY)
@@ -60,7 +61,11 @@ export function CatalogModifiersPage() {
             <>
                 <div className="flex flex-col gap-1.5">
                     <Label htmlFor="modifier-product">Pilih Product</Label>
-                    <Select value={selectedId} onValueChange={handleValueChange}>
+                    <Select
+                        items={productItems}
+                        value={selectedId === EMPTY ? "" : selectedId}
+                        onValueChange={handleValueChange}
+                    >
                         <SelectTrigger id="modifier-product" className="w-full">
                             <SelectValue placeholder="Pilih product" />
                         </SelectTrigger>
@@ -87,9 +92,13 @@ export function CatalogModifiersPage() {
         <>
             <div className="flex flex-col gap-1.5">
                 <Label htmlFor="modifier-product">Pilih Product</Label>
-                <Select value={selectedId} onValueChange={handleValueChange}>
+                <Select
+                    items={productItems}
+                    value={selectedId === EMPTY ? "" : selectedId}
+                    onValueChange={handleValueChange}
+                >
                     <SelectTrigger id="modifier-product" className="w-full">
-                        <SelectValue />
+                        <SelectValue placeholder="Pilih product" />
                     </SelectTrigger>
                     <SelectContent>
                         {products.map((item) => (

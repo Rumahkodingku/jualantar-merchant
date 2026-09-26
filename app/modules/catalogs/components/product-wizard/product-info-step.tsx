@@ -5,7 +5,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~
 import { Text } from "~/components/ui/text"
 import { Textarea } from "~/components/ui/textarea"
 import { cn } from "~/lib/utils"
-
 import { PRODUCT_TYPE_FORM_LABEL } from "../../utils/labels"
 import type { ProductType } from "../../types/catalog.types"
 import type { ProductInfoFormValues } from "../../schemas/catalog.schema"
@@ -21,6 +20,11 @@ export function ProductInfoStep({
     categories: Array<{ id: string; name: string }>
     onChange: (patch: Partial<ProductInfoFormValues>) => void
 }) {
+    const categoryItems = categories.map((category) => ({
+        value: category.id,
+        label: category.name,
+    }))
+
     return (
         <div className="flex flex-col gap-4">
             <Field>
@@ -43,6 +47,7 @@ export function ProductInfoStep({
                     Kategori Produk<span className="text-red-600">*</span>
                 </FieldLabel>
                 <Select
+                    items={categoryItems}
                     value={values.category_id === "" ? "" : values.category_id}
                     onValueChange={(value) => onChange({ category_id: value ?? "" })}
                 >

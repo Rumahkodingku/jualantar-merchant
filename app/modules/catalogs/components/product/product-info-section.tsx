@@ -37,6 +37,11 @@ export function ProductInfoSection({
     }))
     const [errors, setErrors] = useState<Record<string, string>>({})
 
+    const categoryItems = categories.map((category) => ({
+        value: category.id,
+        label: category.name,
+    }))
+
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
@@ -92,7 +97,8 @@ export function ProductInfoSection({
                 <Field>
                     <FieldLabel htmlFor="edit-category">Kategori</FieldLabel>
                     <Select
-                        value={values.category_id}
+                        items={categoryItems}
+                        value={values.category_id === "" ? "" : values.category_id}
                         onValueChange={(value) =>
                             setValues((current) => ({ ...current, category_id: value ?? current.category_id }))
                         }

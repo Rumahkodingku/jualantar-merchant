@@ -91,6 +91,7 @@ export function LegalEntityForm() {
                             render={({ field }) => (
                                 <Select
                                     id="entity_type"
+                                    items={LEGAL_ENTITY_TYPE_OPTIONS}
                                     value={field.value}
                                     onValueChange={field.onChange}
                                     aria-invalid={form.formState.errors.entity_type !== undefined}

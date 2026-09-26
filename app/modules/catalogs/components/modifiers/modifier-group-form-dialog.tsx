@@ -12,6 +12,7 @@ import { Text } from "~/components/ui/text"
 import { useCreateModifierGroup, useUpdateModifierGroup } from "../../services/modifiers/modifier.mutations"
 import { applyServerFieldErrors, catalogErrorMessage } from "../../utils/api-error"
 import { issuesToMessages } from "../../utils/issues"
+import { SELECTION_TYPE_OPTIONS } from "../../utils/labels"
 import { notifyError, notifySuccess } from "~/lib/notify"
 import { modifierGroupSchema, type ModifierGroupFormValues } from "../../schemas/catalog.schema"
 import type { ProductModifierGroup, SelectionType } from "../../types/catalog.types"
@@ -128,15 +129,19 @@ export function ModifierGroupFormDialog({
                     <Field>
                         <FieldLabel id="group-selection-label">Tipe seleksi</FieldLabel>
                         <Select
+                            items={SELECTION_TYPE_OPTIONS}
                             value={values.selection_type}
                             onValueChange={(value) => setField("selection_type", (value ?? "single") as SelectionType)}
                         >
                             <SelectTrigger className="w-full" aria-labelledby="group-selection-label">
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih tipe seleksi" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="single">Single</SelectItem>
-                                <SelectItem value="multiple">Multiple</SelectItem>
+                                {SELECTION_TYPE_OPTIONS.map((option) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </Field>

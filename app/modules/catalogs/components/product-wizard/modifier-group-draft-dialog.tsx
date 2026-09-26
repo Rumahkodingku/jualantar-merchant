@@ -9,6 +9,7 @@ import { Switch } from "~/components/ui/switch"
 import { Text } from "~/components/ui/text"
 
 import { issuesToMessages } from "../../utils/issues"
+import { SELECTION_TYPE_OPTIONS } from "../../utils/labels"
 import { modifierGroupSchema, type ModifierGroupFormValues } from "../../schemas/catalog.schema"
 import type { SelectionType } from "../../types/catalog.types"
 import type { GroupDraft, GroupDraftPayload } from "./types"
@@ -97,15 +98,19 @@ export function ModifierGroupDraftDialog({
                     <Field>
                         <FieldLabel id="draft-group-selection">Tipe seleksi</FieldLabel>
                         <Select
+                            items={SELECTION_TYPE_OPTIONS}
                             value={values.selection_type}
                             onValueChange={(value) => setField("selection_type", (value ?? "single") as SelectionType)}
                         >
                             <SelectTrigger className="w-full" aria-labelledby="draft-group-selection">
-                                <SelectValue />
+                                <SelectValue placeholder="Pilih tipe seleksi" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="single">Single</SelectItem>
-                                <SelectItem value="multiple">Multiple</SelectItem>
+                                {SELECTION_TYPE_OPTIONS.map((option) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </Field>

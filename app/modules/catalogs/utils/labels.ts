@@ -20,6 +20,11 @@ export const SELECTION_TYPE_LABEL: Record<SelectionType, string> = {
     multiple: "Multiple",
 }
 
+export const SELECTION_TYPE_OPTIONS: ReadonlyArray<{ value: SelectionType; label: string }> = [
+    { value: "single", label: SELECTION_TYPE_LABEL.single },
+    { value: "multiple", label: SELECTION_TYPE_LABEL.multiple },
+]
+
 export const AVAILABILITY_LABEL: Record<AvailabilityStatus, string> = {
     available: "Tersedia",
     unavailable: "Tidak tersedia",

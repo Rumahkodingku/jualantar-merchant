@@ -90,7 +90,24 @@ describe("ProductCard", () => {
         })
 
         expect(screen.getByText("Mulai dari Rp 15.000")).toBeInTheDocument()
-        expect(screen.getByText(`Makanan • ${PRODUCT_TYPE_LABEL.variable} • 3 varian`)).toBeInTheDocument()
+        expect(screen.getByText(`Makanan • ${PRODUCT_TYPE_LABEL.variable}`)).toBeInTheDocument()
+        expect(screen.getByText("3 varian")).toBeInTheDocument()
+    })
+
+    it("reports only the metadata that has a value", () => {
+        renderCard({
+            product: { ...PRODUCT, variants_count: 0, modifier_groups_count: 2, media_count: 5 },
+        })
+
+        expect(screen.getByText("2 customization · 5 foto")).toBeInTheDocument()
+        expect(screen.queryByText(/varian/)).not.toBeInTheDocument()
+    })
+
+    it("hides the metadata line when every count is zero", () => {
+        renderCard()
+
+        expect(screen.queryByText(/foto/)).not.toBeInTheDocument()
+        expect(screen.queryByText(/customization/)).not.toBeInTheDocument()
     })
 
     it("keeps the plain variant prompt when no variant is active", () => {

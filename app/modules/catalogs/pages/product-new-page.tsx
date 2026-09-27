@@ -422,7 +422,7 @@ export function ProductNewPage() {
                 {step.id === "customization" ? (
                     <WizardStepShell
                         title="Customization"
-                        description="Tambahkan pilihan yang dapat dipilih pelanggan. Opsional."
+                        description="Tambahkan pilihan yang dapat dipilih pelanggan (opsional)"
                     >
                         <ModifierGroupDraftEditor groups={draft.groups} onChange={draft.setGroups} />
                     </WizardStepShell>

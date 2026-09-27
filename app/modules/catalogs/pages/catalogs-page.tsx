@@ -5,9 +5,9 @@ import { ErrorState } from "~/components/error-state"
 import { Button } from "~/components/ui/button"
 import { useDebouncedValue } from "~/hooks/use-debounced-value"
 import { CatalogEmptyState } from "../components/catalog-empty-state"
-import { ListSkeleton } from "~/components/list-skeleton"
 import { ProductFilters } from "../components/product/product-filters"
 import { ProductList } from "../components/product/product-list"
+import { ProductListSkeleton } from "../components/product/product-list-skeleton"
 import { useCategories } from "../services/categories/category.queries"
 import { useReorderProducts } from "../services/products/product.mutations"
 import { useProducts, PRODUCT_MEDIA_REFRESH_INTERVAL } from "../services/products/product.queries"
@@ -119,7 +119,7 @@ export function CatalogsPage() {
             />
 
             {productsQuery.isPending ? (
-                <ListSkeleton rows={4} className="h-72 md:h-64" layout="grid" />
+                <ProductListSkeleton rows={4} />
             ) : productsQuery.isError ? (
                 <ErrorState
                     title="Gagal memuat produk"

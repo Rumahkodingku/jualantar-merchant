@@ -16,7 +16,7 @@ function SortableProductCard({ product }: { product: Product }) {
         <div
             ref={setNodeRef}
             style={{ transform: CSS.Transform.toString(transform), transition }}
-            className={cn("rounded-2xl", isDragging && "relative z-10 opacity-80 shadow-lg ring-2 ring-primary/40")}
+            className={cn("relative rounded-xl", isDragging && "z-10 opacity-80 shadow-lg ring-2 ring-primary/40")}
             {...attributes}
         >
             <ProductCard
@@ -26,10 +26,10 @@ function SortableProductCard({ product }: { product: Product }) {
                     <button
                         type="button"
                         aria-label={`Seret ${product.name} untuk mengurutkan`}
-                        className="flex w-6 shrink-0 cursor-grab items-center justify-center text-muted-foreground active:cursor-grabbing"
+                        className="flex size-9 shrink-0 cursor-grab items-center justify-center rounded-lg text-muted-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 active:cursor-grabbing"
                         {...listeners}
                     >
-                        <GripVerticalIcon aria-hidden="true" className="size-4" />
+                        <GripVerticalIcon aria-hidden="true" className="size-5" />
                     </button>
                 }
             />
@@ -74,7 +74,7 @@ export function ProductList({
         return (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={products.map((product) => product.id)} strategy={verticalListSortingStrategy}>
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-3">
                         {products.map((product) => (
                             <SortableProductCard key={product.id} product={product} />
                         ))}
@@ -85,7 +85,7 @@ export function ProductList({
     }
 
     return (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="flex flex-col gap-6">
             {products.map((product) => (
                 <ProductCard key={product.id} product={product} actionMenu={<ProductActionsMenu product={product} />} />
             ))}

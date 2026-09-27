@@ -285,9 +285,9 @@ export function ModifierGroupDraftEditor({
 
                 <Button
                     type="button"
-                    size="sm"
+                    size="lg"
                     variant={groups.length === 0 ? "default" : "outline"}
-                    className={cn("self-start", groups.length > 0 && "border-dashed")}
+                    className={cn("w-full self-start", groups.length > 0 && "border-dashed")}
                     onClick={() => setGroupDialog({ open: true })}
                 >
                     <PlusIcon /> Tambah modifier group

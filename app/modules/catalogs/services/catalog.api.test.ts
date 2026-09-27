@@ -105,6 +105,47 @@ describe("catalog api", () => {
         expect(result.meta.total).toBe(2)
     })
 
+    it("maps the category summary and the card counts on the list", async () => {
+        vi.spyOn(api, "get").mockResolvedValue({
+            data: singlePage([
+                {
+                    ...PRODUCT_WIRE,
+                    product_type: "variable" as const,
+                    price: null,
+                    category: { id: "c1", name: "Makanan", status: "active" as const },
+                    primary_media: { url: "https://cdn.test/ayam.jpg", alt_text: "Ayam" },
+                    variants_count: 3,
+                    min_price: "15000.00",
+                    media_count: 2,
+                    modifier_groups_count: 1,
+                },
+            ]),
+        })
+
+        const result = await fetchProducts()
+        const product = result.data[0]
+
+        expect(product?.category?.name).toBe("Makanan")
+        expect(product?.primary_media?.url).toBe("https://cdn.test/ayam.jpg")
+        expect(product?.variants_count).toBe(3)
+        expect(product?.min_price).toBe(15_000)
+        expect(product?.media_count).toBe(2)
+        expect(product?.modifier_groups_count).toBe(1)
+    })
+
+    it("defaults the optional card fields when the payload omits them", async () => {
+        vi.spyOn(api, "get").mockResolvedValue({ data: singlePage([PRODUCT_WIRE]) })
+
+        const product = (await fetchProducts()).data[0]
+
+        expect(product?.category).toBeNull()
+        expect(product?.primary_media).toBeNull()
+        expect(product?.variants_count).toBe(0)
+        expect(product?.min_price).toBeNull()
+        expect(product?.media_count).toBe(0)
+        expect(product?.modifier_groups_count).toBe(0)
+    })
+
     it("normalizes nested prices on the product detail", async () => {
         const get = vi.spyOn(api, "get").mockResolvedValue({
             data: {

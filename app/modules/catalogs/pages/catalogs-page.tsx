@@ -10,7 +10,7 @@ import { ProductFilters } from "../components/product/product-filters"
 import { ProductList } from "../components/product/product-list"
 import { useCategories } from "../services/categories/category.queries"
 import { useReorderProducts } from "../services/products/product.mutations"
-import { useProducts } from "../services/products/product.queries"
+import { useProducts, PRODUCT_MEDIA_REFRESH_INTERVAL } from "../services/products/product.queries"
 import { notifyError, notifySuccess } from "~/lib/notify"
 import { CATALOGS_PATHS } from "../utils/paths"
 import { readProductFilters, type ProductFilterValues } from "../utils/product-filters"
@@ -59,15 +59,11 @@ export function CatalogsPage() {
         [filters.search, filters.category_id, filters.status, filters.product_type]
     )
 
-    const productsQuery = useProducts(params)
+    const productsQuery = useProducts(params, { refetchInterval: PRODUCT_MEDIA_REFRESH_INTERVAL })
     const categoriesQuery = useCategories({ per_page: 100 })
     const reorderMutation = useReorderProducts()
 
     const categories = categoriesQuery.data?.data ?? []
-    const categoryNameById = useMemo(
-        () => Object.fromEntries(categories.map((category) => [category.id, category.name])),
-        [categories]
-    )
 
     function patchFilters(patch: Partial<ProductFilterValues>) {
         setReorderMode(false)
@@ -157,7 +153,6 @@ export function CatalogsPage() {
             ) : (
                 <ProductList
                     products={productsQuery.data.data}
-                    categoryNameById={categoryNameById}
                     reorderMode={reorderMode && !hasFilters}
                     onReorder={handleReorder}
                 />

@@ -1,10 +1,10 @@
-import { PackageIcon } from "lucide-react"
 import { Link } from "react-router"
 
 import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
 
 import { StatusBadge } from "../status-badge"
+import { ProductMediaThumbnail } from "./product-media-thumbnail"
 import { formatCurrency } from "../../utils/format-currency"
 import { PRODUCT_TYPE_LABEL } from "../../utils/labels"
 import { CATALOGS_PATHS } from "../../utils/paths"
@@ -12,22 +12,24 @@ import type { Product } from "../../types/catalog.types"
 
 export function ProductCard({
     product,
-    categoryName,
     actionMenu,
     reorderMode = false,
     dragHandle,
     className,
 }: {
     product: Product
-    categoryName?: string
     actionMenu?: React.ReactNode
     reorderMode?: boolean
     dragHandle?: React.ReactNode
     className?: string
 }) {
     const isVariable = product.product_type === "variable"
+    const variantCount = isVariable ? (product.variants_count ?? 0) : 0
+    const hasVariantRange = isVariable && product.min_price !== null && product.min_price !== undefined
     const detailPath = CATALOGS_PATHS.detail(product.id)
     const overlayActions = actionMenu ?? dragHandle
+
+    console.log(product)
 
     return (
         <div
@@ -38,9 +40,10 @@ export function ProductCard({
             )}
         >
             <div className="relative aspect-video overflow-hidden bg-muted">
-                <span className="flex size-full items-center justify-center">
-                    <PackageIcon aria-hidden="true" className="size-8 text-muted-foreground/70" />
-                </span>
+                <ProductMediaThumbnail
+                    src={product.primary_media?.url ?? null}
+                    alt={product.primary_media?.alt_text ?? product.name}
+                />
 
                 <div className="absolute top-2 left-2 rounded-full bg-background/85 p-1 ring-1 ring-foreground/10 backdrop-blur-sm">
                     <StatusBadge status={product.status} />
@@ -70,16 +73,26 @@ export function ProductCard({
                 )}
 
                 <Text variant="xs" className="truncate text-muted-foreground">
-                    {[categoryName ?? "Tanpa kategori", PRODUCT_TYPE_LABEL[product.product_type]].join(" • ")}
+                    {[
+                        product.category?.name ?? "Tanpa kategori",
+                        PRODUCT_TYPE_LABEL[product.product_type],
+                        variantCount > 0 ? `${variantCount} varian` : null,
+                    ]
+                        .filter((part) => part !== null)
+                        .join(" • ")}
                 </Text>
 
                 <div className="mt-auto border-t pt-2">
                     <Text
                         variant="base"
                         weight={isVariable ? "medium" : "semibold"}
-                        className={cn("tabular-nums", isVariable && "text-muted-foreground")}
+                        className={cn("truncate tabular-nums", isVariable && "text-muted-foreground")}
                     >
-                        {isVariable ? "Lihat varian" : formatCurrency(product.price)}
+                        {hasVariantRange
+                            ? `Mulai dari ${formatCurrency(product.min_price)}`
+                            : isVariable
+                              ? "Lihat varian"
+                              : formatCurrency(product.price)}
                     </Text>
                 </div>
             </div>

@@ -6,11 +6,19 @@ import type { ProductIndexParams } from "../../types/catalog.types"
 
 type QueryGate = { enabled?: boolean }
 
-export function useProducts(params: ProductIndexParams = {}) {
+/**
+ * Below the signed media URL lifetime (STORAGE_TEMPORARY_URL_TTL, 300s by
+ * default) so a list left open still gets fresh cover URLs. Callers without
+ * media on screen opt out instead of polling a payload they do not render.
+ */
+export const PRODUCT_MEDIA_REFRESH_INTERVAL = 240_000
+
+export function useProducts(params: ProductIndexParams = {}, options: { refetchInterval?: number } = {}) {
     return useQuery({
         queryKey: catalogKeys.productList(params),
         queryFn: () => catalogRepository.products.list(params),
         placeholderData: keepPreviousData,
+        refetchInterval: options.refetchInterval,
     })
 }
 

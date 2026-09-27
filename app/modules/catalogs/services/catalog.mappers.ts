@@ -6,11 +6,16 @@ import type {
     ProductMedia,
     ProductModifier,
     ProductModifierGroup,
+    ProductPrimaryMedia,
     ProductVariant,
 } from "../types/catalog.types"
 import { normalizePrice, normalizeRequiredPrice } from "../utils/normalize"
 
-export type ProductWire = Omit<Product, "price"> & { price: string | null }
+export type ProductWire = Omit<Product, "price" | "primary_media" | "min_price"> & {
+    price: string | null
+    primary_media?: ProductPrimaryMedia | null
+    min_price?: string | null
+}
 export type ProductVariantWire = Omit<ProductVariant, "price"> & { price: string }
 export type ProductModifierWire = Omit<ProductModifier, "price"> & { price: string }
 export type ProductModifierGroupWire = Omit<ProductModifierGroup, "modifiers" | "max_selection"> & {
@@ -28,12 +33,18 @@ export function toProduct(wire: ProductWire): Product {
     return {
         id: wire.id,
         category_id: wire.category_id,
+        category: wire.category ?? null,
         name: wire.name,
         description: wire.description,
         product_type: wire.product_type,
         price: normalizePrice(wire.price),
         status: wire.status,
         display_order: wire.display_order,
+        primary_media: wire.primary_media ?? null,
+        variants_count: wire.variants_count ?? 0,
+        min_price: normalizePrice(wire.min_price),
+        media_count: wire.media_count ?? 0,
+        modifier_groups_count: wire.modifier_groups_count ?? 0,
         created_at: wire.created_at,
         updated_at: wire.updated_at,
     }

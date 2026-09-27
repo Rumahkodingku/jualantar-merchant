@@ -9,7 +9,7 @@ import { ProductActionsMenu } from "./product-actions-menu"
 import { ProductCard } from "./product-card"
 import type { Product } from "../../types/catalog.types"
 
-function SortableProductCard({ product, categoryName }: { product: Product; categoryName?: string }) {
+function SortableProductCard({ product }: { product: Product }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: product.id })
 
     return (
@@ -21,7 +21,6 @@ function SortableProductCard({ product, categoryName }: { product: Product; cate
         >
             <ProductCard
                 product={product}
-                categoryName={categoryName}
                 reorderMode
                 dragHandle={
                     <button
@@ -40,12 +39,10 @@ function SortableProductCard({ product, categoryName }: { product: Product; cate
 
 export function ProductList({
     products,
-    categoryNameById,
     reorderMode = false,
     onReorder,
 }: {
     products: Product[]
-    categoryNameById: Record<string, string | undefined>
     reorderMode?: boolean
     onReorder?: (orderedIds: string[]) => void
 }) {
@@ -79,11 +76,7 @@ export function ProductList({
                 <SortableContext items={products.map((product) => product.id)} strategy={verticalListSortingStrategy}>
                     <div className="flex flex-col gap-4">
                         {products.map((product) => (
-                            <SortableProductCard
-                                key={product.id}
-                                product={product}
-                                categoryName={categoryNameById[product.category_id]}
-                            />
+                            <SortableProductCard key={product.id} product={product} />
                         ))}
                     </div>
                 </SortableContext>
@@ -94,12 +87,7 @@ export function ProductList({
     return (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {products.map((product) => (
-                <ProductCard
-                    key={product.id}
-                    product={product}
-                    categoryName={categoryNameById[product.category_id]}
-                    actionMenu={<ProductActionsMenu product={product} />}
-                />
+                <ProductCard key={product.id} product={product} actionMenu={<ProductActionsMenu product={product} />} />
             ))}
         </div>
     )

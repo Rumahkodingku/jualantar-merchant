@@ -16,15 +16,32 @@ export interface CatalogCategory {
     updated_at: string | null
 }
 
+export interface ProductCategorySummary {
+    id: string
+    name: string
+    status: CatalogStatus
+}
+
+export interface ProductPrimaryMedia {
+    url: string | null
+    alt_text: string | null
+}
+
 export interface Product {
     id: string
     category_id: string
+    category?: ProductCategorySummary | null
     name: string
     description: string | null
     product_type: ProductType
     price: number | null
     status: CatalogStatus
     display_order: number
+    primary_media?: ProductPrimaryMedia | null
+    variants_count?: number
+    min_price?: number | null
+    media_count?: number
+    modifier_groups_count?: number
     created_at: string | null
     updated_at: string | null
 }
@@ -223,12 +240,6 @@ export interface ModifierUpdateInput {
 export interface ReorderItem {
     id: string
     display_order: number
-}
-
-export interface ProductViewSummary {
-    primary_media_url: string | null
-    variant_count: number | null
-    min_price: number | null
 }
 
 export interface MediaUploadUrlInput {

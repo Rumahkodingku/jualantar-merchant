@@ -138,14 +138,6 @@ export function ProductNewPage() {
         setReconcileNotice,
     ])
 
-    // base-ui mirrors handler props into an internal store, so a new function
-    // identity on every render makes it re-render from its own store forever.
-    // Every handler handed to a base-ui component is therefore pinned.
-    const clearErrors = useCallback(() => {
-        setInfoErrors({})
-        setStepError(null)
-    }, [])
-
     const patchInfo = useCallback(
         (patch: Partial<ProductInfoFormValues>) => {
             draft.patchInfo(patch)
@@ -209,16 +201,6 @@ export function ProductNewPage() {
         setStepError(null)
         draft.setStepIndex(Math.max(draft.stepIndex - 1, 0))
     }, [draft.setStepIndex, draft.stepIndex])
-
-    const handleToggleReview = useCallback((id: string) => {
-        setExpandedReview((current) => (current === id ? null : id))
-    }, [])
-
-    const handleDiscard = useCallback(() => {
-        setConfirmDiscard(false)
-        setBannerDismissed(false)
-        void discard()
-    }, [discard])
 
     const openDiscard = useCallback(() => setConfirmDiscard(true), [])
     const dismissBanner = useCallback(() => setBannerDismissed(true), [])

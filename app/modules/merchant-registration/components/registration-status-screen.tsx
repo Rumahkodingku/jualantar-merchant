@@ -7,7 +7,6 @@ import { useCreateRegistration } from "../services/merchant-registration.mutatio
 import { rejectionNote } from "../utils/rejection-note"
 import { statusPresentationFor } from "../utils/status-presentation"
 import type { MerchantRegistration } from "../types/merchant-registration.types"
-import { Text } from "~/components/ui/text"
 import { useNavigate } from "react-router"
 
 export function RegistrationStatusScreen({ registration }: { registration: MerchantRegistration }) {

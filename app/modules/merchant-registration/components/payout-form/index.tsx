@@ -12,7 +12,7 @@ import { useRegistrationContext } from "../registration-context"
 import { payoutSchema, type PayoutFormValues } from "../../schemas/payout.schema"
 import { useSavePayoutAccount } from "../../services/merchant-registration.mutations"
 import { applyApiFieldErrors, getApiErrorMessage } from "../../utils/api-error"
-import { Hash, ShieldUser, User } from "lucide-react"
+import { Hash, ShieldUser } from "lucide-react"
 
 const FIELDS = ["bank_id", "account_number", "account_name"] as const
 

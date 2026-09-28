@@ -30,7 +30,7 @@ export function useServiceWorker() {
 
         let cancelled = false
 
-        const notifyUpdate = (registration: ServiceWorkerRegistration) => {
+        const notifyUpdate = (_registration: ServiceWorkerRegistration) => {
             setUpdateAvailable(true)
 
             if (notifiedRef.current) {

@@ -96,7 +96,7 @@ function seedFrom(outletId: string): number {
     return hash / 997
 }
 
-function outletDashboard(outletId: string, outletName: string): HomeDashboardData {
+function outletDashboard(outletId: string, _outletName: string): HomeDashboardData {
     const seed = seedFrom(outletId)
     const scale = 0.35 + seed * 0.9
     const round = (value: number) => Math.max(1, Math.round(value * scale))

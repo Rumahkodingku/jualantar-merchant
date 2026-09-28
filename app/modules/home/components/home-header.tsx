@@ -1,28 +1,15 @@
 import { BellIcon } from "lucide-react"
 import { Link } from "react-router"
-import { Brand } from "~/components/brand"
-import { Avatar, AvatarFallback } from "~/components/ui/avatar"
 import { Text } from "~/components/ui/text"
-import { cn } from "~/lib/utils"
 import { SETTINGS_PATHS } from "~/modules/settings"
-
-const TONE_DOT: Record<"positive" | "neutral" | "negative", string> = {
-    positive: "bg-emerald-500",
-    neutral: "bg-muted-foreground",
-    negative: "bg-destructive",
-}
 
 export function HomeHeader({
     businessName,
-    description,
-    merchantStatus,
 }: {
     businessName: string
     description: string
     merchantStatus: { label: string; tone: "positive" | "neutral" | "negative" } | null
 }) {
-    const initial = businessName[0]?.toUpperCase() ?? "M"
-
     const today = new Date().toLocaleDateString("id-ID", {
         weekday: "long",
         day: "numeric",

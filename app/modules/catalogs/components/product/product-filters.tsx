@@ -33,7 +33,6 @@ export function ProductFilters({
     count,
     onChange,
     onReset,
-    hasFilters,
     reorderMode,
     canReorder,
     onToggleReorder,
@@ -43,7 +42,6 @@ export function ProductFilters({
     count?: number | null
     onChange: (patch: Partial<ProductFilterValues>) => void
     onReset: () => void
-    hasFilters: boolean
     reorderMode: boolean
     canReorder: boolean
     onToggleReorder: () => void

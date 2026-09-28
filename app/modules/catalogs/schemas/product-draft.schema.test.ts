@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { emptyDraftData, productDraftSchema, submissionProgressSchema } from "./product-draft.schema"
+import { productDraftSchema, submissionProgressSchema } from "./product-draft.schema"
 
 describe("productDraftSchema", () => {
     it("parses a complete draft", () => {

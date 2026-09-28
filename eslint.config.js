@@ -70,6 +70,15 @@ export default tseslint.config(
             "no-unused-vars": "off",
 
             // ----------------------------------------------------
+            // Type safety: larang `any`.
+            // Gunakan `unknown` + type guard, generics, atau
+            // tipe eksplisit dari Zod schema.
+            // ----------------------------------------------------
+            "@typescript-eslint/no-explicit-any": "error",
+            "@typescript-eslint/no-empty-object-type": "error",
+            "@typescript-eslint/no-unsafe-function-type": "error",
+
+            // ----------------------------------------------------
             // Architecture
             // ----------------------------------------------------
             "boundaries/dependencies": [

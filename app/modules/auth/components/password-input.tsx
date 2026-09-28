@@ -1,11 +1,10 @@
 import * as React from "react"
 import { EyeIcon, EyeOffIcon, LockKeyholeIcon } from "lucide-react"
-
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { cn } from "~/lib/utils"
 
-interface PasswordInputProps extends React.ComponentProps<typeof Input> {}
+type PasswordInputProps = React.ComponentProps<typeof Input>
 
 export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(function PasswordInput(
     { className, id, ...props },

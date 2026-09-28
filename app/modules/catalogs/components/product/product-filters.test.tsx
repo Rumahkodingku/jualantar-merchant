@@ -31,7 +31,6 @@ function renderFilters(overrides: Partial<React.ComponentProps<typeof ProductFil
                 count={3}
                 onChange={onChange}
                 onReset={onReset}
-                hasFilters={false}
                 reorderMode={false}
                 canReorder
                 onToggleReorder={onToggleReorder}
@@ -73,7 +72,6 @@ describe("ProductFilters", () => {
         const user = userEvent.setup()
         const { onChange } = renderFilters({
             values: { search: "geprek", category_id: "", status: "", product_type: "" },
-            hasFilters: true,
         })
 
         await user.click(screen.getByRole("button", { name: "Hapus pencarian" }))

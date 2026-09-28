@@ -3,6 +3,8 @@ import type {
     PaginatedResponse,
     Product,
     ProductDetail,
+    ProductDetailPriceSummary,
+    ProductDetailSummary,
     ProductMedia,
     ProductModifier,
     ProductModifierGroup,
@@ -22,8 +24,22 @@ export type ProductModifierGroupWire = Omit<ProductModifierGroup, "modifiers" | 
     max_selection: number | null
     modifiers?: ProductModifierWire[]
 }
+export interface ProductDetailPriceSummaryWire {
+    type: "fixed" | "from"
+    value: number | string | null
+}
+
+export interface ProductDetailSummaryWire {
+    price: ProductDetailPriceSummaryWire
+    variants_count: number
+    customization_groups_count: number
+    media_count: number
+    outlets_count: number
+}
+
 export type ProductDetailWire = ProductWire & {
     category?: CatalogCategory
+    summary?: ProductDetailSummaryWire
     variants?: ProductVariantWire[]
     media?: ProductMedia[]
     modifier_groups?: ProductModifierGroupWire[]
@@ -109,10 +125,49 @@ export function toModifierGroup(wire: ProductModifierGroupWire): ProductModifier
     }
 }
 
+function toSummaryPrice(wire: ProductDetailPriceSummaryWire): ProductDetailPriceSummary {
+    return { type: wire.type, value: normalizePrice(wire.value) }
+}
+
+function deriveSummary(wire: ProductDetailWire): ProductDetailSummary {
+    const variants = wire.variants ?? []
+    const isVariable = wire.product_type === "variable"
+    const activePrices = variants
+        .filter((variant) => variant.status === "active")
+        .map((variant) => normalizeRequiredPrice(variant.price))
+
+    return {
+        price: {
+            type: isVariable ? "from" : "fixed",
+            value: isVariable
+                ? activePrices.length > 0
+                    ? Math.min(...activePrices)
+                    : null
+                : normalizePrice(wire.price),
+        },
+        variants_count: variants.length,
+        customization_groups_count: (wire.modifier_groups ?? []).length,
+        media_count: (wire.media ?? []).length,
+        outlets_count: 0,
+    }
+}
+
 export function toProductDetail(wire: ProductDetailWire): ProductDetail {
+    const summary: ProductDetailSummary =
+        wire.summary !== undefined
+            ? {
+                  price: toSummaryPrice(wire.summary.price),
+                  variants_count: wire.summary.variants_count,
+                  customization_groups_count: wire.summary.customization_groups_count,
+                  media_count: wire.summary.media_count,
+                  outlets_count: wire.summary.outlets_count,
+              }
+            : deriveSummary(wire)
+
     return {
         ...toProduct(wire),
         category: wire.category,
+        summary,
         variants: wire.variants?.map(toProductVariant),
         media: wire.media?.map(toProductMedia),
         modifier_groups: wire.modifier_groups?.map(toModifierGroup),

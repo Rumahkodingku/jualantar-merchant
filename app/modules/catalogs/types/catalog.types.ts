@@ -120,8 +120,24 @@ export interface OutletProductAssignment {
     updated_at: string | null
 }
 
+export type ProductDetailPriceType = "fixed" | "from"
+
+export interface ProductDetailPriceSummary {
+    type: ProductDetailPriceType
+    value: number | null
+}
+
+export interface ProductDetailSummary {
+    price: ProductDetailPriceSummary
+    variants_count: number
+    customization_groups_count: number
+    media_count: number
+    outlets_count: number
+}
+
 export interface ProductDetail extends Product {
     category?: CatalogCategory
+    summary: ProductDetailSummary
     variants?: ProductVariant[]
     media?: ProductMedia[]
     modifier_groups?: ProductModifierGroup[]

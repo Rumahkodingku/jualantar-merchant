@@ -112,7 +112,6 @@ export function CatalogsPage() {
                 count={productCount}
                 onChange={patchFilters}
                 onReset={resetFilters}
-                hasFilters={hasFilters}
                 reorderMode={reorderMode}
                 canReorder={!hasFilters}
                 onToggleReorder={() => setReorderMode((mode) => !mode)}

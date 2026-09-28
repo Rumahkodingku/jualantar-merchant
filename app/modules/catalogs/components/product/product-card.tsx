@@ -28,7 +28,7 @@ export function ProductCard({
     const hasVariantRange = isVariable && product.min_price !== null && product.min_price !== undefined
     const detailPath = CATALOGS_PATHS.detail(product.id)
     const meta = buildProductMeta(product)
-    const subtitle = [product.category?.name ?? "Tanpa kategori", PRODUCT_TYPE_LABEL[product.product_type]].join(" - ")
+    const subtitle = [product.category?.name ?? "Tanpa kategori", PRODUCT_TYPE_LABEL[product.product_type]].join(" • ")
     const priceLabel = hasVariantRange
         ? `Mulai dari ${formatCurrency(product.min_price)}`
         : isVariable

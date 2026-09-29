@@ -5,7 +5,7 @@ import { Dialog, DialogContent } from "~/components/ui/dialog"
 import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
 
-import { ProductMediaThumbnail } from "./product-media-thumbnail"
+import { ProductMediaThumbnail } from "../common/media-thumbnail"
 import { sortByDisplayOrder } from "../../utils/media-order"
 import type { ProductMedia } from "../../types"
 

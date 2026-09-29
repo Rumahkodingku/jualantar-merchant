@@ -1,7 +1,7 @@
 import { Images, ImagesIcon } from "lucide-react"
 import { Text } from "~/components/ui/text"
-import { CatalogEmptyState } from "../catalog-empty-state"
-import { ProductMediaThumbnail } from "./product-media-thumbnail"
+import { CatalogEmptyState } from "../common/catalog-empty-state"
+import { ProductMediaThumbnail } from "../common/media-thumbnail"
 import { sortByDisplayOrder } from "../../utils/media-order"
 import type { ProductMedia } from "../../types"
 

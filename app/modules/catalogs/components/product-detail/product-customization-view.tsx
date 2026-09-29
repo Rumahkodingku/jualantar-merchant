@@ -4,7 +4,7 @@ import { Badge } from "~/components/ui/badge"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible"
 import { Text } from "~/components/ui/text"
 
-import { CatalogEmptyState } from "../catalog-empty-state"
+import { CatalogEmptyState } from "../common/catalog-empty-state"
 import { StatusBadge } from "../common/status-badge"
 import { formatCurrency } from "../../utils/format-currency"
 import { SELECTION_TYPE_LABEL } from "../../utils/labels"

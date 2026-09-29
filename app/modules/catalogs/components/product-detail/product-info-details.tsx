@@ -1,6 +1,6 @@
 import { InfoIcon } from "lucide-react"
 
-import { DetailRows } from "./detail-rows"
+import { DetailRows } from "../common/detail-rows"
 import { formatDateTime } from "../../utils/format-datetime"
 import { PRODUCT_TYPE_LABEL, STATUS_LABEL } from "../../utils/labels"
 import { formatSummaryPrice } from "../../utils/product-price"

@@ -2,7 +2,7 @@ import { ImageIcon } from "lucide-react"
 
 import { Text } from "~/components/ui/text"
 
-import { ReviewSection } from "../review-section"
+import { ReviewSection } from "../common/review-section"
 import { formatCurrency } from "../../utils/format-currency"
 import { PRODUCT_TYPE_LABEL } from "../../utils/labels"
 import type { ProductInfoFormValues } from "../../schemas/"

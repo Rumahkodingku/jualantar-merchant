@@ -1,7 +1,7 @@
 import { AspectRatio } from "~/components/ui/aspect-ratio"
 import { Text } from "~/components/ui/text"
 import { ProductDetailTabList, type ProductDetailTab } from "./product-detail-tabs"
-import { ProductMediaThumbnail } from "./product-media-thumbnail"
+import { ProductMediaThumbnail } from "../common/media-thumbnail"
 import { ProductSummaryMetrics } from "./product-summary-metrics"
 import { sortByDisplayOrder } from "../../utils/media-order"
 import { formatSummaryPrice } from "../../utils/product-price"

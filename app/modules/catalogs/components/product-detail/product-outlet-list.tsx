@@ -5,7 +5,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/component
 import { Text } from "~/components/ui/text"
 import type { OperationalOutlet } from "~/modules/merchant-operations"
 
-import { CatalogEmptyState } from "../catalog-empty-state"
+import { CatalogEmptyState } from "../common/catalog-empty-state"
 import { AvailabilityBadge } from "../outlets/availability-badge"
 import { StatusBadge } from "../common/status-badge"
 import { outletPhotoUrl } from "../../utils/outlet-photo"

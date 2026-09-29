@@ -8,7 +8,7 @@ import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { Textarea } from "~/components/ui/textarea"
 
-import { DetailRows } from "./detail-rows"
+import { DetailRows } from "../common/detail-rows"
 import { useUpdateProduct } from "../../services/products/product.mutations"
 import { applyServerFieldErrors, catalogErrorMessage } from "../../utils/api-error"
 import { issuesToMessages } from "../../utils/issues"

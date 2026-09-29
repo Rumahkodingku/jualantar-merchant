@@ -6,7 +6,7 @@ import { ErrorState } from "~/components/error-state"
 import { Input } from "~/components/ui/input"
 import { useDebouncedValue } from "~/hooks/use-debounced-value"
 
-import { CatalogEmptyState } from "../components/catalog-empty-state"
+import { CatalogEmptyState } from "../components/common/catalog-empty-state"
 import { ListSkeleton } from "~/components/list-skeleton"
 import { CategoryDeleteDialog } from "../components/categories/category-delete-dialog"
 import { CategoryFormDialog } from "../components/categories/category-form-dialog"

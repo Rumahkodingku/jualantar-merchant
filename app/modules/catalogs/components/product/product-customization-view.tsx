@@ -14,14 +14,14 @@ function ModifierGroupItem({ group }: { group: ProductModifierGroup }) {
     const hasDescription = group.description !== null && group.description !== ""
 
     return (
-        <Collapsible defaultOpen className="overflow-hidden">
+        <Collapsible defaultOpen className="overflow-hidden rounded-2xl border">
             <CollapsibleTrigger
                 type="button"
-                className="group flex w-full items-start gap-3 text-left transition-colors outline-none hover:bg-muted/50 focus-visible:bg-muted/50"
+                className="group flex w-full items-start gap-3 p-4 text-left transition-colors outline-none hover:bg-muted/50 focus-visible:bg-muted/50"
             >
                 <span className="flex min-w-0 flex-1 flex-col gap-1.5">
                     <span className="flex min-w-0 items-center justify-between gap-3">
-                        <Text as="span" variant="base" weight="semibold" truncate>
+                        <Text as="span" variant="base" weight="bold" truncate>
                             {group.name}
                         </Text>
                         <StatusBadge status={group.status} />
@@ -49,7 +49,7 @@ function ModifierGroupItem({ group }: { group: ProductModifierGroup }) {
             </CollapsibleTrigger>
 
             <CollapsibleContent>
-                <div className="flex flex-col gap-3 py-4">
+                <div className="flex flex-col gap-3 border-t">
                     {hasDescription ? (
                         <Text variant="sm" className="text-muted-foreground">
                             {group.description}
@@ -62,12 +62,12 @@ function ModifierGroupItem({ group }: { group: ProductModifierGroup }) {
                                 <li key={modifier.id} className="flex items-center justify-between gap-3 px-3 py-2.5">
                                     <div className="flex min-w-0 flex-col gap-1">
                                         <div className="flex min-w-0 items-center gap-2">
-                                            <Text variant="base" weight="bold" truncate>
+                                            <Text variant="sm" weight="semibold" truncate>
                                                 {modifier.name}
                                             </Text>
                                             {modifier.is_default ? <Badge variant="secondary">Default</Badge> : null}
                                         </div>
-                                        <Text variant="sm" weight="semibold">
+                                        <Text variant="sm" weight="medium">
                                             + {formatCurrency(modifier.price)}
                                         </Text>
                                     </div>

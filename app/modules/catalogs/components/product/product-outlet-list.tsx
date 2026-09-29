@@ -200,7 +200,7 @@ export function ProductOutletList({ rows }: { rows: ProductOutletRow[] }) {
 
     return (
         <div className="mt-4">
-            <div className="mb-4">
+            <div className="mb-6">
                 <div className="flex items-center gap-2">
                     <StoreIcon aria-hidden="true" className="size-4 text-muted-foreground" />
 

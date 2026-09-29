@@ -1,7 +1,5 @@
-import { ImagesIcon } from "lucide-react"
-
+import { Images, ImagesIcon } from "lucide-react"
 import { Text } from "~/components/ui/text"
-
 import { CatalogEmptyState } from "../catalog-empty-state"
 import { ProductMediaThumbnail } from "./product-media-thumbnail"
 import { sortByDisplayOrder } from "../../utils/media-order"
@@ -21,10 +19,18 @@ export function ProductMediaGallery({ media, onOpen }: { media: ProductMedia[]; 
     }
 
     return (
-        <div className="flex flex-col gap-3">
-            <Text variant="sm" className="text-muted-foreground">
-                Terdapat {items.length} foto untuk produk ini.
-            </Text>
+        <div className="mt-4 flex flex-col gap-3">
+            <div className="mb-3">
+                <div className="flex items-center gap-2">
+                    <Images aria-hidden="true" className="size-4 text-muted-foreground" />
+                    <Text as="h2" variant="base" weight="bold">
+                        Galeri Produk
+                    </Text>
+                </div>
+                <Text variant="xs" className="mt-1 text-muted-foreground">
+                    Terdapat {items.length} foto untuk produk ini.
+                </Text>
+            </div>
 
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {items.map((item, index) => (

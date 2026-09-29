@@ -1,12 +1,13 @@
 import { PlusIcon, StoreIcon } from "lucide-react"
 import { useEffect, useState } from "react"
-import { Link, useSearchParams } from "react-router"
+import { Link } from "react-router"
 
 import { ErrorState } from "~/components/error-state"
 import { Button } from "~/components/ui/button"
 import { Text } from "~/components/ui/text"
 import { getApiErrorMessage } from "~/lib/api-form"
 import { useDebouncedValue } from "~/hooks/use-debounced-value"
+import { useStableSearchParams } from "~/hooks/use-stable-search-params"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
 import { ForbiddenState } from "~/components/forbidden-state"
 
@@ -29,7 +30,7 @@ function toStatusFilter(value: string | null): StatusFilter {
 
 export function OutletsPage() {
     const permissions = useOperationsPermissions()
-    const [searchParams, setSearchParams] = useSearchParams()
+    const [searchParams, setSearchParams] = useStableSearchParams()
 
     const status = toStatusFilter(searchParams.get("status"))
     const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1)

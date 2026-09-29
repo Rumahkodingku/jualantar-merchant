@@ -21,10 +21,6 @@ import { useProductDetail } from "../services/products/product.queries"
 const DEFAULT_TAB: ProductDetailTab = "ringkasan"
 
 function readTab(value: string | null): ProductDetailTab {
-    if (value === "informasi") {
-        return DEFAULT_TAB
-    }
-
     return PRODUCT_DETAIL_TABS.some((tab) => tab.value === value) ? (value as ProductDetailTab) : DEFAULT_TAB
 }
 
@@ -48,7 +44,7 @@ export function ProductDetailPage() {
             params.set("tab", next)
         }
 
-        setSearchParams(params, { replace: true })
+        setSearchParams(params, { replace: true, preventScrollReset: true })
     }
 
     function openViewer(index: number) {

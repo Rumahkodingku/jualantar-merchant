@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react"
 import { SearchXIcon, ShoppingBagIcon } from "lucide-react"
-import { Link, useSearchParams } from "react-router"
+import { Link } from "react-router"
 import { ErrorState } from "~/components/error-state"
 import { Button } from "~/components/ui/button"
 import { useDebouncedValue } from "~/hooks/use-debounced-value"
+import { useStableSearchParams } from "~/hooks/use-stable-search-params"
 import { CatalogEmptyState } from "../components/catalog-empty-state"
 import { ProductFilters } from "../components/product/product-filters"
 import { ProductList } from "../components/product/product-list"
@@ -17,7 +18,7 @@ import { readProductFilters, type ProductFilterValues } from "../utils/product-f
 import type { CatalogStatus, ProductIndexParams, ProductType } from "../types/catalog.types"
 
 export function CatalogsPage() {
-    const [searchParams, setSearchParams] = useSearchParams()
+    const [searchParams, setSearchParams] = useStableSearchParams()
     const filters = readProductFilters(searchParams)
 
     const [searchInput, setSearchInput] = useState(filters.search)

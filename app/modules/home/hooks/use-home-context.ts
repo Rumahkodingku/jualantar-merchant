@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react"
-import { useSearchParams } from "react-router"
 
+import { useStableSearchParams } from "~/hooks/use-stable-search-params"
 import { useOperationalOutlets, type OperationalOutlet } from "~/modules/merchant-operations"
 
 import type { HomeOutletContext } from "../types/home.types"
@@ -35,7 +35,7 @@ function readSelectedId(searchParams: URLSearchParams): string | null {
  * - pemilihan outlet TIDAK mengubah role/permission/session.
  */
 export function useHomeContext(): HomeContextValue {
-    const [searchParams, setSearchParams] = useSearchParams()
+    const [searchParams, setSearchParams] = useStableSearchParams()
     const outletsQuery = useOperationalOutlets({ per_page: HOME_OUTLETS_PAGE_SIZE })
 
     const outlets = useMemo(() => outletsQuery.data?.data ?? [], [outletsQuery.data])

@@ -1,5 +1,5 @@
 import { NotebookPenIcon } from "lucide-react"
-import { useSearchParams } from "react-router"
+import { useStableSearchParams } from "~/hooks/use-stable-search-params"
 
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "~/components/ui/empty"
 import { Text } from "~/components/ui/text"
@@ -20,7 +20,7 @@ function toStatusFilter(value: string | null): OrderStatusFilter {
 }
 
 export function OrdersPage() {
-    const [searchParams, setSearchParams] = useSearchParams()
+    const [searchParams, setSearchParams] = useStableSearchParams()
     const status = toStatusFilter(searchParams.get("status"))
 
     return (

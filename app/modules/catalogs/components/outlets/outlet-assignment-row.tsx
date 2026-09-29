@@ -12,6 +12,17 @@ import { catalogErrorMessage } from "../../utils/api-error"
 import { notifyError, notifySuccess } from "~/lib/notify"
 import type { OutletProductAssignment } from "../../types"
 
+/**
+ * One outlet this product is assigned to, with the two things that can be said
+ * about that assignment beyond its existence.
+ *
+ * Assignment and availability are per-outlet facts the API moves one at a time,
+ * and they survive a replace of the whole list — which is why they are written
+ * straight to the server here rather than held for the end of the wizard. The
+ * one thing that is *not* immediate is removal: `onRemove` only reports the
+ * merchant's wish, and the assignment actually goes when the wizard is saved, so
+ * a step they change their mind about costs nothing.
+ */
 export function OutletAssignmentRow({
     productId,
     assignment,
@@ -22,12 +33,13 @@ export function OutletAssignmentRow({
     onRemove: () => void
 }) {
     const statusMutation = useSetOutletAssignmentStatus(productId, assignment.outlet_id)
+    const name = assignment.outlet?.name ?? assignment.outlet_id
 
     return (
         <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 ring-1 ring-foreground/5">
             <div className="flex items-center justify-between gap-2">
                 <Text variant="sm" weight="medium" truncate>
-                    {assignment.outlet?.name ?? assignment.outlet_id}
+                    {name}
                 </Text>
                 <div className="flex shrink-0 items-center gap-1.5">
                     <StatusBadge status={assignment.status} />
@@ -47,7 +59,7 @@ export function OutletAssignmentRow({
                 <Switch
                     checked={assignment.status === "active"}
                     disabled={statusMutation.isPending}
-                    aria-label={`Assignment ${assignment.outlet?.name ?? assignment.outlet_id}`}
+                    aria-label={`Assignment ${name}`}
                     onCheckedChange={(checked) =>
                         statusMutation.mutate(checked === true ? "active" : "inactive", {
                             onSuccess: () => notifySuccess("Status assignment diperbarui"),
@@ -75,7 +87,7 @@ export function OutletAssignmentRow({
                         type="button"
                         variant="ghost"
                         size="icon-sm"
-                        aria-label={`Hapus penugasan ${assignment.outlet?.name ?? ""}`}
+                        aria-label={`Hapus penugasan ${name}`}
                         className="text-destructive"
                         onClick={onRemove}
                     >

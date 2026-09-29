@@ -13,8 +13,8 @@ import { SELECTION_TYPE_OPTIONS } from "../../utils/labels"
 import { notifyError, notifySuccess } from "~/lib/notify"
 import { modifierGroupSchema, type ModifierGroupFormValues } from "../../schemas"
 import { useCreateModifierGroup, useUpdateModifierGroup } from "../../services/modifiers/modifier.mutations"
-import type { SelectionType } from "../../types"
-import type { FormMode } from "../variants/variant-form-dialog"
+import type { CatalogStatus, SelectionType } from "../../types"
+import { allowsStatusChoice, type FormMode } from "../variants/variant-form-dialog"
 
 /**
  * The parts of a modifier group the API takes. A description that was never
@@ -36,6 +36,12 @@ export interface ModifierGroupDraftPayload extends Omit<ModifierGroupPayload, "d
     description: string
 }
 
+/**
+ * What a staged group gets back, with the status the API moves separately. The
+ * description stays the empty string its input holds, as a draft keeps it.
+ */
+export type ModifierGroupDraftPayloadWithStatus = ModifierGroupDraftPayload & { status: CatalogStatus }
+
 /** What the form reads, satisfied by both a saved group and a staged draft. */
 export interface ExistingModifierGroup {
     id?: string
@@ -45,6 +51,7 @@ export interface ExistingModifierGroup {
     min_selection: number
     max_selection: number | null
     is_required: boolean
+    status?: CatalogStatus
 }
 
 function groupDefaults(group?: ExistingModifierGroup): ModifierGroupFormValues {
@@ -69,9 +76,12 @@ export function ModifierGroupFormDialog({
     productId?: string
     group?: ExistingModifierGroup
     onClose: () => void
-    onSubmit?: (payload: ModifierGroupDraftPayload) => void
+    onSubmit?: (payload: ModifierGroupDraftPayloadWithStatus) => void
 }) {
     const [values, setValues] = useState<ModifierGroupFormValues>(() => groupDefaults(group))
+    // As with a modifier, a group's status is not part of what the API accepts
+    // on a write; it is held beside the form and applied separately.
+    const [status, setStatus] = useState<CatalogStatus>(group?.status ?? "active")
     const { errors, setErrors, clear } = useFieldErrors()
 
     const createMutation = useCreateModifierGroup(productId ?? "")
@@ -132,8 +142,8 @@ export function ModifierGroupFormDialog({
                 : parsed.data.max_selection_raw
             : 1
 
-        if (mode === "draft") {
-            // A draft keeps the empty string its input holds; the API reads a
+        if (mode !== "server") {
+            // A staged row keeps the empty string its input holds; the API reads a
             // description that was never written as `null`.
             onSubmit?.({
                 name: parsed.data.name,
@@ -142,6 +152,7 @@ export function ModifierGroupFormDialog({
                 min_selection: parsed.data.min_selection,
                 max_selection,
                 is_required: parsed.data.is_required,
+                status,
             })
             return
         }
@@ -283,6 +294,19 @@ export function ModifierGroupFormDialog({
                 error={errors.is_required}
                 ariaLabel="Wajib dipilih"
             />
+
+            {/* The create wizard stages a group for a product that does not exist
+                yet, so there is no status to offer there. An existing group has
+                one, and hiding it is exactly the kind of edit this screen is for. */}
+            {allowsStatusChoice(mode) ? (
+                <ToggleField
+                    label="Status aktif"
+                    description="Nonaktifkan untuk menyembunyikan group ini dari pelanggan."
+                    ariaLabel="Status aktif group"
+                    checked={status === "active"}
+                    onCheckedChange={(active) => setStatus(active ? "active" : "inactive")}
+                />
+            ) : null}
         </FormDialog>
     )
 }

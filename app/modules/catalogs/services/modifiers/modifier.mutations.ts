@@ -3,14 +3,24 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { invalidateProducts } from "../catalog.invalidation"
 import * as modifierApi from "./modifier.api"
 import type {
-    CatalogStatus,
     ModifierCreateInput,
     ModifierGroupCreateInput,
     ModifierGroupUpdateInput,
     ModifierUpdateInput,
-    ReorderItem,
 } from "../../types"
 
+/**
+ * The four writes a customization row can make on its own.
+ *
+ * A product's groups and options are otherwise written by the edit wizard's save,
+ * which works out the whole change at once. These exist for the one case that is
+ * not a whole-product edit: a row inside a form dialog, where the merchant has
+ * changed one group or one option and nothing else.
+ *
+ * Everything else — deleting either, reordering them, moving either between
+ * active and inactive — belongs to that save, because each of those only means
+ * anything relative to the rest of the product.
+ */
 export function useCreateModifierGroup(productId: string) {
     const queryClient = useQueryClient()
 
@@ -30,45 +40,6 @@ export function useUpdateModifierGroup(productId: string, groupId: string) {
     })
 }
 
-export function useDeleteModifierGroup(productId: string) {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: (groupId: string) => modifierApi.deleteProductModifierGroup(productId, groupId),
-        onSuccess: () => invalidateProducts(queryClient, productId),
-    })
-}
-
-export function useSetModifierGroupStatus(productId: string, groupId: string) {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: (status: CatalogStatus) =>
-            status === "active"
-                ? modifierApi.activateProductModifierGroup(productId, groupId)
-                : modifierApi.deactivateProductModifierGroup(productId, groupId),
-        onSuccess: () => invalidateProducts(queryClient, productId),
-    })
-}
-
-export function useReorderModifierGroups(productId: string) {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: (items: ReorderItem[]) => modifierApi.reorderProductModifierGroups(productId, items),
-        onSuccess: () => invalidateProducts(queryClient, productId),
-    })
-}
-
-export function useReorderModifiers(productId: string, groupId: string) {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: (items: ReorderItem[]) => modifierApi.reorderProductModifiers(productId, groupId, items),
-        onSuccess: () => invalidateProducts(queryClient, productId),
-    })
-}
-
 export function useCreateModifier(productId: string, groupId: string) {
     const queryClient = useQueryClient()
 
@@ -84,27 +55,6 @@ export function useUpdateModifier(productId: string, groupId: string, modifierId
     return useMutation({
         mutationFn: (input: ModifierUpdateInput) =>
             modifierApi.updateProductModifier(productId, groupId, modifierId, input),
-        onSuccess: () => invalidateProducts(queryClient, productId),
-    })
-}
-
-export function useDeleteModifier(productId: string, groupId: string) {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: (modifierId: string) => modifierApi.deleteProductModifier(productId, groupId, modifierId),
-        onSuccess: () => invalidateProducts(queryClient, productId),
-    })
-}
-
-export function useSetModifierStatus(productId: string, groupId: string, modifierId: string) {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: (status: CatalogStatus) =>
-            status === "active"
-                ? modifierApi.activateProductModifier(productId, groupId, modifierId)
-                : modifierApi.deactivateProductModifier(productId, groupId, modifierId),
         onSuccess: () => invalidateProducts(queryClient, productId),
     })
 }

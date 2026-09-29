@@ -7,20 +7,30 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~
 import { Text } from "~/components/ui/text"
 import { Textarea } from "~/components/ui/textarea"
 import { cn } from "~/lib/utils"
-import { PRODUCT_TYPE_FORM_LABEL } from "../../utils/labels"
+import { PRODUCT_TYPE_FORM_LABEL, PRODUCT_TYPE_LABEL } from "../../utils/labels"
 import type { ProductType } from "../../types"
 import type { ProductInfoFormValues } from "../../schemas/"
 
+/**
+ * The first step of both wizards.
+ *
+ * A product's type is fixed once it exists — the API will not change it — so
+ * `readOnlyProductType` replaces the choice with the settled answer. The field
+ * is shown rather than hidden because a merchant looking at an existing product
+ * still needs to know which kind of price they are dealing with.
+ */
 export function ProductInfoStep({
     values,
     errors,
     categories,
     onChange,
+    readOnlyProductType,
 }: {
     values: ProductInfoFormValues
     errors: Record<string, string>
     categories: Array<{ id: string; name: string }>
     onChange: (patch: Partial<ProductInfoFormValues>) => void
+    readOnlyProductType?: ProductType
 }) {
     // base-ui mirrors `items` and the change handlers into an internal store and
     // re-renders from it, so a new array or a new function identity on every
@@ -97,38 +107,53 @@ export function ProductInfoStep({
                 {errors.description !== undefined ? <FieldError>{errors.description}</FieldError> : null}
             </Field>
 
-            <div className="flex flex-col gap-2">
-                <FieldLabel id="product-type-label">
-                    Tipe Produk <span className="text-red-600">*</span>
-                </FieldLabel>
-                <RadioGroup
-                    value={values.product_type}
-                    onValueChange={handleProductTypeChange}
-                    aria-labelledby="product-type-label"
-                    className="gap-2"
-                >
-                    {(["simple", "variable"] as const).map((type) => (
-                        <label
-                            key={type}
-                            className={cn(
-                                "flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors hover:bg-muted/50",
-                                values.product_type === type && "border-primary bg-primary/5"
-                            )}
-                        >
-                            <RadioGroupItem value={type} id={`product-type-${type}`} />
-                            <span className="flex min-w-0 flex-col gap-0.5">
-                                <Text variant="sm" weight="semibold">
-                                    {PRODUCT_TYPE_FORM_LABEL[type]}
-                                </Text>
-                                <Text variant="xs" className="text-muted-foreground">
-                                    {type === "simple" ? "Satu harga untuk seluruh produk" : "Harga per variant"}
-                                </Text>
-                            </span>
-                        </label>
-                    ))}
-                </RadioGroup>
-                {errors.product_type !== undefined ? <FieldError>{errors.product_type}</FieldError> : null}
-            </div>
+            {readOnlyProductType === undefined ? (
+                <div className="flex flex-col gap-2">
+                    <FieldLabel id="product-type-label">
+                        Tipe Produk <span className="text-red-600">*</span>
+                    </FieldLabel>
+                    <RadioGroup
+                        value={values.product_type}
+                        onValueChange={handleProductTypeChange}
+                        aria-labelledby="product-type-label"
+                        className="gap-2"
+                    >
+                        {(["simple", "variable"] as const).map((type) => (
+                            <label
+                                key={type}
+                                className={cn(
+                                    "flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors hover:bg-muted/50",
+                                    values.product_type === type && "border-primary bg-primary/5"
+                                )}
+                            >
+                                <RadioGroupItem value={type} id={`product-type-${type}`} />
+                                <span className="flex min-w-0 flex-col gap-0.5">
+                                    <Text variant="sm" weight="semibold">
+                                        {PRODUCT_TYPE_FORM_LABEL[type]}
+                                    </Text>
+                                    <Text variant="xs" className="text-muted-foreground">
+                                        {type === "simple" ? "Satu harga untuk seluruh produk" : "Harga per variant"}
+                                    </Text>
+                                </span>
+                            </label>
+                        ))}
+                    </RadioGroup>
+                    {errors.product_type !== undefined ? <FieldError>{errors.product_type}</FieldError> : null}
+                </div>
+            ) : (
+                <div className="flex flex-col gap-2">
+                    <FieldLabel htmlFor="product-type-readonly">Tipe Produk</FieldLabel>
+                    <Input
+                        id="product-type-readonly"
+                        value={PRODUCT_TYPE_LABEL[readOnlyProductType]}
+                        readOnly
+                        disabled
+                    />
+                    <Text variant="xs" className="text-muted-foreground">
+                        Tipe produk tidak dapat diubah setelah produk dibuat.
+                    </Text>
+                </div>
+            )}
         </div>
     )
 }

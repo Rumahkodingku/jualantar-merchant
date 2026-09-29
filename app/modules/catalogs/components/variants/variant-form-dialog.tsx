@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 import { FormDialog } from "../common/form-dialog"
-import { DescriptionField, MoneyField, NameField, ToggleField } from "../common/form-fields"
+import { MoneyField, NameField, ToggleField } from "../common/form-fields"
 import { useFieldErrors } from "../common/use-field-errors"
 import { applyServerFieldErrors, catalogErrorMessage } from "../../utils/api-error"
 import { issuesToMessages } from "../../utils/issues"
@@ -14,12 +14,22 @@ import type { CatalogStatus } from "../../types"
  * Where the form ends up decides how it saves, and nothing else.
  *
  * `server` writes straight to the API and reports field errors the backend
- * sends back. `draft` hands the validated values to `onSubmit` and stops there,
- * because the wizard owns the row until the whole product is saved — there is
- * no server to report against yet, and a variant staged in a draft is not
- * allowed to carry a status the merchant never chose.
+ * sends back. `draft` and `edit` hand the validated values to `onSubmit` and
+ * stop there, because the wizard owns the row until the whole product is
+ * saved — there is no server to report against yet.
+ *
+ * The two staged modes differ in one field. A product being created has no
+ * status to speak of, so a staged variant is always live and the form does not
+ * offer a choice. A product being edited already has one, and changing it is
+ * exactly the kind of edit this screen exists for — so `edit` shows the toggle
+ * and the status travels back with the rest of the row.
  */
-export type FormMode = "server" | "draft"
+export type FormMode = "server" | "draft" | "edit"
+
+/** Whether the merchant is allowed to choose a row's active status. */
+export function allowsStatusChoice(mode: FormMode): boolean {
+    return mode === "server" || mode === "edit"
+}
 
 /** The parts of a variant the API takes, with the blank-SKU difference folded in. */
 export interface VariantPayload {
@@ -27,6 +37,15 @@ export interface VariantPayload {
     sku: string | null
     price: number
     is_default: boolean
+}
+
+/**
+ * What a staged row gets back. The API's variant endpoints do not take a status
+ * — that changes through activate/deactivate — so the status is carried beside
+ * the payload and applied separately by whoever saves the row.
+ */
+export interface VariantPayloadWithStatus extends VariantPayload {
+    status: CatalogStatus
 }
 
 /**
@@ -59,7 +78,7 @@ export function VariantFormDialog({
     productId?: string
     variant?: ExistingVariant
     onClose: () => void
-    onSubmit?: (payload: VariantPayload) => void
+    onSubmit?: (payload: VariantPayloadWithStatus) => void
 }) {
     const [values, setValues] = useState<VariantRowValues>(() => ({
         name: variant?.name ?? "",
@@ -91,8 +110,8 @@ export function VariantFormDialog({
             is_default: parsed.data.is_default,
         }
 
-        if (mode === "draft") {
-            onSubmit?.(payload)
+        if (mode !== "server") {
+            onSubmit?.({ ...payload, status: parsed.data.status })
             return
         }
 
@@ -169,12 +188,15 @@ export function VariantFormDialog({
                 }}
             />
 
-            {/* A staged variant cannot be deactivated: the draft always keeps it
-                live, and status is decided when the product itself is created. */}
-            {mode === "server" ? (
+            {/* A staged variant on a product that does not exist yet cannot be
+                deactivated: the draft always keeps it live, and status is decided
+                when the product itself is created. An edit is a different matter —
+                the product is already there with a status to change. */}
+            {allowsStatusChoice(mode) ? (
                 <ToggleField
                     label="Status aktif"
                     description="Nonaktifkan untuk menyembunyikan variant."
+                    ariaLabel="Status aktif variant"
                     checked={values.status === "active"}
                     onCheckedChange={(active) => {
                         setValues((current) => ({ ...current, status: active ? "active" : "inactive" }))

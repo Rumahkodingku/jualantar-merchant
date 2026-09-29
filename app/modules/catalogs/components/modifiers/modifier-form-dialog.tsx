@@ -8,7 +8,8 @@ import { issuesToMessages } from "../../utils/issues"
 import { notifyError, notifySuccess } from "~/lib/notify"
 import { modifierSchema, type ModifierFormValues } from "../../schemas"
 import { useCreateModifier, useUpdateModifier } from "../../services/modifiers/modifier.mutations"
-import type { FormMode } from "../variants/variant-form-dialog"
+import type { CatalogStatus } from "../../types"
+import { allowsStatusChoice, type FormMode } from "../variants/variant-form-dialog"
 
 /**
  * The parts of a modifier the API takes. A description that was never written
@@ -23,6 +24,15 @@ export interface ModifierPayload {
     is_default: boolean
 }
 
+/**
+ * What a staged row gets back. As with variants, the modifier endpoints do not
+ * take a status — it moves through activate/deactivate — so it travels beside
+ * the payload and is applied separately by whoever saves the row. The
+ * description stays the empty string its input holds, exactly as a draft keeps
+ * it; the API reads an unwritten one as `null` at the moment of writing.
+ */
+export type ModifierDraftPayloadWithStatus = ModifierDraftPayload & { status: CatalogStatus }
+
 /** The same modifier as the draft stores it. */
 export interface ModifierDraftPayload extends Omit<ModifierPayload, "description"> {
     description: string
@@ -35,6 +45,7 @@ export interface ExistingModifier {
     description: string | null
     price: number
     is_default: boolean
+    status?: CatalogStatus
 }
 
 export function ModifierFormDialog({
@@ -50,7 +61,7 @@ export function ModifierFormDialog({
     groupId?: string
     modifier?: ExistingModifier
     onClose: () => void
-    onSubmit?: (payload: ModifierDraftPayload) => void
+    onSubmit?: (payload: ModifierDraftPayloadWithStatus) => void
 }) {
     const [values, setValues] = useState<ModifierFormValues>(() => ({
         name: modifier?.name ?? "",
@@ -58,6 +69,10 @@ export function ModifierFormDialog({
         price: modifier?.price ?? 0,
         is_default: modifier?.is_default ?? false,
     }))
+    // Status is not part of the modifier's validated payload — the API moves it
+    // through activate/deactivate — so it is held beside the form and only
+    // offered where the merchant is allowed to choose it.
+    const [status, setStatus] = useState<CatalogStatus>(modifier?.status ?? "active")
     const { errors, setErrors, clear } = useFieldErrors()
 
     const createMutation = useCreateModifier(productId ?? "", groupId ?? "")
@@ -72,12 +87,13 @@ export function ModifierFormDialog({
             return
         }
 
-        if (mode === "draft") {
+        if (mode !== "server") {
             onSubmit?.({
                 name: parsed.data.name,
                 description: parsed.data.description ?? "",
                 price: parsed.data.price,
                 is_default: parsed.data.is_default,
+                status,
             })
             return
         }
@@ -161,6 +177,20 @@ export function ModifierFormDialog({
                     clear("is_default")
                 }}
             />
+
+            {/* A product that does not exist yet has no status to speak of, so the
+                create wizard never offers the choice. An existing product does,
+                and hiding an option is exactly the kind of edit this screen is
+                for. */}
+            {allowsStatusChoice(mode) ? (
+                <ToggleField
+                    label="Status aktif"
+                    description="Nonaktifkan untuk menyembunyikan pilihan ini dari pelanggan."
+                    ariaLabel="Status aktif pilihan"
+                    checked={status === "active"}
+                    onCheckedChange={(active) => setStatus(active ? "active" : "inactive")}
+                />
+            ) : null}
         </FormDialog>
     )
 }

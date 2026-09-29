@@ -8,17 +8,19 @@ import { VariantFormDialog } from "../variants/variant-form-dialog"
 import type { FormMode } from "../variants/variant-form-dialog"
 
 /**
- * The wizard stages a row and the edit screen saves one, through the same
- * dialog. That is only safe while both modes lay out the same fields — a field
- * added to one and forgotten in the other would let a merchant type something
- * the wizard silently drops.
+ * The create wizard stages a row and the edit wizard saves one, through the same
+ * dialog. That is only safe while the two lay out the same fields — a field added
+ * to one and forgotten in the other would let a merchant type something the other
+ * silently drops.
  *
- * These assertions run the same form in both modes and compare what is on
- * screen, so the two can never drift apart unnoticed.
+ * These assertions run the same form in every mode and compare what is on screen.
+ * The only field allowed to differ is the status toggle, and it is allowed to
+ * differ for a reason: a product that does not exist yet has no status to give a
+ * row, while a product that is already there does.
  */
 function renderWithClient(ui: React.ReactNode) {
     // Dialogs portal out of the render container, and each test renders the
-    // same form twice, so the tree is cleared in between to keep the two
+    // same form more than once, so the tree is cleared in between to keep the
     // label sets from overlapping.
     cleanup()
 
@@ -53,56 +55,81 @@ function renderModifierGroup(mode: FormMode) {
     return renderWithClient(<ModifierGroupFormDialog mode={mode} productId="p1" onClose={() => undefined} />)
 }
 
-describe("form dialogs render the same fields in both modes", () => {
-    it("variant: both modes offer name, sku, price and default", () => {
+const STATUS_FIELD = "Status aktif"
+
+describe("every mode offers the same fields apart from the status toggle", () => {
+    it("variant: draft, edit and server agree on name, sku, price and default", () => {
         const draft = renderVariant("draft")
+        const edit = renderVariant("edit")
         const server = renderVariant("server")
 
-        // Server mode adds exactly one field — the status toggle below — and
-        // otherwise offers the same form the wizard does.
         expect(draft).toEqual(["Harga (Rp)", "Nama", "SKU (opsional)", "Variant utama"])
-        expect(server.filter((field) => field !== "Status aktif")).toEqual(draft)
-        expect(server).toEqual([...draft, "Status aktif"].sort())
+
+        // The status toggle is the one field that may differ, and it does so
+        // deliberately: the create wizard has no product to give a status to.
+        for (const fields of [edit, server]) {
+            expect(fields.filter((field) => field !== STATUS_FIELD)).toEqual(draft)
+            expect(fields).toEqual([...draft, STATUS_FIELD].sort())
+        }
     })
 
-    it("modifier: both modes offer name, description, price and default", () => {
-        expect(renderModifier("server")).toEqual(renderModifier("draft"))
-        expect(renderModifier("server")).toEqual([
-            "Deskripsi (opsional)",
-            "Dipilih secara default",
-            "Harga tambahan (Rp)",
-            "Nama",
-        ])
+    it("modifier: draft, edit and server agree on name, description, price and default", () => {
+        const draft = renderModifier("draft")
+        const edit = renderModifier("edit")
+        const server = renderModifier("server")
+
+        expect(draft).toEqual(["Deskripsi (opsional)", "Dipilih secara default", "Harga tambahan (Rp)", "Nama"])
+
+        for (const fields of [edit, server]) {
+            expect(fields.filter((field) => field !== STATUS_FIELD)).toEqual(draft)
+            expect(fields).toEqual([...draft, STATUS_FIELD].sort())
+        }
     })
 
-    it("modifier group: both modes offer the same fields", () => {
-        expect(renderModifierGroup("server")).toEqual(renderModifierGroup("draft"))
-        expect(renderModifierGroup("server")).toEqual([
-            "Deskripsi (opsional)",
-            "Nama group",
-            "Tipe seleksi",
-            "Wajib dipilih",
-        ])
+    it("modifier group: draft, edit and server agree on name, description, selection and required", () => {
+        const draft = renderModifierGroup("draft")
+        const edit = renderModifierGroup("edit")
+        const server = renderModifierGroup("server")
+
+        expect(draft).toEqual(["Deskripsi (opsional)", "Nama group", "Tipe seleksi", "Wajib dipilih"])
+
+        for (const fields of [edit, server]) {
+            expect(fields.filter((field) => field !== STATUS_FIELD)).toEqual(draft)
+            expect(fields).toEqual([...draft, STATUS_FIELD].sort())
+        }
     })
 })
 
-describe("the status toggle belongs to the server only", () => {
+describe("the status toggle is offered wherever a status exists to change", () => {
     it("is offered when saving a saved variant", () => {
         renderVariant("server")
 
-        expect(screen.getByText("Status aktif")).toBeInTheDocument()
+        expect(screen.getByText(STATUS_FIELD)).toBeInTheDocument()
+    })
+
+    it("is offered when editing a variant of a product that already exists", () => {
+        renderVariant("edit")
+
+        expect(screen.getByText(STATUS_FIELD)).toBeInTheDocument()
     })
 
     it("is not offered for a staged variant, whose status is decided on create", () => {
         renderVariant("draft")
 
-        expect(screen.queryByText("Status aktif")).not.toBeInTheDocument()
+        expect(screen.queryByText(STATUS_FIELD)).not.toBeInTheDocument()
     })
 })
 
-describe("a draft form never waits on the network", () => {
+describe("a staged form never waits on the network", () => {
     it("shows a plain submit, with no pending state to enter", () => {
         renderVariant("draft")
+
+        expect(screen.getByRole("button", { name: "Simpan" })).toBeInTheDocument()
+        expect(screen.queryByText("Menyimpan…")).not.toBeInTheDocument()
+    })
+
+    it("is equally true of a row being staged for an edit", () => {
+        renderVariant("edit")
 
         expect(screen.getByRole("button", { name: "Simpan" })).toBeInTheDocument()
         expect(screen.queryByText("Menyimpan…")).not.toBeInTheDocument()

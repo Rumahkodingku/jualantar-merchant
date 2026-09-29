@@ -16,20 +16,32 @@ import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
 
 import { ConfirmDialog } from "../common/confirm-dialog"
-import { ModifierFormDialog, type ModifierDraftPayload } from "../modifiers/modifier-form-dialog"
-import { ModifierGroupFormDialog, type ModifierGroupDraftPayload } from "../modifiers/modifier-group-form-dialog"
+import { ModifierFormDialog, type ModifierDraftPayloadWithStatus } from "../modifiers/modifier-form-dialog"
+import {
+    ModifierGroupFormDialog,
+    type ModifierGroupDraftPayloadWithStatus,
+} from "../modifiers/modifier-group-form-dialog"
 import { ModifierGroupDraftCard } from "./modifier-group-draft-card"
 import { draftKey } from "../../utils/draft-key"
+import type { FormMode } from "../variants/variant-form-dialog"
 import type { GroupDraft, ModifierDraft } from "../../types/product-draft.types"
 
 type PendingDelete = { scope: "group" | "option"; groupKey: string; modifier?: ModifierDraft }
 
+/**
+ * The wizard's modifier editor, with the same caveat as the variant list: rows
+ * live in the form until the product is saved, and `mode` decides whether a row
+ * can be deactivated. A group being created has no status to give it; a group on
+ * a product that already exists does.
+ */
 export function ModifierGroupDraftEditor({
     groups,
     onChange,
+    mode = "draft",
 }: {
     groups: GroupDraft[]
     onChange: (groups: GroupDraft[]) => void
+    mode?: FormMode
 }) {
     const [groupDialog, setGroupDialog] = useState<{ open: boolean; group?: GroupDraft }>({ open: false })
     const [modifierDialog, setModifierDialog] = useState<{
@@ -55,20 +67,22 @@ export function ModifierGroupDraftEditor({
         return owner
     }, [groups])
 
-    function submitGroup(payload: ModifierGroupDraftPayload) {
+    function submitGroup(payload: ModifierGroupDraftPayloadWithStatus) {
         const editing = groupDialog.group
+        const { status, ...fields } = payload
 
         if (editing === undefined) {
-            onChange([...groups, { key: draftKey("grp"), status: "active", modifiers: [], ...payload }])
+            onChange([...groups, { key: draftKey("grp"), modifiers: [], ...fields, status }])
         } else {
-            onChange(groups.map((group) => (group.key === editing.key ? { ...group, ...payload } : group)))
+            onChange(groups.map((group) => (group.key === editing.key ? { ...group, ...fields, status } : group)))
         }
 
         setGroupDialog({ open: false })
     }
 
-    function submitModifier(payload: ModifierDraftPayload) {
+    function submitModifier(payload: ModifierDraftPayloadWithStatus) {
         const { groupKey, modifier } = modifierDialog
+        const { status, ...fields } = payload
 
         onChange(
             groups.map((group) => {
@@ -79,14 +93,14 @@ export function ModifierGroupDraftEditor({
                 if (modifier === undefined) {
                     return {
                         ...group,
-                        modifiers: [...group.modifiers, { key: draftKey("mod"), status: "active", ...payload }],
+                        modifiers: [...group.modifiers, { key: draftKey("mod"), ...fields, status }],
                     }
                 }
 
                 return {
                     ...group,
                     modifiers: group.modifiers.map((entry) =>
-                        entry.key === modifier.key ? { ...entry, ...payload } : entry
+                        entry.key === modifier.key ? { ...entry, ...fields, status } : entry
                     ),
                 }
             })
@@ -296,7 +310,7 @@ export function ModifierGroupDraftEditor({
 
             {groupDialog.open ? (
                 <ModifierGroupFormDialog
-                    mode="draft"
+                    mode={mode}
                     group={groupDialog.group}
                     onClose={() => setGroupDialog({ open: false })}
                     onSubmit={submitGroup}
@@ -305,7 +319,7 @@ export function ModifierGroupDraftEditor({
 
             {modifierDialog.open ? (
                 <ModifierFormDialog
-                    mode="draft"
+                    mode={mode}
                     modifier={modifierDialog.modifier}
                     onClose={() => setModifierDialog({ open: false, groupKey: "" })}
                     onSubmit={submitModifier}

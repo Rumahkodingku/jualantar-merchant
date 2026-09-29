@@ -57,3 +57,7 @@ export type {
 } from "./product.types"
 
 export type { VariantCreateInput, VariantIndexParams, VariantUpdateInput, ProductVariant } from "./variant.types"
+
+export type { EditForm, EditSnapshot } from "./product-edit.types"
+
+export type { GroupDraft, MediaDraft, ModifierDraft, VariantDraft } from "./product-draft.types"

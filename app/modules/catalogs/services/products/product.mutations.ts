@@ -2,16 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { invalidateProducts } from "../catalog.invalidation"
 import * as productApi from "./product.api"
-import type { CatalogStatus, ProductUpdateInput, ReorderItem } from "../../types"
-
-export function useUpdateProduct(productId: string) {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: (input: ProductUpdateInput) => productApi.updateProduct(productId, input),
-        onSuccess: () => invalidateProducts(queryClient, productId),
-    })
-}
+import type { CatalogStatus, ReorderItem } from "../../types"
 
 export function useDeleteProduct() {
     const queryClient = useQueryClient()

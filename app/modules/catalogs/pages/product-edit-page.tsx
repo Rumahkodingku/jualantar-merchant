@@ -1,52 +1,57 @@
-import { Button } from "~/components/ui/button"
-import { Skeleton } from "~/components/ui/skeleton"
-import { Text } from "~/components/ui/text"
-import { useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 
 import { ErrorState } from "~/components/error-state"
 import { ListSkeleton } from "~/components/list-skeleton"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
 
-import { ReviewSection } from "../components/common/review-section"
-import { StatusBadge } from "../components/common/status-badge"
-import { ProductInfoSection } from "../components/product-edit/product-info-section"
-import { ProductPriceSection } from "../components/product-edit/product-price-section"
-import { ProductVariantSection } from "../components/product-edit/product-variant-section"
-import { ProductCustomizationSection } from "../components/product-edit/product-customization-section"
-import { ProductMediaSection } from "../components/product-edit/product-media-section"
-import { ProductOutletSection } from "../components/product-edit/product-outlet-section"
-import { useProductEditSections } from "../hooks/use-product-edit-sections"
+import { ProductEditWizard } from "../components/product-edit/product-edit-wizard"
 import { useCategories } from "../services/categories/category.queries"
-import { useProductAssignments } from "../services/product-outlets/product-outlet.queries"
+import { toEditForm } from "../services/product-edit/to-edit-form"
+import { useOutlets, useProductAssignments } from "../services/product-outlets/product-outlet.queries"
 import { useProductDetail } from "../services/products/product.queries"
-import { formatCurrency } from "../utils/format-currency"
 import { CATALOGS_PATHS } from "../utils/paths"
+import type { EditSnapshot, ProductDetail } from "../types"
 
 /**
- * The edit screen: one collapsible section per part of a product, each
- * read-only until the merchant asks to change it.
+ * The "edit product" screen.
  *
- * The page decides what data to load and which section is open; every section
- * lives in `components/product-edit` and owns its own presentation.
+ * All it does is decide which of the states the merchant is in — something is
+ * still loading, something could not be read, or the wizard can be shown — and
+ * hand over to `ProductEditWizard`. Nothing about the steps, the form or the save
+ * belongs here.
+ *
+ * Three requests are waited on before the wizard opens: the product itself, the
+ * categories its information step offers, and the outlets it is currently
+ * assigned to. The last one is not cosmetic — the wizard is seeded once from what
+ * these return, and a form seeded before the assignments arrive would read every
+ * outlet as unassigned and quietly un-assign them on save. Waiting is the honest
+ * version of that; the alternative is a wizard that has to reconcile a late
+ * arrival into an edit already in progress.
  */
 export function ProductEditPage() {
     const { productId } = useParams<{ productId: string }>()
+    const navigate = useNavigate()
 
     const detailQuery = useProductDetail(productId)
     const categoriesQuery = useCategories({ status: "active", per_page: 100, sort: "name", order: "asc" })
     const assignmentsQuery = useProductAssignments(productId)
-
-    const sections = useProductEditSections()
+    const outletsQuery = useOutlets()
 
     if (productId === undefined) {
         return <ErrorState title="Produk tidak ditemukan" description="ID produk tidak tersedia." />
     }
 
-    if (detailQuery.isPending) {
+    const isLoading = detailQuery.isPending || categoriesQuery.isPending || assignmentsQuery.isPending
+
+    if (isLoading) {
         return (
             <div className="flex flex-1 flex-col gap-5">
-                <Skeleton className="h-10 w-2/3" />
-                <ListSkeleton rows={4} className="h-20" />
+                <SubpageHeader
+                    title="Edit Produk"
+                    description="Lengkapi langkah untuk mengubah produk."
+                    backTo={CATALOGS_PATHS.detail(productId)}
+                />
+                <ListSkeleton rows={3} className="h-24" />
             </div>
         )
     }
@@ -61,120 +66,74 @@ export function ProductEditPage() {
         )
     }
 
+    if (categoriesQuery.isError) {
+        return (
+            <ErrorState
+                title="Gagal memuat kategori"
+                description="Terjadi kesalahan saat memuat data kategori."
+                onRetry={() => void categoriesQuery.refetch()}
+            />
+        )
+    }
+
+    if (assignmentsQuery.isError) {
+        return (
+            <ErrorState
+                title="Gagal memuat outlet produk"
+                description="Daftar outlet produk tidak dapat dimuat. Coba lagi sebelum mengubah produk."
+                onRetry={() => void assignmentsQuery.refetch()}
+            />
+        )
+    }
+
     const product = detailQuery.data
     const categories = categoriesQuery.data?.data ?? []
-    const assignments = assignmentsQuery.data ?? []
-    const isVariable = product.product_type === "variable"
+    const outlets = outletsQuery.data ?? []
+    const outletIds = (assignmentsQuery.data ?? []).map((assignment) => assignment.outlet_id)
 
     return (
-        <div className="flex flex-1 flex-col gap-5">
-            <SubpageHeader title="Edit Produk" description={product.name} backTo={CATALOGS_PATHS.detail(product.id)} />
+        <div className="flex flex-1 flex-col gap-4">
+            <SubpageHeader
+                title="Edit Produk"
+                description="Lengkapi langkah untuk mengubah produk."
+                backTo={CATALOGS_PATHS.detail(productId)}
+            />
 
-            <div className="flex items-center gap-2">
-                <Text variant="sm" weight="medium" truncate>
-                    {product.name}
-                </Text>
-                <StatusBadge status={product.status} />
-            </div>
-
-            <div className="flex flex-col gap-3">
-                {/* Name, category and description. The type is fixed after
-                    creation, so it is shown rather than offered as a choice. */}
-                <ReviewSection
-                    title="Informasi"
-                    summary={[product.name, product.category?.name ?? "Tanpa kategori"].join(" • ")}
-                    expanded={sections.expanded === "info"}
-                    onToggle={() => sections.toggle("info")}
-                    headerAction={
-                        sections.expanded === "info" && !sections.editing.info ? (
-                            <Button
-                                type="button"
-                                size="sm"
-                                variant="outline"
-                                onClick={() => sections.startEdit("info")}
-                            >
-                                Ubah
-                            </Button>
-                        ) : undefined
-                    }
-                >
-                    <ProductInfoSection
-                        product={product}
-                        categories={categories}
-                        editing={sections.editing.info}
-                        onToggleEdit={() => sections.stopEdit("info")}
-                    />
-                </ReviewSection>
-
-                {/* A variable product's price is its variant list, which has its
-                    own section; a simple one just has a number. */}
-                {isVariable ? (
-                    <ProductVariantSection
-                        product={product}
-                        isExpanded={sections.expanded === "price"}
-                        isEditing={sections.editing.price}
-                        onToggle={() => sections.toggle("price")}
-                        onStartEdit={() => sections.startEdit("price")}
-                        onStopEdit={() => sections.stopEdit("price")}
-                    />
-                ) : (
-                    <ReviewSection
-                        title="Harga"
-                        summary={product.price != null ? formatCurrency(product.price) : "Harga belum diisi"}
-                        expanded={sections.expanded === "price"}
-                        onToggle={() => sections.toggle("price")}
-                        headerAction={
-                            sections.expanded === "price" && !sections.editing.price ? (
-                                <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => sections.startEdit("price")}
-                                >
-                                    Ubah
-                                </Button>
-                            ) : undefined
-                        }
-                    >
-                        <ProductPriceSection
-                            product={product}
-                            editing={sections.editing.price}
-                            onToggleEdit={() => sections.stopEdit("price")}
-                        />
-                    </ReviewSection>
-                )}
-
-                <ProductCustomizationSection
-                    product={product}
-                    isExpanded={sections.expanded === "customization"}
-                    isEditing={sections.editing.customization}
-                    onToggle={() => sections.toggle("customization")}
-                    onStartEdit={() => sections.startEdit("customization")}
-                    onStopEdit={() => sections.stopEdit("customization")}
-                />
-
-                <ProductMediaSection
-                    product={product}
-                    isExpanded={sections.expanded === "media"}
-                    isEditing={sections.editing.media}
-                    onToggle={() => sections.toggle("media")}
-                    onStartEdit={() => sections.startEdit("media")}
-                    onStopEdit={() => sections.stopEdit("media")}
-                />
-
-                <ProductOutletSection
-                    product={product}
-                    assignments={assignments}
-                    isLoading={assignmentsQuery.isPending}
-                    isError={assignmentsQuery.isError}
-                    isExpanded={sections.expanded === "outlet"}
-                    isEditing={sections.editing.outlet}
-                    onToggle={() => sections.toggle("outlet")}
-                    onStartEdit={() => sections.startEdit("outlet")}
-                    onStopEdit={() => sections.stopEdit("outlet")}
-                    onRetry={() => void assignmentsQuery.refetch()}
-                />
-            </div>
+            <ProductEditWizard
+                productId={product.id}
+                productName={product.name}
+                productType={product.product_type}
+                categories={categories}
+                outlets={outlets}
+                assignments={assignmentsQuery.data ?? []}
+                isOutletsPending={outletsQuery.isPending}
+                isOutletsError={outletsQuery.isError}
+                onRetryOutlets={() => void outletsQuery.refetch()}
+                form={toEditForm(product, outletIds)}
+                snapshot={toEditSnapshot(product, outletIds)}
+                onSaved={() => void navigate(CATALOGS_PATHS.detail(product.id))}
+            />
         </div>
     )
+}
+
+/**
+ * What the save diffs against: the product exactly as the API last reported it.
+ *
+ * The child collections are kept in the shape they arrived in rather than being
+ * folded into the form's row shape, because the form's rows have been given keys
+ * and a form's row is a thing being edited — the snapshot has to stay a record
+ * of what is actually saved.
+ */
+function toEditSnapshot(product: ProductDetail, outletIds: string[]): EditSnapshot {
+    return {
+        name: product.name,
+        category_id: product.category_id,
+        description: product.description ?? null,
+        price: product.price,
+        outletIds,
+        variants: product.variants ?? [],
+        groups: product.modifier_groups ?? [],
+        media: product.media ?? [],
+    }
 }

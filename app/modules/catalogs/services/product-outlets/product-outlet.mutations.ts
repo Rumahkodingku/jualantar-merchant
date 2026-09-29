@@ -4,24 +4,18 @@ import { invalidateProducts } from "../catalog.invalidation"
 import * as productOutletApi from "./product-outlet.api"
 import type { CatalogStatus, OutletAvailabilityInput } from "../../types"
 
-export function useReplaceProductOutlets(productId: string) {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: (outletIds: string[]) => productOutletApi.replaceProductOutlets(productId, outletIds),
-        onSuccess: () => invalidateProducts(queryClient, productId),
-    })
-}
-
-export function useRemoveProductOutlet(productId: string) {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: (outletId: string) => productOutletApi.removeProductOutlet(productId, outletId),
-        onSuccess: () => invalidateProducts(queryClient, productId),
-    })
-}
-
+/**
+ * The two things that can be said about one outlet's assignment, as opposed to
+ * which outlets a product belongs in.
+ *
+ * Replacing the whole list is the edit wizard's save, because it has to be told
+ * what the list is now. These two act on a single assignment and nothing else, so
+ * they are written the moment the merchant changes one.
+ *
+ * `invalidateProducts` also covers the product's assignments: the assignments key
+ * is nested under the product's, so the summary count and the outlet tab both
+ * come back fresh.
+ */
 export function useSetOutletAssignmentStatus(productId: string, outletId: string) {
     const queryClient = useQueryClient()
 

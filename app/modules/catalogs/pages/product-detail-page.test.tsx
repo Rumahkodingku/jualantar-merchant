@@ -317,7 +317,6 @@ describe("ProductDetailPage", () => {
     })
 
     it("shows the full outlet record joined from the outlet directory", async () => {
-        const user = userEvent.setup()
         renderPage(["/catalogs/products/prd-001?tab=outlet"])
 
         await screen.findByText("Outlet Utama")

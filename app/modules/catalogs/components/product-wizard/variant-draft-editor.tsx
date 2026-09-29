@@ -4,22 +4,28 @@ import { ArrowDownIcon, ArrowUpIcon, PencilIcon, PlusIcon, StarIcon, Trash2Icon 
 import { Button } from "~/components/ui/button"
 import { Text } from "~/components/ui/text"
 
-import { VariantFormDialog, type VariantPayload } from "../variants/variant-form-dialog"
+import { VariantFormDialog, type FormMode, type VariantPayloadWithStatus } from "../variants/variant-form-dialog"
 import { formatCurrency } from "../../utils/format-currency"
 import { draftKey } from "../../utils/draft-key"
 import type { VariantDraft } from "../../types/product-draft.types"
 
 /**
- * The wizard's variant list. Every row lives in the draft until the product is
- * created, so there is nothing to save here — each edit hands a validated row
+ * The wizard's variant list. Every row lives in the form until the whole product
+ * is saved, so there is nothing to save here — each edit hands a validated row
  * straight back up to `onChange`.
+ *
+ * `mode` is passed through to the row dialog. The create wizard has no product
+ * to give a status to, so its rows cannot be deactivated; the edit wizard is
+ * changing a product that is already there, so its rows can be.
  */
 export function VariantDraftEditor({
     variants,
     onChange,
+    mode = "draft",
 }: {
     variants: VariantDraft[]
     onChange: (variants: VariantDraft[]) => void
+    mode?: FormMode
 }) {
     const [dialog, setDialog] = useState<{ open: boolean; key: string | null }>({ open: false, key: null })
 
@@ -33,8 +39,8 @@ export function VariantDraftEditor({
         setDialog({ open: true, key: variant.key })
     }
 
-    function handleSubmit(payload: VariantPayload) {
-        // A blank SKU stays an empty string in the draft: it is the state the
+    function handleSubmit(payload: VariantPayloadWithStatus) {
+        // A blank SKU stays an empty string in the form: it is the state the
         // input holds, and the wizard converts it to `null` only when it writes.
         const base: Omit<VariantDraft, "key" | "status"> = {
             name: payload.name,
@@ -44,11 +50,11 @@ export function VariantDraftEditor({
         }
 
         if (dialog.key === null) {
-            onChange([...variants, { key: draftKey("var"), status: "active", ...base }])
+            onChange([...variants, { key: draftKey("var"), status: payload.status, ...base }])
         } else {
             onChange(
                 variants.map((variant) =>
-                    variant.key === dialog.key ? { ...variant, ...base, status: variant.status } : variant
+                    variant.key === dialog.key ? { ...variant, ...base, status: payload.status } : variant
                 )
             )
         }
@@ -178,7 +184,7 @@ export function VariantDraftEditor({
 
             {dialog.open ? (
                 <VariantFormDialog
-                    mode="draft"
+                    mode={mode}
                     variant={editing}
                     onClose={() => setDialog({ open: false, key: null })}
                     onSubmit={handleSubmit}

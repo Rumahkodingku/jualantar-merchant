@@ -14,7 +14,10 @@ Package manager is **bun** (`bun.lock` is the only lockfile). Do not use npm/yar
 - `bun run format` — Prettier (only `.ts`/`.tsx`)
 - `bun run start` — serve built app (`react-router-serve`)
 
-There is **no lint script**. Verification order: `bun run typecheck` then `bun run test:run`.
+- `bun run lint` — ESLint (includes `unused-imports` and `@typescript-eslint/no-unused-vars`)
+- `bun run check` — `typecheck` + `lint` + `test:run`
+
+Verification order: `bun run check`.
 
 ## Gotchas
 

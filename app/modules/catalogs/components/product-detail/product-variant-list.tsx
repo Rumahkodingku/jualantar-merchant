@@ -3,7 +3,7 @@ import { Badge } from "~/components/ui/badge"
 import { Text } from "~/components/ui/text"
 import { CatalogEmptyState } from "../common/catalog-empty-state"
 import { StatusBadge } from "../common/status-badge"
-import { ProductMediaThumbnail } from "../common/media-thumbnail"
+import { MediaThumbnail } from "../common/media-thumbnail"
 import { formatCurrency } from "../../utils/format-currency"
 import { sortByDisplayOrder } from "../../utils/media-order"
 import type { ProductDetail } from "../../types"
@@ -47,7 +47,7 @@ export function ProductVariantList({ product }: { product: ProductDetail }) {
                 {variants.map((variant) => (
                     <li key={variant.id} className="flex items-center gap-3">
                         <div className="size-16 shrink-0 overflow-hidden rounded-xl border bg-muted">
-                            <ProductMediaThumbnail src={imageSrc} alt={imageAlt} className="size-full" />
+                            <MediaThumbnail src={imageSrc} alt={imageAlt} className="size-full" />
                         </div>
 
                         <div className="flex min-w-0 flex-1 flex-col gap-1">

@@ -1,8 +1,14 @@
 import { Checkbox } from "~/components/ui/checkbox"
 import { Text } from "~/components/ui/text"
 
+import { OutletSelectRow } from "../outlets/outlet-select-row"
 import type { CatalogOutlet } from "../../types"
 
+/**
+ * The wizard's outlet step. Nothing is saved yet — the picks live in the draft
+ * until the product is created — so this is a plain multi-select over the
+ * merchant's outlets.
+ */
 export function OutletDraftPicker({
     outlets,
     selectedIds,
@@ -23,29 +29,24 @@ export function OutletDraftPicker({
                     const checked = selectedIds.includes(outlet.id)
 
                     return (
-                        <label
+                        <OutletSelectRow
                             key={outlet.id}
-                            className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border px-3 py-3 hover:bg-muted/50"
-                        >
-                            <span className="flex min-w-0 flex-col">
-                                <Text variant="sm" weight="medium">
-                                    {outlet.name}
-                                </Text>
-                                <Text variant="xs" className="text-muted-foreground">
-                                    {checked ? "Ditugaskan" : "Tidak ditugaskan"}
-                                </Text>
-                            </span>
-                            <Checkbox
-                                checked={checked}
-                                onCheckedChange={(value) =>
-                                    onChange(
-                                        value === true
-                                            ? [...selectedIds, outlet.id]
-                                            : selectedIds.filter((id) => id !== outlet.id)
-                                    )
-                                }
-                            />
-                        </label>
+                            outlet={outlet}
+                            isAssigned={checked}
+                            className="py-3"
+                            control={
+                                <Checkbox
+                                    checked={checked}
+                                    onCheckedChange={(value) =>
+                                        onChange(
+                                            value === true
+                                                ? [...selectedIds, outlet.id]
+                                                : selectedIds.filter((id) => id !== outlet.id)
+                                        )
+                                    }
+                                />
+                            }
+                        />
                     )
                 })}
             </div>

@@ -4,7 +4,7 @@ import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
 
 import { StatusBadge } from "../common/status-badge"
-import { ProductMediaThumbnail } from "../common/media-thumbnail"
+import { MediaThumbnail } from "../common/media-thumbnail"
 import { formatCurrency } from "../../utils/format-currency"
 import { PRODUCT_TYPE_LABEL } from "../../utils/labels"
 import { buildProductMeta } from "../../utils/product-meta"
@@ -48,7 +48,7 @@ export function ProductCard({
             ) : null}
 
             <div className="size-20 shrink-0 overflow-hidden rounded-xl bg-muted sm:size-20">
-                <ProductMediaThumbnail
+                <MediaThumbnail
                     src={product.primary_media?.url ?? null}
                     alt={product.primary_media?.alt_text ?? product.name}
                 />

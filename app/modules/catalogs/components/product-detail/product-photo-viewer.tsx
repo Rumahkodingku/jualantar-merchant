@@ -5,7 +5,7 @@ import { Dialog, DialogContent } from "~/components/ui/dialog"
 import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
 
-import { ProductMediaThumbnail } from "../common/media-thumbnail"
+import { MediaThumbnail } from "../common/media-thumbnail"
 import { sortByDisplayOrder } from "../../utils/media-order"
 import type { ProductMedia } from "../../types"
 
@@ -85,7 +85,7 @@ export function ProductPhotoViewer({
 
                 <div className="flex flex-1 items-center justify-center overflow-hidden bg-muted/40 px-3">
                     {current !== undefined ? (
-                        <ProductMediaThumbnail
+                        <MediaThumbnail
                             src={current.url}
                             alt={current.alt_text ?? ""}
                             className="max-h-full max-w-full object-contain"
@@ -107,7 +107,7 @@ export function ProductPhotoViewer({
                                     itemIndex === safeIndex ? "border-primary ring-2 ring-primary/40" : "opacity-60"
                                 )}
                             >
-                                <ProductMediaThumbnail src={item.url} alt={item.alt_text ?? ""} className="size-full" />
+                                <MediaThumbnail src={item.url} alt={item.alt_text ?? ""} className="size-full" />
                             </button>
                         ))}
                     </div>

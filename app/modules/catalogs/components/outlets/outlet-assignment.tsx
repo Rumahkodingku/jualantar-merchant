@@ -9,6 +9,7 @@ import { Text } from "~/components/ui/text"
 
 import { ConfirmDialog } from "../common/confirm-dialog"
 import { OutletAssignmentRow } from "./outlet-assignment-row"
+import { OutletSelectRow } from "./outlet-select-row"
 import { useOutlets } from "../../services/product-outlets/product-outlet.queries"
 import {
     useRemoveProductOutlet,
@@ -102,20 +103,15 @@ export function OutletAssignment({
                             const checked = selectedIds.includes(outlet.id)
 
                             return (
-                                <label
+                                <OutletSelectRow
                                     key={outlet.id}
-                                    className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border px-3 py-2.5 hover:bg-muted/50"
-                                >
-                                    <span className="flex min-w-0 flex-col">
-                                        <Text variant="sm" weight="medium" truncate>
-                                            {outlet.name}
-                                        </Text>
-                                        <Text variant="xs" className="text-muted-foreground">
-                                            {checked ? "Ditugaskan" : "Tidak ditugaskan"}
-                                        </Text>
-                                    </span>
-                                    <Switch checked={checked} onCheckedChange={() => toggleOutlet(outlet.id)} />
-                                </label>
+                                    outlet={outlet}
+                                    isAssigned={checked}
+                                    className="py-2.5"
+                                    control={
+                                        <Switch checked={checked} onCheckedChange={() => toggleOutlet(outlet.id)} />
+                                    }
+                                />
                             )
                         })}
 

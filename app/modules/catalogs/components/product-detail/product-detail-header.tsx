@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { ChevronLeftIcon, MoreVerticalIcon, PencilIcon, PowerIcon, Trash2Icon } from "lucide-react"
 import { useNavigate } from "react-router"
 
@@ -11,50 +10,20 @@ import {
     DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 import { Text } from "~/components/ui/text"
-import { notifyError, notifySuccess } from "~/lib/notify"
 
-import { ConfirmDialog } from "../common/confirm-dialog"
+import { ProductActionDialogs } from "../products/product-action-dialogs"
 import { StatusBadge } from "../common/status-badge"
-import { useDeleteProduct, useSetProductStatus } from "../../services/products/product.mutations"
-import { catalogErrorMessage } from "../../utils/api-error"
+import { useProductActions } from "../../hooks/use-product-actions"
 import { CATALOGS_PATHS } from "../../utils/paths"
 import type { Product } from "../../types"
 
-type ConfirmAction = "status" | "delete"
-
 export function ProductDetailHeader({ product }: { product: Product }) {
     const navigate = useNavigate()
-    const [confirm, setConfirm] = useState<ConfirmAction | null>(null)
-
-    const deleteMutation = useDeleteProduct()
-    const statusMutation = useSetProductStatus(product.id)
-
-    const isPending = deleteMutation.isPending || statusMutation.isPending
-    const nextStatus = product.status === "active" ? "inactive" : "active"
-
-    function runStatus() {
-        statusMutation.mutate(nextStatus, {
-            onSuccess: () => {
-                setConfirm(null)
-                notifySuccess(
-                    nextStatus === "active" ? "Produk diaktifkan" : "Produk dinonaktifkan",
-                    `Status "${product.name}" diperbarui.`
-                )
-            },
-            onError: (error) => notifyError(catalogErrorMessage(error, "Gagal memperbarui status")),
-        })
-    }
-
-    function runDelete() {
-        deleteMutation.mutate(product.id, {
-            onSuccess: () => {
-                setConfirm(null)
-                notifySuccess("Produk dihapus", `"${product.name}" dihapus dari katalog.`)
-                void navigate(CATALOGS_PATHS.home)
-            },
-            onError: (error) => notifyError(catalogErrorMessage(error, "Gagal menghapus produk")),
-        })
-    }
+    // Deleting a product from its own page leaves nothing to show, so the
+    // merchant goes back to the list rather than staying on a dead record.
+    const actions = useProductActions(product, {
+        onDeleted: () => void navigate(CATALOGS_PATHS.home),
+    })
 
     return (
         <>
@@ -96,41 +65,24 @@ export function ProductDetailHeader({ product }: { product: Product }) {
                             <PencilIcon /> Edit produk
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => setConfirm("status")}>
-                            <PowerIcon /> {nextStatus === "active" ? "Aktifkan" : "Nonaktifkan"}
+                        <DropdownMenuItem onClick={() => actions.request("status")}>
+                            <PowerIcon /> {actions.nextStatus === "active" ? "Aktifkan" : "Nonaktifkan"}
                         </DropdownMenuItem>
-                        <DropdownMenuItem variant="destructive" onClick={() => setConfirm("delete")}>
+                        <DropdownMenuItem variant="destructive" onClick={() => actions.request("delete")}>
                             <Trash2Icon /> Hapus
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
 
-            <ConfirmDialog
-                open={confirm === "status"}
-                onOpenChange={(open) => (!open ? setConfirm(null) : undefined)}
-                title={nextStatus === "active" ? "Aktifkan produk?" : "Nonaktifkan produk?"}
-                description={
-                    nextStatus === "active"
-                        ? `Produk "${product.name}" akan tampil aktif pada master catalog.`
-                        : `Produk "${product.name}" tidak akan aktif pada master catalog.`
-                }
-                confirmLabel={nextStatus === "active" ? "Aktifkan" : "Nonaktifkan"}
-                pendingLabel="Memproses…"
-                variant={nextStatus === "active" ? "default" : "destructive"}
-                isPending={isPending}
-                onConfirm={runStatus}
-            />
-
-            <ConfirmDialog
-                open={confirm === "delete"}
-                onOpenChange={(open) => (!open ? setConfirm(null) : undefined)}
-                title="Hapus produk?"
-                description={<>Produk &ldquo;{product.name}&rdquo; akan dihapus dari katalog.</>}
-                confirmLabel="Hapus"
-                pendingLabel="Menghapus…"
-                isPending={isPending}
-                onConfirm={runDelete}
+            <ProductActionDialogs
+                product={product}
+                confirm={actions.confirm}
+                isPending={actions.isPending}
+                nextStatus={actions.nextStatus}
+                onClose={actions.close}
+                onConfirmStatus={actions.runStatus}
+                onConfirmDelete={actions.runDelete}
             />
         </>
     )

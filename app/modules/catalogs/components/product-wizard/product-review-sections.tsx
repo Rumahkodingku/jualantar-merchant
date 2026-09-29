@@ -1,7 +1,6 @@
-import { ImageIcon } from "lucide-react"
-
 import { Text } from "~/components/ui/text"
 
+import { MediaTilePlaceholder } from "../media/media-tile"
 import { ReviewSection } from "../common/review-section"
 import { formatCurrency } from "../../utils/format-currency"
 import { PRODUCT_TYPE_LABEL } from "../../utils/labels"
@@ -127,19 +126,7 @@ export function ProductReviewSections({
                         </Text>
                     ) : (
                         media.map((item) => (
-                            <div key={item.key} className="relative size-16 overflow-hidden rounded-lg border bg-muted">
-                                {item.preview_url === null ? (
-                                    <div className="flex size-full items-center justify-center text-muted-foreground">
-                                        <ImageIcon aria-hidden="true" className="size-4" />
-                                    </div>
-                                ) : (
-                                    <img
-                                        src={item.preview_url}
-                                        alt={item.alt_text}
-                                        className="size-full object-cover"
-                                    />
-                                )}
-                            </div>
+                            <MediaTilePlaceholder key={item.key} src={item.preview_url} alt={item.alt_text} />
                         ))
                     )}
                 </div>

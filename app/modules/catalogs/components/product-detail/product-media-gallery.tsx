@@ -1,7 +1,7 @@
 import { Images, ImagesIcon } from "lucide-react"
 import { Text } from "~/components/ui/text"
 import { CatalogEmptyState } from "../common/catalog-empty-state"
-import { ProductMediaThumbnail } from "../common/media-thumbnail"
+import { MediaTile } from "../media/media-tile"
 import { sortByDisplayOrder } from "../../utils/media-order"
 import type { ProductMedia } from "../../types"
 
@@ -39,14 +39,9 @@ export function ProductMediaGallery({ media, onOpen }: { media: ProductMedia[]; 
                         type="button"
                         onClick={() => onOpen(index)}
                         aria-label={`Buka foto ${index + 1}`}
-                        className="relative aspect-square overflow-hidden rounded-xl border bg-muted outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                        className="outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
                     >
-                        <ProductMediaThumbnail src={item.url} alt={item.alt_text ?? ""} className="size-full" />
-                        {item.is_primary ? (
-                            <span className="absolute top-2 left-2 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">
-                                Utama
-                            </span>
-                        ) : null}
+                        <MediaTile src={item.url} alt={item.alt_text ?? ""} isPrimary={item.is_primary} size="full" />
                     </button>
                 ))}
             </div>

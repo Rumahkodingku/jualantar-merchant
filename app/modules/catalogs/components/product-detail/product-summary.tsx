@@ -1,7 +1,7 @@
 import { AspectRatio } from "~/components/ui/aspect-ratio"
 import { Text } from "~/components/ui/text"
 import { ProductDetailTabList, type ProductDetailTab } from "./product-detail-tabs"
-import { ProductMediaThumbnail } from "../common/media-thumbnail"
+import { MediaThumbnail } from "../common/media-thumbnail"
 import { ProductSummaryMetrics } from "./product-summary-metrics"
 import { sortByDisplayOrder } from "../../utils/media-order"
 import { formatSummaryPrice } from "../../utils/product-price"
@@ -24,7 +24,7 @@ export function ProductSummary({
         <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-4">
                 <AspectRatio ratio={16 / 9} className="overflow-hidden rounded-2xl border bg-muted">
-                    <ProductMediaThumbnail src={heroSrc} alt={heroAlt} className="size-full" />
+                    <MediaThumbnail src={heroSrc} alt={heroAlt} className="size-full" />
                 </AspectRatio>
 
                 <div className="flex flex-col gap-1">

@@ -3,15 +3,7 @@ import { PackageIcon } from "lucide-react"
 
 import { cn } from "~/lib/utils"
 
-export function ProductMediaThumbnail({
-    src,
-    alt,
-    className,
-}: {
-    src: string | null
-    alt: string
-    className?: string
-}) {
+export function MediaThumbnail({ src, alt, className }: { src: string | null; alt: string; className?: string }) {
     const [failed, setFailed] = useState(false)
 
     useEffect(() => {

@@ -1,23 +1,12 @@
 import { useState } from "react"
 import { ArrowDownIcon, ArrowUpIcon, PencilIcon, PlusIcon, StarIcon, Trash2Icon } from "lucide-react"
-
 import { Button } from "~/components/ui/button"
 import { Text } from "~/components/ui/text"
-
 import { VariantFormDialog, type FormMode, type VariantPayloadWithStatus } from "../variants/variant-form-dialog"
 import { formatCurrency } from "../../utils/format-currency"
 import { draftKey } from "../../utils/draft-key"
 import type { VariantDraft } from "../../types/product-draft.types"
 
-/**
- * The wizard's variant list. Every row lives in the form until the whole product
- * is saved, so there is nothing to save here — each edit hands a validated row
- * straight back up to `onChange`.
- *
- * `mode` is passed through to the row dialog. The create wizard has no product
- * to give a status to, so its rows cannot be deactivated; the edit wizard is
- * changing a product that is already there, so its rows can be.
- */
 export function VariantDraftEditor({
     variants,
     onChange,
@@ -40,8 +29,6 @@ export function VariantDraftEditor({
     }
 
     function handleSubmit(payload: VariantPayloadWithStatus) {
-        // A blank SKU stays an empty string in the form: it is the state the
-        // input holds, and the wizard converts it to `null` only when it writes.
         const base: Omit<VariantDraft, "key" | "status"> = {
             name: payload.name,
             sku: payload.sku ?? "",
@@ -84,7 +71,7 @@ export function VariantDraftEditor({
         <div className="flex flex-col gap-3">
             {variants.length > 0 ? (
                 <div className="overflow-hidden rounded-xl border">
-                    <div className="hidden grid-cols-[1fr_auto_auto_auto] gap-2 border-b bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground sm:grid">
+                    <div className="hidden grid-cols-[1fr_auto_auto_auto] gap-8 border-b bg-muted/50 px-3 py-4 text-xs font-medium text-muted-foreground sm:grid">
                         <span>Nama</span>
                         <span>Harga</span>
                         <span>Status</span>
@@ -97,7 +84,7 @@ export function VariantDraftEditor({
                         >
                             <div className="flex min-w-0 flex-col">
                                 <div className="flex items-center gap-2">
-                                    <Text variant="sm" weight="medium" truncate>
+                                    <Text variant="sm" weight="semibold" truncate>
                                         {variant.name}
                                     </Text>
                                     {variant.is_default ? (
@@ -178,7 +165,7 @@ export function VariantDraftEditor({
                 </div>
             )}
 
-            <Button type="button" size="sm" variant="outline" className="self-start" onClick={openCreate}>
+            <Button type="button" size="lg" variant="outline" className="w-full self-start" onClick={openCreate}>
                 <PlusIcon /> Tambah Variant
             </Button>
 

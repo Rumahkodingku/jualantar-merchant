@@ -10,11 +10,9 @@ import {
 } from "@dnd-kit/core"
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { PlusIcon } from "lucide-react"
-
 import { Button } from "~/components/ui/button"
 import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
-
 import { ConfirmDialog } from "../common/confirm-dialog"
 import { ModifierFormDialog, type ModifierDraftPayloadWithStatus } from "../modifiers/modifier-form-dialog"
 import {
@@ -26,23 +24,19 @@ import { draftKey } from "../../utils/draft-key"
 import type { FormMode } from "../variants/variant-form-dialog"
 import type { GroupDraft, ModifierDraft } from "../../types/product-draft.types"
 
-type PendingDelete = { scope: "group" | "option"; groupKey: string; modifier?: ModifierDraft }
+type PendingDelete = {
+    scope: "group" | "option"
+    groupKey: string
+    modifier?: ModifierDraft
+}
 
-/**
- * The wizard's modifier editor, with the same caveat as the variant list: rows
- * live in the form until the product is saved, and `mode` decides whether a row
- * can be deactivated. A group being created has no status to give it; a group on
- * a product that already exists does.
- */
-export function ModifierGroupDraftEditor({
-    groups,
-    onChange,
-    mode = "draft",
-}: {
+interface ModifierGroupDraftEditorProps {
     groups: GroupDraft[]
     onChange: (groups: GroupDraft[]) => void
     mode?: FormMode
-}) {
+}
+
+export function ModifierGroupDraftEditor({ groups, onChange, mode = "draft" }: ModifierGroupDraftEditorProps) {
     const [groupDialog, setGroupDialog] = useState<{ open: boolean; group?: GroupDraft }>({ open: false })
     const [modifierDialog, setModifierDialog] = useState<{
         open: boolean
@@ -127,13 +121,11 @@ export function ModifierGroupDraftEditor({
                 }
 
                 const index = group.modifiers.findIndex((entry) => entry.key === modifier.key)
-
                 if (index < 0) {
                     return group
                 }
 
                 const modifiers = [...group.modifiers]
-
                 modifiers.splice(index + 1, 0, { ...modifier, key: draftKey("mod") })
 
                 return { ...group, modifiers }
@@ -200,7 +192,6 @@ export function ModifierGroupDraftEditor({
         const overId = String(over.id)
 
         if (groupIds.includes(activeId)) {
-            // A group can be dropped over an option row, so resolve that to its owning group.
             const target = groupIds.includes(overId) ? overId : modifierOwner.get(overId)
 
             if (target === undefined || target === activeId) {

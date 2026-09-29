@@ -1,9 +1,7 @@
 import { useNavigate, useParams } from "react-router"
-
 import { ErrorState } from "~/components/error-state"
 import { ListSkeleton } from "~/components/list-skeleton"
 import { SubpageHeader } from "~/components/layouts/subpage-header"
-
 import { ProductEditWizard } from "../components/product-edit/product-edit-wizard"
 import { useCategories } from "../services/categories/category.queries"
 import { toEditForm } from "../services/product-edit/to-edit-form"
@@ -12,22 +10,6 @@ import { useProductDetail } from "../services/products/product.queries"
 import { CATALOGS_PATHS } from "../utils/paths"
 import type { EditSnapshot, ProductDetail } from "../types"
 
-/**
- * The "edit product" screen.
- *
- * All it does is decide which of the states the merchant is in — something is
- * still loading, something could not be read, or the wizard can be shown — and
- * hand over to `ProductEditWizard`. Nothing about the steps, the form or the save
- * belongs here.
- *
- * Three requests are waited on before the wizard opens: the product itself, the
- * categories its information step offers, and the outlets it is currently
- * assigned to. The last one is not cosmetic — the wizard is seeded once from what
- * these return, and a form seeded before the assignments arrive would read every
- * outlet as unassigned and quietly un-assign them on save. Waiting is the honest
- * version of that; the alternative is a wizard that has to reconcile a late
- * arrival into an edit already in progress.
- */
 export function ProductEditPage() {
     const { productId } = useParams<{ productId: string }>()
     const navigate = useNavigate()
@@ -117,14 +99,6 @@ export function ProductEditPage() {
     )
 }
 
-/**
- * What the save diffs against: the product exactly as the API last reported it.
- *
- * The child collections are kept in the shape they arrived in rather than being
- * folded into the form's row shape, because the form's rows have been given keys
- * and a form's row is a thing being edited — the snapshot has to stay a record
- * of what is actually saved.
- */
 function toEditSnapshot(product: ProductDetail, outletIds: string[]): EditSnapshot {
     return {
         name: product.name,

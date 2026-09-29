@@ -23,21 +23,21 @@ import { productInfoSchema, simplePriceSchema, type ProductInfoFormValues } from
 import { issuesToMessages } from "../../utils/issues"
 import type { CatalogOutlet, EditForm, EditSnapshot, OutletProductAssignment, ProductType } from "../../types"
 
-/**
- * The edit screen, walked the same way as the create screen.
- *
- * A merchant who has just created a product and a merchant who is going back to
- * change one are doing the same job — naming a product, pricing it, giving it
- * options, photos and outlets — so they are given the same six steps in the same
- * order with the same controls. What differs is what happens at the end, and
- * that difference is the whole reason this is a separate component: the create
- * wizard writes everything forward at the end, while this one has to work out
- * what the merchant actually changed and leave the rest of the product alone.
- *
- * The three things a page cannot express as markup live here: which step is
- * showing, whether the form is complete enough to move on, and how the save is
- * carried out and reported.
- */
+interface ProductEditWizardProps {
+    productId: string
+    productName: string
+    productType: ProductType
+    categories: Array<{ id: string; name: string }>
+    outlets: CatalogOutlet[]
+    assignments: OutletProductAssignment[]
+    isOutletsPending: boolean
+    isOutletsError: boolean
+    onRetryOutlets: () => void
+    form: EditForm
+    snapshot: EditSnapshot
+    onSaved: () => void
+}
+
 export function ProductEditWizard({
     productId,
     productName,
@@ -51,21 +51,7 @@ export function ProductEditWizard({
     form: initialForm,
     snapshot,
     onSaved,
-}: {
-    productId: string
-    productName: string
-    productType: ProductType
-    categories: Array<{ id: string; name: string }>
-    outlets: CatalogOutlet[]
-    /** The product's current outlet assignments, for the per-outlet rows. */
-    assignments: OutletProductAssignment[]
-    isOutletsPending: boolean
-    isOutletsError: boolean
-    onRetryOutlets: () => void
-    form: EditForm
-    snapshot: EditSnapshot
-    onSaved: () => void
-}) {
+}: ProductEditWizardProps) {
     const edit = useEditForm({ form: initialForm, snapshot })
     const bundle = useUpdateProductBundle(productId)
     const media = useEditMedia({ productId, form: edit.form, setMedia: edit.setMedia })
@@ -74,16 +60,12 @@ export function ProductEditWizard({
     const [priceErrors, setPriceErrors] = useState<Record<string, string>>({})
     const [stepError, setStepError] = useState<string | null>(null)
     const [expandedReview, setExpandedReview] = useState<string | null>(null)
-    /** Cleared the moment a save begins, so the redirect out of a success is not blocked. */
     const [isSaved, setIsSaved] = useState(false)
 
     const step = STEPS[edit.stepIndex] ?? STEPS[0]
     const isSubmitting = bundle.isPending
     const isSimple = edit.form.info.product_type === "simple"
 
-    // Once every part of the save has settled, the product on screen is the one
-    // that was just written. The guard is dropped before navigating so the
-    // redirect is not treated as an abandonment.
     useEffect(() => {
         if (isSubmitting || !bundle.hasStarted || bundle.hasFailure || !isSaved) {
             return
@@ -121,11 +103,6 @@ export function ProductEditWizard({
         return true
     }
 
-    /**
-     * A variable product needs somewhere for its price to come from, so this
-     * checks that at least one variant is left. The rows validate as they are
-     * edited, so their values are not re-checked here.
-     */
     function validatePrice(): boolean {
         if (isSimple) {
             const parsed = simplePriceSchema.safeParse({ price: edit.form.priceRaw })
@@ -188,8 +165,6 @@ export function ProductEditWizard({
 
         const plan = buildEditPlan({ form: edit.form, snapshot: edit.snapshot })
 
-        // Walking through six steps and changing nothing is a legitimate thing to
-        // do. Saying so beats saving nothing and reporting success.
         if (isPlanEmpty(plan)) {
             notifySuccess("Tidak ada perubahan", "Produk sudah tersimpan seperti yang ditampilkan.")
             onSaved()

@@ -3,24 +3,10 @@ import { ImageIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, StarIcon, Trash2Icon }
 import { Button } from "~/components/ui/button"
 import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
-import { Input } from "~/components/ui/input"
 import { MAX_UPLOAD_SIZE_LABEL } from "~/lib/upload"
-
 import { MAX_PRODUCT_MEDIA, MEDIA_ACCEPT } from "../../utils/media"
 import type { MediaDraft } from "../../types"
 
-/**
- * The photos of a product that already exists.
- *
- * The create wizard's picker cannot be reused as it stands: it uploads against
- * the draft, and this product has no draft. Everything else about it is the
- * behaviour the merchant already knows, so that is kept — pick, lead, reorder,
- * remove, and the note about what the limits are.
- *
- * One thing is added. A photo that is already on the product can be described,
- * and its description is part of the save rather than something set at upload
- * time, so the tile carries an alt-text field the draft picker does not have.
- */
 export function MediaEditPicker({
     media,
     busy,
@@ -28,7 +14,7 @@ export function MediaEditPicker({
     onRemove,
     onSetPrimary,
     onMove,
-    onSetAltText,
+
     onPreviewError,
 }: {
     media: MediaDraft[]
@@ -54,7 +40,7 @@ export function MediaEditPicker({
                         onRemove={onRemove}
                         onSetPrimary={onSetPrimary}
                         onMove={onMove}
-                        onSetAltText={onSetAltText}
+
                         onPreviewError={onPreviewError}
                     />
                 ))}
@@ -118,7 +104,6 @@ function MediaEditTile({
     onRemove,
     onSetPrimary,
     onMove,
-    onSetAltText,
     onPreviewError,
 }: {
     item: MediaDraft
@@ -127,7 +112,6 @@ function MediaEditTile({
     onRemove: (key: string) => void
     onSetPrimary: (key: string) => void
     onMove: (index: number, direction: -1 | 1) => void
-    onSetAltText: (key: string, altText: string) => void
     onPreviewError: () => void
 }) {
     const isUploading = item.status !== "ready"
@@ -208,14 +192,6 @@ function MediaEditTile({
                     </Button>
                 </div>
             </div>
-
-            <Input
-                value={item.alt_text}
-                onChange={(event) => onSetAltText(item.key, event.target.value)}
-                placeholder="Deskripsi foto (opsional)"
-                aria-label={`Deskripsi foto ${index + 1}`}
-                className="h-9 text-xs"
-            />
         </div>
     )
 }

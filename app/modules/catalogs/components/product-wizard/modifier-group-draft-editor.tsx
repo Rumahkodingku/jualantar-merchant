@@ -16,16 +16,11 @@ import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
 
 import { ConfirmDialog } from "../common/confirm-dialog"
-import { ModifierDraftDialog } from "./modifier-draft-dialog"
+import { ModifierFormDialog, type ModifierDraftPayload } from "../modifiers/modifier-form-dialog"
+import { ModifierGroupFormDialog, type ModifierGroupDraftPayload } from "../modifiers/modifier-group-form-dialog"
 import { ModifierGroupDraftCard } from "./modifier-group-draft-card"
-import { ModifierGroupDraftDialog } from "./modifier-group-draft-dialog"
 import { draftKey } from "../../utils/draft-key"
-import type {
-    GroupDraft,
-    GroupDraftPayload,
-    ModifierDraft,
-    ModifierDraftPayload,
-} from "../../types/product-draft.types"
+import type { GroupDraft, ModifierDraft } from "../../types/product-draft.types"
 
 type PendingDelete = { scope: "group" | "option"; groupKey: string; modifier?: ModifierDraft }
 
@@ -60,7 +55,7 @@ export function ModifierGroupDraftEditor({
         return owner
     }, [groups])
 
-    function submitGroup(payload: GroupDraftPayload) {
+    function submitGroup(payload: ModifierGroupDraftPayload) {
         const editing = groupDialog.group
 
         if (editing === undefined) {
@@ -300,7 +295,8 @@ export function ModifierGroupDraftEditor({
             </div>
 
             {groupDialog.open ? (
-                <ModifierGroupDraftDialog
+                <ModifierGroupFormDialog
+                    mode="draft"
                     group={groupDialog.group}
                     onClose={() => setGroupDialog({ open: false })}
                     onSubmit={submitGroup}
@@ -308,7 +304,8 @@ export function ModifierGroupDraftEditor({
             ) : null}
 
             {modifierDialog.open ? (
-                <ModifierDraftDialog
+                <ModifierFormDialog
+                    mode="draft"
                     modifier={modifierDialog.modifier}
                     onClose={() => setModifierDialog({ open: false, groupKey: "" })}
                     onSubmit={submitModifier}

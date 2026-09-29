@@ -60,6 +60,7 @@ export function VariantEditor({ productId, variants }: { productId: string; vari
 
             {dialog.open ? (
                 <VariantFormDialog
+                    mode="server"
                     productId={productId}
                     variant={dialog.variant}
                     onClose={() => setDialog({ open: false })}

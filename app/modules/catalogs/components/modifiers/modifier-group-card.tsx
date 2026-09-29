@@ -121,6 +121,7 @@ export function ModifierGroupCard({
 
             {modifierDialog.open ? (
                 <ModifierFormDialog
+                    mode="server"
                     productId={productId}
                     groupId={group.id}
                     modifier={modifierDialog.modifier}

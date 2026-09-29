@@ -1,61 +1,70 @@
 import { useState } from "react"
 
-import { Button } from "~/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog"
-import { Field, FieldError, FieldLabel } from "~/components/ui/field"
-import { Input } from "~/components/ui/input"
-import { Spinner } from "~/components/ui/spinner"
-import { Switch } from "~/components/ui/switch"
-import { Text } from "~/components/ui/text"
-
-import { useCreateModifier, useUpdateModifier } from "../../services/modifiers/modifier.mutations"
+import { FormDialog } from "../common/form-dialog"
+import { DescriptionField, MoneyField, NameField, ToggleField } from "../common/form-fields"
+import { useFieldErrors } from "../common/use-field-errors"
 import { applyServerFieldErrors, catalogErrorMessage } from "../../utils/api-error"
 import { issuesToMessages } from "../../utils/issues"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import { modifierSchema, type ModifierFormValues } from "../../schemas/"
-import type { ProductModifier } from "../../types"
+import { modifierSchema, type ModifierFormValues } from "../../schemas"
+import { useCreateModifier, useUpdateModifier } from "../../services/modifiers/modifier.mutations"
+import type { FormMode } from "../variants/variant-form-dialog"
 
-function modifierDefaults(modifier?: ProductModifier): ModifierFormValues {
-    return {
-        name: modifier?.name ?? "",
-        description: modifier?.description ?? "",
-        price: modifier?.price ?? 0,
-        is_default: modifier?.is_default ?? false,
-    }
+/**
+ * The parts of a modifier the API takes. A description that was never written
+ * is `null` on the wire, while the wizard keeps the empty string its input
+ * holds — so the draft shape is a separate type rather than a nullable field
+ * the caller has to remember to narrow.
+ */
+export interface ModifierPayload {
+    name: string
+    description: string | null
+    price: number
+    is_default: boolean
+}
+
+/** The same modifier as the draft stores it. */
+export interface ModifierDraftPayload extends Omit<ModifierPayload, "description"> {
+    description: string
+}
+
+/** What the form reads, satisfied by both a saved modifier and a staged draft. */
+export interface ExistingModifier {
+    id?: string
+    name: string
+    description: string | null
+    price: number
+    is_default: boolean
 }
 
 export function ModifierFormDialog({
+    mode,
     productId,
     groupId,
     modifier,
     onClose,
+    onSubmit,
 }: {
-    productId: string
-    groupId: string
-    modifier?: ProductModifier
+    mode: FormMode
+    productId?: string
+    groupId?: string
+    modifier?: ExistingModifier
     onClose: () => void
+    onSubmit?: (payload: ModifierDraftPayload) => void
 }) {
-    const [values, setValues] = useState<ModifierFormValues>(() => modifierDefaults(modifier))
-    const [errors, setErrors] = useState<Record<string, string>>({})
+    const [values, setValues] = useState<ModifierFormValues>(() => ({
+        name: modifier?.name ?? "",
+        description: modifier?.description ?? "",
+        price: modifier?.price ?? 0,
+        is_default: modifier?.is_default ?? false,
+    }))
+    const { errors, setErrors, clear } = useFieldErrors()
 
-    const createMutation = useCreateModifier(productId, groupId)
-    const updateMutation = useUpdateModifier(productId, groupId, modifier?.id ?? "")
-    const isPending = createMutation.isPending || updateMutation.isPending
+    const createMutation = useCreateModifier(productId ?? "", groupId ?? "")
+    const updateMutation = useUpdateModifier(productId ?? "", groupId ?? "", modifier?.id ?? "")
+    const isPending = mode === "server" && (createMutation.isPending || updateMutation.isPending)
 
-    function setField<K extends keyof ModifierFormValues>(key: K, value: ModifierFormValues[K]) {
-        setValues((current) => ({ ...current, [key]: value }))
-        setErrors((current) => {
-            const next = { ...current }
-
-            delete next[key as string]
-
-            return next
-        })
-    }
-
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-
+    function handleSubmit() {
         const parsed = modifierSchema.safeParse(values)
 
         if (!parsed.success) {
@@ -63,9 +72,20 @@ export function ModifierFormDialog({
             return
         }
 
-        const payload = {
+        if (mode === "draft") {
+            onSubmit?.({
+                name: parsed.data.name,
+                description: parsed.data.description ?? "",
+                price: parsed.data.price,
+                is_default: parsed.data.is_default,
+            })
+            return
+        }
+
+        const payload: ModifierPayload = {
             name: parsed.data.name,
-            description: parsed.data.description,
+            // The API wants `null` for a description that was never written.
+            description: parsed.data.description ?? null,
             price: parsed.data.price,
             is_default: parsed.data.is_default,
         }
@@ -94,78 +114,53 @@ export function ModifierFormDialog({
     }
 
     return (
-        <Dialog open onOpenChange={(open) => (open ? undefined : onClose())}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{modifier === undefined ? "Tambah modifier" : "Edit modifier"}</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-                    <Field>
-                        <FieldLabel htmlFor="modifier-name">Nama</FieldLabel>
-                        <Input
-                            id="modifier-name"
-                            value={values.name}
-                            onChange={(event) => setField("name", event.target.value)}
-                            aria-invalid={errors.name !== undefined}
-                            className="h-11"
-                        />
-                        {errors.name !== undefined ? <FieldError>{errors.name}</FieldError> : null}
-                    </Field>
+        <FormDialog
+            title={modifier === undefined ? "Tambah modifier" : "Edit modifier"}
+            isPending={isPending}
+            onClose={onClose}
+            onSubmit={handleSubmit}
+        >
+            <NameField
+                id="modifier-name"
+                label="Nama"
+                value={values.name}
+                error={errors.name}
+                onChange={(name) => {
+                    setValues((current) => ({ ...current, name }))
+                    clear("name")
+                }}
+            />
 
-                    <Field>
-                        <FieldLabel htmlFor="modifier-description">Deskripsi (opsional)</FieldLabel>
-                        <Input
-                            id="modifier-description"
-                            value={values.description ?? ""}
-                            onChange={(event) => setField("description", event.target.value)}
-                            className="h-11"
-                        />
-                    </Field>
+            <DescriptionField
+                id="modifier-description"
+                label="Deskripsi (opsional)"
+                value={values.description ?? ""}
+                onChange={(description) => {
+                    setValues((current) => ({ ...current, description }))
+                    clear("description")
+                }}
+            />
 
-                    <Field>
-                        <FieldLabel htmlFor="modifier-price">Harga tambahan (Rp)</FieldLabel>
-                        <Input
-                            id="modifier-price"
-                            inputMode="numeric"
-                            value={String(values.price)}
-                            onChange={(event) => setField("price", Number(event.target.value))}
-                            aria-invalid={errors.price !== undefined}
-                            className="h-11"
-                        />
-                        {errors.price !== undefined ? <FieldError>{errors.price}</FieldError> : null}
-                    </Field>
+            <MoneyField
+                id="modifier-price"
+                label="Harga tambahan (Rp)"
+                value={values.price}
+                error={errors.price}
+                onChange={(price) => {
+                    setValues((current) => ({ ...current, price }))
+                    clear("price")
+                }}
+            />
 
-                    <div className="flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5">
-                        <div className="flex flex-col">
-                            <Text variant="sm" weight="medium">
-                                Dipilih secara default
-                            </Text>
-                            <Text variant="xs" className="text-muted-foreground">
-                                Opsi ini terpilih otomatis oleh pelanggan.
-                            </Text>
-                        </div>
-                        <Switch
-                            checked={values.is_default}
-                            onCheckedChange={(checked) => setField("is_default", checked === true)}
-                        />
-                    </div>
-
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose}>
-                            Batal
-                        </Button>
-                        <Button type="submit" disabled={isPending}>
-                            {isPending ? (
-                                <>
-                                    <Spinner /> Menyimpan…
-                                </>
-                            ) : (
-                                "Simpan"
-                            )}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+            <ToggleField
+                label="Dipilih secara default"
+                description="Opsi ini terpilih otomatis oleh pelanggan."
+                checked={values.is_default}
+                onCheckedChange={(is_default) => {
+                    setValues((current) => ({ ...current, is_default }))
+                    clear("is_default")
+                }}
+            />
+        </FormDialog>
     )
 }

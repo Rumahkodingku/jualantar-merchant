@@ -1,28 +1,65 @@
 import { useState } from "react"
 
-import { Button } from "~/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog"
-import { Field, FieldError, FieldLabel } from "~/components/ui/field"
-import { Input } from "~/components/ui/input"
-import { Spinner } from "~/components/ui/spinner"
-import { Switch } from "~/components/ui/switch"
-import { Text } from "~/components/ui/text"
-
-import { useCreateVariant, useUpdateVariant } from "../../services/variants/variant.mutations"
+import { FormDialog } from "../common/form-dialog"
+import { DescriptionField, MoneyField, NameField, ToggleField } from "../common/form-fields"
+import { useFieldErrors } from "../common/use-field-errors"
 import { applyServerFieldErrors, catalogErrorMessage } from "../../utils/api-error"
 import { issuesToMessages } from "../../utils/issues"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import { variantRowSchema, type VariantRowValues } from "../../schemas/"
-import type { ProductVariant } from "../../types"
+import { variantRowSchema, type VariantRowValues } from "../../schemas"
+import { useCreateVariant, useUpdateVariant } from "../../services/variants/variant.mutations"
+import type { CatalogStatus } from "../../types"
+
+/**
+ * Where the form ends up decides how it saves, and nothing else.
+ *
+ * `server` writes straight to the API and reports field errors the backend
+ * sends back. `draft` hands the validated values to `onSubmit` and stops there,
+ * because the wizard owns the row until the whole product is saved — there is
+ * no server to report against yet, and a variant staged in a draft is not
+ * allowed to carry a status the merchant never chose.
+ */
+export type FormMode = "server" | "draft"
+
+/** The parts of a variant the API takes, with the blank-SKU difference folded in. */
+export interface VariantPayload {
+    name: string
+    sku: string | null
+    price: number
+    is_default: boolean
+}
+
+/**
+ * The subset of a variant the form reads. Both a saved variant and a staged
+ * draft row satisfy it, which is what lets one dialog edit either.
+ */
+export interface ExistingVariant {
+    id?: string
+    name: string
+    sku: string | null
+    price: number
+    status: CatalogStatus
+    is_default: boolean
+}
+
+/** A staged draft row has no server id yet, which is how the two are told apart. */
+function variantIdOf(variant: ExistingVariant | undefined): string {
+    return variant?.id ?? ""
+}
 
 export function VariantFormDialog({
+    mode,
     productId,
     variant,
     onClose,
+    onSubmit,
 }: {
-    productId: string
-    variant?: ProductVariant
+    mode: FormMode
+    /** Only needed in `server` mode; a draft row is not attached to a product yet. */
+    productId?: string
+    variant?: ExistingVariant
     onClose: () => void
+    onSubmit?: (payload: VariantPayload) => void
 }) {
     const [values, setValues] = useState<VariantRowValues>(() => ({
         name: variant?.name ?? "",
@@ -31,20 +68,13 @@ export function VariantFormDialog({
         status: variant?.status ?? "active",
         is_default: variant?.is_default ?? false,
     }))
-    const [errors, setErrors] = useState<Partial<Record<keyof VariantRowValues, string>>>({})
+    const { errors, setErrors, clear } = useFieldErrors()
 
-    const createMutation = useCreateVariant(productId)
-    const updateMutation = useUpdateVariant(productId, variant?.id ?? "")
-    const isPending = createMutation.isPending || updateMutation.isPending
+    const createMutation = useCreateVariant(productId ?? "")
+    const updateMutation = useUpdateVariant(productId ?? "", variantIdOf(variant))
+    const isPending = mode === "server" && (createMutation.isPending || updateMutation.isPending)
 
-    function setField<K extends keyof VariantRowValues>(key: K, value: VariantRowValues[K]) {
-        setValues((current) => ({ ...current, [key]: value }))
-        setErrors((current) => ({ ...current, [key]: undefined }))
-    }
-
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-
+    function handleSubmit() {
         const parsed = variantRowSchema.safeParse(values)
 
         if (!parsed.success) {
@@ -52,11 +82,18 @@ export function VariantFormDialog({
             return
         }
 
-        const payload = {
+        // The API reads a blank SKU as `null`; the draft keeps it as an empty
+        // string, which is the state the input actually holds.
+        const payload: VariantPayload = {
             name: parsed.data.name,
-            sku: parsed.data.sku === "" ? null : parsed.data.sku,
+            sku: parsed.data.sku === "" || parsed.data.sku === undefined ? null : parsed.data.sku,
             price: parsed.data.price,
             is_default: parsed.data.is_default,
+        }
+
+        if (mode === "draft") {
+            onSubmit?.(payload)
+            return
         }
 
         const onSuccess = () => {
@@ -83,95 +120,68 @@ export function VariantFormDialog({
     }
 
     return (
-        <Dialog open onOpenChange={(open) => (open ? undefined : onClose())}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{variant === undefined ? "Tambah variant" : "Edit variant"}</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-                    <Field>
-                        <FieldLabel htmlFor="variant-name">Nama</FieldLabel>
-                        <Input
-                            id="variant-name"
-                            value={values.name}
-                            onChange={(event) => setField("name", event.target.value)}
-                            aria-invalid={errors.name !== undefined}
-                            className="h-11"
-                        />
-                        {errors.name !== undefined ? <FieldError>{errors.name}</FieldError> : null}
-                    </Field>
+        <FormDialog
+            title={variant === undefined ? "Tambah variant" : "Edit variant"}
+            isPending={isPending}
+            onClose={onClose}
+            onSubmit={handleSubmit}
+        >
+            <NameField
+                id="variant-name"
+                label="Nama"
+                value={values.name}
+                error={errors.name}
+                onChange={(name) => {
+                    setValues((current) => ({ ...current, name }))
+                    clear("name")
+                }}
+            />
 
-                    <Field>
-                        <FieldLabel htmlFor="variant-sku">SKU (opsional)</FieldLabel>
-                        <Input
-                            id="variant-sku"
-                            value={values.sku ?? ""}
-                            onChange={(event) => setField("sku", event.target.value)}
-                            aria-invalid={errors.sku !== undefined}
-                            className="h-11"
-                        />
-                        {errors.sku !== undefined ? <FieldError>{errors.sku}</FieldError> : null}
-                    </Field>
+            <NameField
+                id="variant-sku"
+                label="SKU (opsional)"
+                value={values.sku ?? ""}
+                error={errors.sku}
+                onChange={(sku) => {
+                    setValues((current) => ({ ...current, sku }))
+                    clear("sku")
+                }}
+            />
 
-                    <Field>
-                        <FieldLabel htmlFor="variant-price">Harga (Rp)</FieldLabel>
-                        <Input
-                            id="variant-price"
-                            inputMode="numeric"
-                            value={String(values.price)}
-                            onChange={(event) => setField("price", Number(event.target.value))}
-                            aria-invalid={errors.price !== undefined}
-                            className="h-11"
-                        />
-                        {errors.price !== undefined ? <FieldError>{errors.price}</FieldError> : null}
-                    </Field>
+            <MoneyField
+                id="variant-price"
+                label="Harga (Rp)"
+                value={values.price}
+                error={errors.price}
+                onChange={(price) => {
+                    setValues((current) => ({ ...current, price }))
+                    clear("price")
+                }}
+            />
 
-                    <div className="flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5">
-                        <div className="flex flex-col">
-                            <Text variant="sm" weight="medium">
-                                Variant utama
-                            </Text>
-                            <Text variant="xs" className="text-muted-foreground">
-                                Jadikan sebagai pilihan default.
-                            </Text>
-                        </div>
-                        <Switch
-                            checked={values.is_default}
-                            onCheckedChange={(checked) => setField("is_default", checked === true)}
-                        />
-                    </div>
+            <ToggleField
+                label="Variant utama"
+                description="Jadikan sebagai pilihan default."
+                checked={values.is_default}
+                onCheckedChange={(is_default) => {
+                    setValues((current) => ({ ...current, is_default }))
+                    clear("is_default")
+                }}
+            />
 
-                    <div className="flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5">
-                        <div className="flex flex-col">
-                            <Text variant="sm" weight="medium">
-                                Status aktif
-                            </Text>
-                            <Text variant="xs" className="text-muted-foreground">
-                                Nonaktifkan untuk menyembunyikan variant.
-                            </Text>
-                        </div>
-                        <Switch
-                            checked={values.status === "active"}
-                            onCheckedChange={(checked) => setField("status", checked === true ? "active" : "inactive")}
-                        />
-                    </div>
-
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose}>
-                            Batal
-                        </Button>
-                        <Button type="submit" disabled={isPending}>
-                            {isPending ? (
-                                <>
-                                    <Spinner /> Menyimpan…
-                                </>
-                            ) : (
-                                "Simpan"
-                            )}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+            {/* A staged variant cannot be deactivated: the draft always keeps it
+                live, and status is decided when the product itself is created. */}
+            {mode === "server" ? (
+                <ToggleField
+                    label="Status aktif"
+                    description="Nonaktifkan untuk menyembunyikan variant."
+                    checked={values.status === "active"}
+                    onCheckedChange={(active) => {
+                        setValues((current) => ({ ...current, status: active ? "active" : "inactive" }))
+                        clear("status")
+                    }}
+                />
+            ) : null}
+        </FormDialog>
     )
 }

@@ -45,6 +45,7 @@ export function ModifierEditor({ productId, groups }: { productId: string; group
 
             {groupDialog.open ? (
                 <ModifierGroupFormDialog
+                    mode="server"
                     productId={productId}
                     group={groupDialog.group}
                     onClose={() => setGroupDialog({ open: false })}

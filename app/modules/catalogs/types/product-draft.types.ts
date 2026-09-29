@@ -49,7 +49,3 @@ export interface MediaDraft {
     is_primary: boolean
     status: "uploading" | "ready" | "error"
 }
-
-export type GroupDraftPayload = Omit<GroupDraft, "key" | "status" | "modifiers">
-
-export type ModifierDraftPayload = Omit<ModifierDraft, "key" | "status">

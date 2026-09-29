@@ -2,25 +2,18 @@ import { useState } from "react"
 import { ArrowDownIcon, ArrowUpIcon, PencilIcon, PlusIcon, StarIcon, Trash2Icon } from "lucide-react"
 
 import { Button } from "~/components/ui/button"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "~/components/ui/dialog"
-import { Field, FieldError, FieldLabel } from "~/components/ui/field"
-import { Input } from "~/components/ui/input"
-import { Switch } from "~/components/ui/switch"
 import { Text } from "~/components/ui/text"
 
+import { VariantFormDialog, type VariantPayload } from "../variants/variant-form-dialog"
 import { formatCurrency } from "../../utils/format-currency"
-import { issuesToMessages } from "../../utils/issues"
-import { variantRowSchema } from "../../schemas/"
 import { draftKey } from "../../utils/draft-key"
 import type { VariantDraft } from "../../types/product-draft.types"
 
+/**
+ * The wizard's variant list. Every row lives in the draft until the product is
+ * created, so there is nothing to save here — each edit hands a validated row
+ * straight back up to `onChange`.
+ */
 export function VariantDraftEditor({
     variants,
     onChange,
@@ -28,59 +21,39 @@ export function VariantDraftEditor({
     variants: VariantDraft[]
     onChange: (variants: VariantDraft[]) => void
 }) {
-    const [dialogOpen, setDialogOpen] = useState(false)
-    const [editingKey, setEditingKey] = useState<string | null>(null)
-    const [values, setValues] = useState({ name: "", sku: "", price: 0, is_default: false })
-    const [errors, setErrors] = useState<Record<string, string>>({})
+    const [dialog, setDialog] = useState<{ open: boolean; key: string | null }>({ open: false, key: null })
+
+    const editing = variants.find((variant) => variant.key === dialog.key)
 
     function openCreate() {
-        setEditingKey(null)
-        setValues({ name: "", sku: "", price: 0, is_default: variants.length === 0 })
-        setErrors({})
-        setDialogOpen(true)
+        setDialog({ open: true, key: null })
     }
 
     function openEdit(variant: VariantDraft) {
-        setEditingKey(variant.key)
-        setValues({ name: variant.name, sku: variant.sku, price: variant.price, is_default: variant.is_default })
-        setErrors({})
-        setDialogOpen(true)
+        setDialog({ open: true, key: variant.key })
     }
 
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-
-        const parsed = variantRowSchema.safeParse({
-            name: values.name,
-            sku: values.sku,
-            price: values.price,
-            status: "active",
-            is_default: values.is_default,
-        })
-
-        if (!parsed.success) {
-            setErrors(issuesToMessages(parsed.error.issues))
-            return
-        }
-
+    function handleSubmit(payload: VariantPayload) {
+        // A blank SKU stays an empty string in the draft: it is the state the
+        // input holds, and the wizard converts it to `null` only when it writes.
         const base: Omit<VariantDraft, "key" | "status"> = {
-            name: parsed.data.name,
-            sku: parsed.data.sku ?? "",
-            price: parsed.data.price,
-            is_default: parsed.data.is_default,
+            name: payload.name,
+            sku: payload.sku ?? "",
+            price: payload.price,
+            is_default: payload.is_default,
         }
 
-        if (editingKey === null) {
+        if (dialog.key === null) {
             onChange([...variants, { key: draftKey("var"), status: "active", ...base }])
         } else {
             onChange(
                 variants.map((variant) =>
-                    variant.key === editingKey ? { ...variant, ...base, status: variant.status } : variant
+                    variant.key === dialog.key ? { ...variant, ...base, status: variant.status } : variant
                 )
             )
         }
 
-        setDialogOpen(false)
+        setDialog({ open: false, key: null })
     }
 
     function move(index: number, direction: -1 | 1) {
@@ -203,75 +176,14 @@ export function VariantDraftEditor({
                 <PlusIcon /> Tambah Variant
             </Button>
 
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent>
-                    <DialogHeader className="flex flex-col gap-0.5">
-                        <DialogTitle className="text-lg font-semibold">
-                            {editingKey === null ? "Tambah variant" : "Edit variant"}
-                        </DialogTitle>
-                        <DialogDescription className="text-xs">
-                            {editingKey === null
-                                ? "Tambahkan variant sesuai yang anda inginkan"
-                                : "edit variant sesuai yang anda inginkan"}
-                        </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-                        <Field>
-                            <FieldLabel htmlFor="draft-variant-name">Nama</FieldLabel>
-                            <Input
-                                id="draft-variant-name"
-                                value={values.name}
-                                onChange={(event) => setValues((current) => ({ ...current, name: event.target.value }))}
-                                aria-invalid={errors.name !== undefined}
-                                className="h-11"
-                            />
-                            {errors.name !== undefined ? <FieldError>{errors.name}</FieldError> : null}
-                        </Field>
-                        <Field>
-                            <FieldLabel htmlFor="draft-variant-sku">SKU (opsional)</FieldLabel>
-                            <Input
-                                id="draft-variant-sku"
-                                value={values.sku}
-                                onChange={(event) => setValues((current) => ({ ...current, sku: event.target.value }))}
-                                className="h-11"
-                            />
-                        </Field>
-                        <Field>
-                            <FieldLabel htmlFor="draft-variant-price">Harga (Rp)</FieldLabel>
-                            <Input
-                                id="draft-variant-price"
-                                inputMode="numeric"
-                                value={String(values.price)}
-                                onChange={(event) =>
-                                    setValues((current) => ({ ...current, price: Number(event.target.value) }))
-                                }
-                                aria-invalid={errors.price !== undefined}
-                                className="h-11"
-                            />
-                            {errors.price !== undefined ? <FieldError>{errors.price}</FieldError> : null}
-                        </Field>
-                        <div className="flex items-center justify-between gap-3 px-1 py-2.5">
-                            <Text variant="sm" weight="semibold">
-                                Variant utama
-                            </Text>
-                            <Switch
-                                checked={values.is_default}
-                                onCheckedChange={(checked) =>
-                                    setValues((current) => ({ ...current, is_default: checked === true }))
-                                }
-                            />
-                        </div>
-                        <DialogFooter>
-                            <Button type="button" size="lg" variant="outline" onClick={() => setDialogOpen(false)}>
-                                Batal
-                            </Button>
-                            <Button type="submit" size="lg">
-                                Simpan
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
+            {dialog.open ? (
+                <VariantFormDialog
+                    mode="draft"
+                    variant={editing}
+                    onClose={() => setDialog({ open: false, key: null })}
+                    onSubmit={handleSubmit}
+                />
+            ) : null}
         </div>
     )
 }

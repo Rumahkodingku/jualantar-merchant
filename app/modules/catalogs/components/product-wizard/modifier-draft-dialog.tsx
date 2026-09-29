@@ -7,7 +7,7 @@ import { Input } from "~/components/ui/input"
 
 import { issuesToMessages } from "../../utils/issues"
 import { modifierSchema } from "../../schemas/catalog.schema"
-import type { ModifierDraft, ModifierDraftPayload } from "./types"
+import type { ModifierDraft, ModifierDraftPayload } from "../../types/product-draft.types"
 
 export function ModifierDraftDialog({
     modifier,

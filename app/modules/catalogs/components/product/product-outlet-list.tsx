@@ -7,7 +7,7 @@ import type { OperationalOutlet } from "~/modules/merchant-operations"
 
 import { CatalogEmptyState } from "../catalog-empty-state"
 import { AvailabilityBadge } from "../outlets/availability-badge"
-import { StatusBadge } from "../status-badge"
+import { StatusBadge } from "../common/status-badge"
 import { outletPhotoUrl } from "../../utils/outlet-photo"
 import { formatOutletLocation } from "../../utils/outlet-location"
 import type { ProductOutletRow } from "../../types/catalog.types"

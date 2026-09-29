@@ -6,8 +6,8 @@ import { Spinner } from "~/components/ui/spinner"
 import { Text } from "~/components/ui/text"
 import { MAX_UPLOAD_SIZE_LABEL } from "~/lib/upload"
 
-import { MAX_PRODUCT_MEDIA, MEDIA_ACCEPT } from "../../hooks/use-catalog-media-upload"
-import type { MediaDraft } from "./types"
+import { MAX_PRODUCT_MEDIA, MEDIA_ACCEPT } from "../../utils/media"
+import type { MediaDraft } from "../../types/product-draft.types"
 
 export function MediaDraftPicker({
     media,

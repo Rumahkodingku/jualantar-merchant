@@ -4,7 +4,7 @@ import { Button } from "~/components/ui/button"
 import { Text } from "~/components/ui/text"
 
 import { EntityStatusSwitch } from "../common/entity-status-switch"
-import { StatusBadge } from "../status-badge"
+import { StatusBadge } from "../common/status-badge"
 import { useSetVariantStatus } from "../../services/variants/variant.mutations"
 import { formatCurrency } from "../../utils/format-currency"
 import type { ProductVariant } from "../../types/catalog.types"

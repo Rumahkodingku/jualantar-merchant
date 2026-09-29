@@ -6,10 +6,6 @@ import { validateUploadFile } from "~/lib/upload"
 import { catalogRepository } from "../services/catalog.repository"
 import type { MediaUploadTarget } from "../types/catalog.types"
 
-export const MAX_PRODUCT_MEDIA = 10
-
-export const MEDIA_ACCEPT = "image/jpeg,image/png,image/webp"
-
 export function useCatalogMediaUpload(productId: string): PresignedUploadController<MediaUploadTarget> {
     const createUpload = useCallback(
         (file: File) =>

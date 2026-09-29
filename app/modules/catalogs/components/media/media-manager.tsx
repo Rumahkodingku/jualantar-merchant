@@ -7,7 +7,7 @@ import { MAX_UPLOAD_SIZE_LABEL } from "~/lib/upload"
 
 import { ConfirmDialog } from "../common/confirm-dialog"
 import { MediaUploadTile } from "./media-upload-tile"
-import { MAX_PRODUCT_MEDIA } from "../../hooks/use-catalog-media-upload"
+import { MAX_PRODUCT_MEDIA } from "../../utils/media"
 import { useDeleteMedia, useReorderMedia, useSetPrimaryMedia } from "../../services/media/media.mutations"
 import { catalogErrorMessage } from "../../utils/api-error"
 import { notifyError, notifySuccess } from "~/lib/notify"

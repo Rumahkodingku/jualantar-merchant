@@ -11,7 +11,7 @@ import { cn } from "~/lib/utils"
 
 import { ModifierActionsMenu } from "./modifier-actions-menu"
 import { ModifierDraftRow } from "./modifier-draft-row"
-import type { GroupDraft, ModifierDraft } from "./types"
+import type { GroupDraft, ModifierDraft } from "../../types/product-draft.types"
 
 function groupMetadata(group: GroupDraft): { required: string; selection: string } {
     const required = group.is_required ? "Wajib" : "Opsional"

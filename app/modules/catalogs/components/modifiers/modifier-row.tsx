@@ -3,7 +3,7 @@ import { ArrowDownIcon, ArrowUpIcon, PencilIcon, Trash2Icon } from "lucide-react
 import { Button } from "~/components/ui/button"
 import { Text } from "~/components/ui/text"
 
-import { StatusBadge } from "../status-badge"
+import { StatusBadge } from "../common/status-badge"
 import { EntityStatusSwitch } from "../common/entity-status-switch"
 import { useSetModifierStatus } from "../../services/modifiers/modifier.mutations"
 import { formatCurrency } from "../../utils/format-currency"

@@ -18,7 +18,12 @@ export function StatusBadge({
     className,
 }: {
     tone: StatusTone
-    indicator?: string
+    /**
+     * A short glyph shown before the label — an emoji reads as a status at a
+     * glance, a dot keeps a dense list scannable. Any node the caller can put
+     * inside the wrapper, which is always hidden from assistive technology.
+     */
+    indicator?: ReactNode
     children: ReactNode
     className?: string
 }) {

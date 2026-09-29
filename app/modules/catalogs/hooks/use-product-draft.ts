@@ -20,9 +20,9 @@ import {
 } from "../services/product-draft/product-draft.queries"
 import { productDraftDataSchema, type ProductDraft, type SubmissionProgress } from "../schemas/product-draft.schema"
 import type { ProductInfoFormValues } from "../schemas/catalog.schema"
-import { draftKey } from "../components/product-wizard/utils"
-import { MAX_PRODUCT_MEDIA } from "./use-catalog-media-upload"
-import type { GroupDraft, MediaDraft, VariantDraft } from "../components/product-wizard/types"
+import { draftKey } from "../utils/draft-key"
+import { MAX_PRODUCT_MEDIA } from "../utils/media"
+import type { GroupDraft, MediaDraft, VariantDraft } from "../types/product-draft.types"
 
 const AUTOSAVE_DEBOUNCE_MS = 1000
 

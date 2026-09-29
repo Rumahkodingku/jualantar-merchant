@@ -6,7 +6,7 @@ import { Text } from "~/components/ui/text"
 
 import { AvailabilityBadge } from "./availability-badge"
 import { AvailabilityControl } from "./availability-control"
-import { StatusBadge } from "../status-badge"
+import { StatusBadge } from "../common/status-badge"
 import { useSetOutletAssignmentStatus } from "../../services/product-outlets/product-outlet.mutations"
 import { catalogErrorMessage } from "../../utils/api-error"
 import { notifyError, notifySuccess } from "~/lib/notify"

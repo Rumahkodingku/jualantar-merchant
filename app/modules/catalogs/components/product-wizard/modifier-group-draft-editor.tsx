@@ -19,8 +19,13 @@ import { ConfirmDialog } from "../common/confirm-dialog"
 import { ModifierDraftDialog } from "./modifier-draft-dialog"
 import { ModifierGroupDraftCard } from "./modifier-group-draft-card"
 import { ModifierGroupDraftDialog } from "./modifier-group-draft-dialog"
-import { draftKey } from "./utils"
-import type { GroupDraft, GroupDraftPayload, ModifierDraft, ModifierDraftPayload } from "./types"
+import { draftKey } from "../../utils/draft-key"
+import type {
+    GroupDraft,
+    GroupDraftPayload,
+    ModifierDraft,
+    ModifierDraftPayload,
+} from "../../types/product-draft.types"
 
 type PendingDelete = { scope: "group" | "option"; groupKey: string; modifier?: ModifierDraft }
 

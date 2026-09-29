@@ -12,7 +12,7 @@ import { issuesToMessages } from "../../utils/issues"
 import { SELECTION_TYPE_OPTIONS } from "../../utils/labels"
 import { modifierGroupSchema, type ModifierGroupFormValues } from "../../schemas/catalog.schema"
 import type { SelectionType } from "../../types/catalog.types"
-import type { GroupDraft, GroupDraftPayload } from "./types"
+import type { GroupDraft, GroupDraftPayload } from "../../types/product-draft.types"
 
 function groupDefaults(group?: GroupDraft): ModifierGroupFormValues {
     return {

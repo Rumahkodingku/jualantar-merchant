@@ -7,7 +7,7 @@ import { cn } from "~/lib/utils"
 
 import { formatCurrency } from "../../utils/format-currency"
 import { ModifierActionsMenu } from "./modifier-actions-menu"
-import type { ModifierDraft } from "./types"
+import type { ModifierDraft } from "../../types/product-draft.types"
 
 export function ModifierDraftRow({
     modifier,

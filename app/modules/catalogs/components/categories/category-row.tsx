@@ -13,7 +13,7 @@ import {
 import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
 
-import { StatusBadge } from "../status-badge"
+import { StatusBadge } from "../common/status-badge"
 import type { CatalogCategory } from "../../types/catalog.types"
 
 export type CategoryRowAction = "edit" | "status" | "delete"

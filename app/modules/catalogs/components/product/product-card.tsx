@@ -3,7 +3,7 @@ import { Link } from "react-router"
 import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
 
-import { StatusBadge } from "../status-badge"
+import { StatusBadge } from "../common/status-badge"
 import { ProductMediaThumbnail } from "./product-media-thumbnail"
 import { formatCurrency } from "../../utils/format-currency"
 import { PRODUCT_TYPE_LABEL } from "../../utils/labels"

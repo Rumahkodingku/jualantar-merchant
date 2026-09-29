@@ -6,7 +6,7 @@ import { Text } from "~/components/ui/text"
 
 import { ConfirmDialog } from "../common/confirm-dialog"
 import { EntityStatusSwitch } from "../common/entity-status-switch"
-import { StatusBadge } from "../status-badge"
+import { StatusBadge } from "../common/status-badge"
 import { ModifierFormDialog } from "./modifier-form-dialog"
 import { ModifierRow } from "./modifier-row"
 import {

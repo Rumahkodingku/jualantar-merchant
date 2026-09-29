@@ -14,7 +14,7 @@ import { Text } from "~/components/ui/text"
 import { notifyError, notifySuccess } from "~/lib/notify"
 
 import { ConfirmDialog } from "../common/confirm-dialog"
-import { StatusBadge } from "../status-badge"
+import { StatusBadge } from "../common/status-badge"
 import { useDeleteProduct, useSetProductStatus } from "../../services/products/product.mutations"
 import { catalogErrorMessage } from "../../utils/api-error"
 import { CATALOGS_PATHS } from "../../utils/paths"

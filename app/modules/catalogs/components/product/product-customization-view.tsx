@@ -5,7 +5,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/component
 import { Text } from "~/components/ui/text"
 
 import { CatalogEmptyState } from "../catalog-empty-state"
-import { StatusBadge } from "../status-badge"
+import { StatusBadge } from "../common/status-badge"
 import { formatCurrency } from "../../utils/format-currency"
 import { SELECTION_TYPE_LABEL } from "../../utils/labels"
 import type { ProductModifierGroup } from "../../types/catalog.types"

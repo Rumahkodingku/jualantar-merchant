@@ -3,10 +3,10 @@ import { FolderPlusIcon, SearchXIcon } from "lucide-react"
 
 import { Button } from "~/components/ui/button"
 import { ErrorState } from "~/components/error-state"
-import { Input } from "~/components/ui/input"
 import { useDebouncedValue } from "~/hooks/use-debounced-value"
 
 import { CatalogEmptyState } from "../components/common/catalog-empty-state"
+import { SectionToolbar } from "../components/common/section-toolbar"
 import { ListSkeleton } from "~/components/list-skeleton"
 import { CategoryDeleteDialog } from "../components/categories/category-delete-dialog"
 import { CategoryFormDialog } from "../components/categories/category-form-dialog"
@@ -95,45 +95,19 @@ export function CatalogCategoriesPage() {
 
     return (
         <>
-            <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2">
-                    <Input
-                        value={searchInput}
-                        onChange={(event) => setSearchInput(event.target.value)}
-                        placeholder="Cari kategori..."
-                        aria-label="Cari kategori"
-                        className="h-10 flex-1"
-                    />
-
-                    <Button
-                        type="button"
-                        variant={reorderMode ? "secondary" : "outline"}
-                        size="sm"
-                        className="h-10 shrink-0"
-                        disabled={hasSearch && !reorderMode}
-                        onClick={() => setReorderMode((mode) => !mode)}
-                        aria-pressed={reorderMode}
-                    >
-                        {reorderMode ? "Selesai" : "Urutkan"}
-                    </Button>
-
-                    <Button type="button" size="sm" className="h-10 shrink-0" onClick={() => setDialog({ open: true })}>
-                        <FolderPlusIcon aria-hidden="true" />
-                        <span className="hidden sm:inline">Tambah Kategori</span>
-                        <span className="sm:hidden">Tambah</span>
-                    </Button>
-                </div>
-
-                {hasSearch ? (
-                    <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
-                        Urutkan dinonaktifkan saat pencarian aktif.
-                    </p>
-                ) : reorderMode ? (
-                    <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
-                        Seret baris untuk mengubah urutan kategori.
-                    </p>
-                ) : null}
-            </div>
+            <SectionToolbar
+                searchValue={searchInput}
+                searchPlaceholder="Cari kategori..."
+                onSearchChange={setSearchInput}
+                reorderMode={reorderMode}
+                canReorder={!hasSearch}
+                onToggleReorder={() => setReorderMode((mode) => !mode)}
+                addLabel="Tambah Kategori"
+                addIcon={<FolderPlusIcon aria-hidden="true" />}
+                onAdd={() => setDialog({ open: true })}
+                reorderHint="Seret baris untuk mengubah urutan kategori."
+                searchBlocksReorderNote="Urutkan dinonaktifkan saat pencarian aktif."
+            />
 
             {categoriesQuery.isPending ? (
                 <ListSkeleton rows={4} className="h-16" />

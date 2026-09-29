@@ -1,5 +1,6 @@
 import { Text } from "~/components/ui/text"
 
+import { DetailRows } from "../common/detail-rows"
 import { MediaTilePlaceholder } from "../media/media-tile"
 import { ReviewSection } from "../common/review-section"
 import { formatCurrency } from "../../utils/format-currency"
@@ -39,8 +40,9 @@ export function ProductReviewSections({
             title: "Informasi",
             summary: [info.name, categoryName ?? "Tanpa kategori"].filter((part) => part !== "").join(" • "),
             content: (
-                <dl className="flex flex-col divide-y rounded-xl border">
-                    {[
+                <DetailRows
+                    variant="boxed"
+                    rows={[
                         { term: "Nama", value: info.name || "-" },
                         { term: "Kategori", value: categoryName ?? "-" },
                         { term: "Deskripsi", value: info.description ?? "-" },
@@ -54,13 +56,8 @@ export function ProductReviewSections({
                                       ? `Mulai ${formatCurrency(Math.min(...variants.map((variant) => variant.price)))}`
                                       : "-",
                         },
-                    ].map((row) => (
-                        <div key={row.term} className="flex items-start justify-between gap-4 px-3 py-2">
-                            <dt className="shrink-0 text-sm text-muted-foreground">{row.term}</dt>
-                            <dd className="text-right text-sm font-medium wrap-break-word">{row.value}</dd>
-                        </div>
-                    ))}
-                </dl>
+                    ]}
+                />
             ),
         },
         {

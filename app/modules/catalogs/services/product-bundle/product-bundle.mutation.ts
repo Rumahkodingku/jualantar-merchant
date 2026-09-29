@@ -1,8 +1,12 @@
 import { useCallback, useRef, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { catalogRepository } from "../catalog.repository"
 import { invalidateProducts } from "../catalog.invalidation"
+import * as mediaApi from "../media/media.api"
+import * as modifierApi from "../modifiers/modifier.api"
+import * as productApi from "../products/product.api"
+import * as productOutletApi from "../product-outlets/product-outlet.api"
+import * as variantApi from "../variants/variant.api"
 import type { ModifierCreateInput, ModifierGroupCreateInput, ProductCreateInput, VariantCreateInput } from "../../types"
 
 export type BundleStepKey = "product" | "variants" | "customization" | "media" | "outlets"
@@ -153,7 +157,7 @@ export function useCreateProductBundle(initialProgress?: BundleProgress | null) 
                 mark("product", "running")
 
                 try {
-                    const product = await catalogRepository.products.create(input.product)
+                    const product = await productApi.createProduct(input.product)
 
                     activeProductId = product.id
                     createdProductId.current = product.id
@@ -180,7 +184,7 @@ export function useCreateProductBundle(initialProgress?: BundleProgress | null) 
                             continue
                         }
 
-                        await catalogRepository.variants.create(targetProductId, variant)
+                        await variantApi.createProductVariant(targetProductId, variant)
                         createdVariants.current = index + 1
                     }
 
@@ -199,7 +203,7 @@ export function useCreateProductBundle(initialProgress?: BundleProgress | null) 
                         let groupId = createdGroupIds.current[index]
 
                         if (groupId === undefined) {
-                            const group = await catalogRepository.modifierGroups.create(targetProductId, entry.group)
+                            const group = await modifierApi.createProductModifierGroup(targetProductId, entry.group)
 
                             groupId = group.id
                             createdGroupIds.current[index] = groupId
@@ -210,7 +214,7 @@ export function useCreateProductBundle(initialProgress?: BundleProgress | null) 
                                 continue
                             }
 
-                            await catalogRepository.modifiers.create(targetProductId, groupId, modifier)
+                            await modifierApi.createProductModifier(targetProductId, groupId, modifier)
                             createdModifierCounts.current[index] = position + 1
                         }
                     }
@@ -231,7 +235,7 @@ export function useCreateProductBundle(initialProgress?: BundleProgress | null) 
                             continue
                         }
 
-                        await catalogRepository.media.create(targetProductId, {
+                        await mediaApi.createProductMedia(targetProductId, {
                             object_key: item.object_key,
                             is_primary: item.is_primary,
                             alt_text: item.alt_text,
@@ -252,7 +256,7 @@ export function useCreateProductBundle(initialProgress?: BundleProgress | null) 
 
                 try {
                     if (!outletsReplaced.current) {
-                        await catalogRepository.productOutlets.replace(targetProductId, input.outletIds)
+                        await productOutletApi.replaceProductOutlets(targetProductId, input.outletIds)
                         outletsReplaced.current = true
                     }
 

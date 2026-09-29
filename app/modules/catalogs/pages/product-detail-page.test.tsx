@@ -20,10 +20,16 @@ const { fetchProduct, fetchProductOutlets, useOperationalOutlets } = vi.hoisted(
     useOperationalOutlets: vi.fn(),
 }))
 
-vi.mock("../services/catalog.api", async (importOriginal) => {
-    const actual = await importOriginal<typeof import("../services/catalog.api")>()
+vi.mock("../services/products/product.api", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../services/products/product.api")>()
 
-    return { ...actual, fetchProduct, fetchProductOutlets }
+    return { ...actual, fetchProduct }
+})
+
+vi.mock("../services/product-outlets/product-outlet.api", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../services/product-outlets/product-outlet.api")>()
+
+    return { ...actual, fetchProductOutlets }
 })
 
 vi.mock("~/modules/merchant-operations", async (importOriginal) => {

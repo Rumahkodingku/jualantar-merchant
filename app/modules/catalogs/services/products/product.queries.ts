@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 
 import { catalogKeys } from "../catalog.keys"
-import { catalogRepository } from "../catalog.repository"
+import * as productApi from "./product.api"
 import type { ProductIndexParams } from "../../types"
 
 type QueryGate = { enabled?: boolean }
@@ -16,7 +16,7 @@ export const PRODUCT_MEDIA_REFRESH_INTERVAL = 240_000
 export function useProducts(params: ProductIndexParams = {}, options: { refetchInterval?: number } = {}) {
     return useQuery({
         queryKey: catalogKeys.productList(params),
-        queryFn: () => catalogRepository.products.list(params),
+        queryFn: () => productApi.fetchProducts(params),
         placeholderData: keepPreviousData,
         refetchInterval: options.refetchInterval,
     })
@@ -25,7 +25,7 @@ export function useProducts(params: ProductIndexParams = {}, options: { refetchI
 export function useProductDetail(productId: string | undefined, gate: QueryGate = {}) {
     return useQuery({
         queryKey: catalogKeys.product(productId ?? ""),
-        queryFn: () => catalogRepository.products.get(productId as string),
+        queryFn: () => productApi.fetchProduct(productId as string),
         enabled: productId !== undefined && productId.length > 0 && (gate.enabled ?? true),
     })
 }

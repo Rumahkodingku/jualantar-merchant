@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { catalogRepository } from "../catalog.repository"
 import { invalidateProducts } from "../catalog.invalidation"
+import * as modifierApi from "./modifier.api"
 import type {
     CatalogStatus,
     ModifierCreateInput,
@@ -15,7 +15,7 @@ export function useCreateModifierGroup(productId: string) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: (input: ModifierGroupCreateInput) => catalogRepository.modifierGroups.create(productId, input),
+        mutationFn: (input: ModifierGroupCreateInput) => modifierApi.createProductModifierGroup(productId, input),
         onSuccess: () => invalidateProducts(queryClient, productId),
     })
 }
@@ -25,7 +25,7 @@ export function useUpdateModifierGroup(productId: string, groupId: string) {
 
     return useMutation({
         mutationFn: (input: ModifierGroupUpdateInput) =>
-            catalogRepository.modifierGroups.update(productId, groupId, input),
+            modifierApi.updateProductModifierGroup(productId, groupId, input),
         onSuccess: () => invalidateProducts(queryClient, productId),
     })
 }
@@ -34,7 +34,7 @@ export function useDeleteModifierGroup(productId: string) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: (groupId: string) => catalogRepository.modifierGroups.delete(productId, groupId),
+        mutationFn: (groupId: string) => modifierApi.deleteProductModifierGroup(productId, groupId),
         onSuccess: () => invalidateProducts(queryClient, productId),
     })
 }
@@ -45,8 +45,8 @@ export function useSetModifierGroupStatus(productId: string, groupId: string) {
     return useMutation({
         mutationFn: (status: CatalogStatus) =>
             status === "active"
-                ? catalogRepository.modifierGroups.activate(productId, groupId)
-                : catalogRepository.modifierGroups.deactivate(productId, groupId),
+                ? modifierApi.activateProductModifierGroup(productId, groupId)
+                : modifierApi.deactivateProductModifierGroup(productId, groupId),
         onSuccess: () => invalidateProducts(queryClient, productId),
     })
 }
@@ -55,7 +55,7 @@ export function useReorderModifierGroups(productId: string) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: (items: ReorderItem[]) => catalogRepository.modifierGroups.reorder(productId, items),
+        mutationFn: (items: ReorderItem[]) => modifierApi.reorderProductModifierGroups(productId, items),
         onSuccess: () => invalidateProducts(queryClient, productId),
     })
 }
@@ -64,7 +64,7 @@ export function useReorderModifiers(productId: string, groupId: string) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: (items: ReorderItem[]) => catalogRepository.modifiers.reorder(productId, groupId, items),
+        mutationFn: (items: ReorderItem[]) => modifierApi.reorderProductModifiers(productId, groupId, items),
         onSuccess: () => invalidateProducts(queryClient, productId),
     })
 }
@@ -73,7 +73,7 @@ export function useCreateModifier(productId: string, groupId: string) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: (input: ModifierCreateInput) => catalogRepository.modifiers.create(productId, groupId, input),
+        mutationFn: (input: ModifierCreateInput) => modifierApi.createProductModifier(productId, groupId, input),
         onSuccess: () => invalidateProducts(queryClient, productId),
     })
 }
@@ -83,7 +83,7 @@ export function useUpdateModifier(productId: string, groupId: string, modifierId
 
     return useMutation({
         mutationFn: (input: ModifierUpdateInput) =>
-            catalogRepository.modifiers.update(productId, groupId, modifierId, input),
+            modifierApi.updateProductModifier(productId, groupId, modifierId, input),
         onSuccess: () => invalidateProducts(queryClient, productId),
     })
 }
@@ -92,7 +92,7 @@ export function useDeleteModifier(productId: string, groupId: string) {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: (modifierId: string) => catalogRepository.modifiers.delete(productId, groupId, modifierId),
+        mutationFn: (modifierId: string) => modifierApi.deleteProductModifier(productId, groupId, modifierId),
         onSuccess: () => invalidateProducts(queryClient, productId),
     })
 }
@@ -103,8 +103,8 @@ export function useSetModifierStatus(productId: string, groupId: string, modifie
     return useMutation({
         mutationFn: (status: CatalogStatus) =>
             status === "active"
-                ? catalogRepository.modifiers.activate(productId, groupId, modifierId)
-                : catalogRepository.modifiers.deactivate(productId, groupId, modifierId),
+                ? modifierApi.activateProductModifier(productId, groupId, modifierId)
+                : modifierApi.deactivateProductModifier(productId, groupId, modifierId),
         onSuccess: () => invalidateProducts(queryClient, productId),
     })
 }

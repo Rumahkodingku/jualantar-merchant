@@ -23,10 +23,16 @@ const { fetchProducts, fetchCategories, useOperationalOutlets, productDraftApi, 
     putToStorage: vi.fn(),
 }))
 
-vi.mock("../services/catalog.api", async (importOriginal) => {
-    const actual = await importOriginal<typeof import("../services/catalog.api")>()
+vi.mock("../services/products/product.api", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../services/products/product.api")>()
 
-    return { ...actual, fetchProducts, fetchCategories }
+    return { ...actual, fetchProducts }
+})
+
+vi.mock("../services/categories/category.api", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../services/categories/category.api")>()
+
+    return { ...actual, fetchCategories }
 })
 
 vi.mock("../services/product-draft/product-draft.api", () => productDraftApi)

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useOperationalOutlets, type OperationalOutlet } from "~/modules/merchant-operations"
 
 import { catalogKeys } from "../catalog.keys"
-import { catalogRepository } from "../catalog.repository"
+import * as productOutletApi from "./product-outlet.api"
 import type { CatalogOutlet, ProductOutletRow } from "../../types"
 
 const OUTLETS_PAGE_SIZE = 100
@@ -16,7 +16,7 @@ function toCatalogOutlet(outlet: OperationalOutlet): CatalogOutlet {
 export function useProductAssignments(productId: string | undefined, enabled = true) {
     return useQuery({
         queryKey: catalogKeys.productAssignments(productId ?? ""),
-        queryFn: () => catalogRepository.productOutlets.list(productId as string),
+        queryFn: () => productOutletApi.fetchProductOutlets(productId as string),
         enabled: enabled && productId !== undefined && productId.length > 0,
     })
 }

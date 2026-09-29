@@ -4,18 +4,25 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { useCreateProductBundle, type BundleProgress, type ProductBundleInput } from "./product-bundle.mutation"
 
-const { repository } = vi.hoisted(() => ({
-    repository: {
-        products: { create: vi.fn() },
-        variants: { create: vi.fn() },
-        modifierGroups: { create: vi.fn() },
-        modifiers: { create: vi.fn() },
-        media: { create: vi.fn() },
-        productOutlets: { replace: vi.fn() },
-    },
+const api = vi.hoisted(() => ({
+    createProduct: vi.fn(),
+    createProductVariant: vi.fn(),
+    createProductModifierGroup: vi.fn(),
+    createProductModifier: vi.fn(),
+    createProductMedia: vi.fn(),
+    replaceProductOutlets: vi.fn(),
 }))
 
-vi.mock("../catalog.repository", () => ({ catalogRepository: repository }))
+vi.mock("../products/product.api", () => ({ createProduct: api.createProduct }))
+vi.mock("../variants/variant.api", () => ({ createProductVariant: api.createProductVariant }))
+vi.mock("../modifiers/modifier.api", () => ({
+    createProductModifierGroup: api.createProductModifierGroup,
+    createProductModifier: api.createProductModifier,
+}))
+vi.mock("../media/media.api", () => ({ createProductMedia: api.createProductMedia }))
+vi.mock("../product-outlets/product-outlet.api", () => ({
+    replaceProductOutlets: api.replaceProductOutlets,
+}))
 
 const PRODUCT = {
     id: "p1",
@@ -57,12 +64,12 @@ function renderBundle(initialProgress?: BundleProgress) {
 beforeEach(() => {
     vi.clearAllMocks()
 
-    repository.products.create.mockResolvedValue(PRODUCT)
-    repository.variants.create.mockResolvedValue({})
-    repository.modifierGroups.create.mockResolvedValue({ id: "g1" })
-    repository.modifiers.create.mockResolvedValue({})
-    repository.media.create.mockResolvedValue({})
-    repository.productOutlets.replace.mockResolvedValue([])
+    api.createProduct.mockResolvedValue(PRODUCT)
+    api.createProductVariant.mockResolvedValue({})
+    api.createProductModifierGroup.mockResolvedValue({ id: "g1" })
+    api.createProductModifier.mockResolvedValue({})
+    api.createProductMedia.mockResolvedValue({})
+    api.replaceProductOutlets.mockResolvedValue([])
 })
 
 describe("useCreateProductBundle", () => {
@@ -75,9 +82,9 @@ describe("useCreateProductBundle", () => {
 
         await waitFor(() => expect(result.current.hasFailure).toBe(false))
 
-        expect(repository.products.create).toHaveBeenCalledTimes(1)
-        expect(repository.media.create).toHaveBeenCalledTimes(1)
-        expect(repository.media.create).toHaveBeenCalledWith("p1", {
+        expect(api.createProduct).toHaveBeenCalledTimes(1)
+        expect(api.createProductMedia).toHaveBeenCalledTimes(1)
+        expect(api.createProductMedia).toHaveBeenCalledWith("p1", {
             object_key: "merchants/m1/drafts/foto-0.jpg",
             is_primary: true,
             alt_text: null,
@@ -95,11 +102,11 @@ describe("useCreateProductBundle", () => {
 
         await waitFor(() => expect(result.current.hasFailure).toBe(false))
 
-        expect(repository.variants.create).not.toHaveBeenCalled()
+        expect(api.createProductVariant).not.toHaveBeenCalled()
     })
 
     it("retries only the failed step without recreating the product", async () => {
-        repository.media.create.mockRejectedValueOnce(new Error("storage offline"))
+        api.createProductMedia.mockRejectedValueOnce(new Error("storage offline"))
 
         const { result } = renderBundle()
 
@@ -118,12 +125,12 @@ describe("useCreateProductBundle", () => {
 
         await waitFor(() => expect(result.current.hasFailure).toBe(false))
 
-        expect(repository.products.create).toHaveBeenCalledTimes(1)
-        expect(repository.media.create).toHaveBeenCalledTimes(2)
+        expect(api.createProduct).toHaveBeenCalledTimes(1)
+        expect(api.createProductMedia).toHaveBeenCalledTimes(2)
     })
 
     it("does not recreate variants or customization when a later step fails", async () => {
-        repository.productOutlets.replace.mockRejectedValueOnce(new Error("outlet down"))
+        api.replaceProductOutlets.mockRejectedValueOnce(new Error("outlet down"))
 
         const { result } = renderBundle()
 
@@ -153,9 +160,9 @@ describe("useCreateProductBundle", () => {
         await waitFor(() => expect(result.current.hasFailure).toBe(true))
 
         expect(result.current.failedKeys).toEqual(["outlets"])
-        expect(repository.variants.create).toHaveBeenCalledTimes(2)
-        expect(repository.modifierGroups.create).toHaveBeenCalledTimes(1)
-        expect(repository.modifiers.create).toHaveBeenCalledTimes(1)
+        expect(api.createProductVariant).toHaveBeenCalledTimes(2)
+        expect(api.createProductModifierGroup).toHaveBeenCalledTimes(1)
+        expect(api.createProductModifier).toHaveBeenCalledTimes(1)
 
         await act(async () => {
             result.current.retry()
@@ -163,15 +170,15 @@ describe("useCreateProductBundle", () => {
 
         await waitFor(() => expect(result.current.hasFailure).toBe(false))
 
-        expect(repository.products.create).toHaveBeenCalledTimes(1)
-        expect(repository.variants.create).toHaveBeenCalledTimes(2)
-        expect(repository.modifierGroups.create).toHaveBeenCalledTimes(1)
-        expect(repository.modifiers.create).toHaveBeenCalledTimes(1)
-        expect(repository.productOutlets.replace).toHaveBeenCalledTimes(2)
+        expect(api.createProduct).toHaveBeenCalledTimes(1)
+        expect(api.createProductVariant).toHaveBeenCalledTimes(2)
+        expect(api.createProductModifierGroup).toHaveBeenCalledTimes(1)
+        expect(api.createProductModifier).toHaveBeenCalledTimes(1)
+        expect(api.replaceProductOutlets).toHaveBeenCalledTimes(2)
     })
 
     it("resumes an interrupted create without duplicating anything", async () => {
-        repository.productOutlets.replace.mockRejectedValueOnce(new Error("outlet down"))
+        api.replaceProductOutlets.mockRejectedValueOnce(new Error("outlet down"))
 
         const input: ProductBundleInput = {
             ...buildInput(2),
@@ -217,14 +224,14 @@ describe("useCreateProductBundle", () => {
 
         await waitFor(() => expect(resumed.result.current.hasFailure).toBe(false))
 
-        expect(repository.products.create).toHaveBeenCalledTimes(1)
-        expect(repository.variants.create).toHaveBeenCalledTimes(2)
-        expect(repository.media.create).toHaveBeenCalledTimes(2)
-        expect(repository.productOutlets.replace).toHaveBeenCalledTimes(2)
+        expect(api.createProduct).toHaveBeenCalledTimes(1)
+        expect(api.createProductVariant).toHaveBeenCalledTimes(2)
+        expect(api.createProductMedia).toHaveBeenCalledTimes(2)
+        expect(api.replaceProductOutlets).toHaveBeenCalledTimes(2)
     })
 
     it("does not re-create modifier groups a restored cursor already covered", async () => {
-        repository.productOutlets.replace.mockRejectedValueOnce(new Error("outlet down"))
+        api.replaceProductOutlets.mockRejectedValueOnce(new Error("outlet down"))
 
         const input: ProductBundleInput = {
             ...buildInput(0),
@@ -266,9 +273,9 @@ describe("useCreateProductBundle", () => {
 
         await waitFor(() => expect(resumed.result.current.hasFailure).toBe(false))
 
-        expect(repository.modifierGroups.create).toHaveBeenCalledTimes(1)
-        expect(repository.modifiers.create).toHaveBeenCalledTimes(2)
-        expect(repository.productOutlets.replace).toHaveBeenCalledTimes(2)
+        expect(api.createProductModifierGroup).toHaveBeenCalledTimes(1)
+        expect(api.createProductModifier).toHaveBeenCalledTimes(2)
+        expect(api.replaceProductOutlets).toHaveBeenCalledTimes(2)
     })
 
     it("skips a step that has nothing to do when retrying an empty form", async () => {
@@ -286,7 +293,7 @@ describe("useCreateProductBundle", () => {
         })
 
         expect(result.current.steps.every((step) => step.status === "skipped" || step.status === "success")).toBe(true)
-        expect(repository.products.create).not.toHaveBeenCalled()
-        expect(repository.productOutlets.replace).not.toHaveBeenCalled()
+        expect(api.createProduct).not.toHaveBeenCalled()
+        expect(api.replaceProductOutlets).not.toHaveBeenCalled()
     })
 })

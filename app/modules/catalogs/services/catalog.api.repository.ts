@@ -62,7 +62,6 @@ export const apiCatalogRepository = {
     },
     productOutlets: {
         list: catalogApi.fetchProductOutlets,
-        assign: catalogApi.assignProductOutlets,
         replace: catalogApi.replaceProductOutlets,
         remove: catalogApi.removeProductOutlet,
         activate: catalogApi.activateProductOutlet,

@@ -18,7 +18,6 @@ export default [
                 route("catalogs", "modules/catalogs/routes/catalogs-layout.tsx", [
                     index("modules/catalogs/routes/index.tsx"),
                     route("categories", "modules/catalogs/routes/categories.tsx"),
-                    route("modifiers", "modules/catalogs/routes/modifiers.tsx"),
                 ]),
                 route("catalogs/new", "modules/catalogs/routes/new.tsx"),
                 route("catalogs/products/:productId", "modules/catalogs/routes/product-detail.tsx"),

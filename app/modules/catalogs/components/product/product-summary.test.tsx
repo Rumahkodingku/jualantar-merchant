@@ -57,8 +57,8 @@ describe("ProductSummary", () => {
         renderSummary()
 
         expect(screen.getByRole("heading", { name: "Nasi Goreng" })).toBeInTheDocument()
-        expect(screen.getAllByText(/Makanan/).length).toBeGreaterThan(0)
-        expect(screen.getAllByText(/Variable/).length).toBeGreaterThan(0)
+        expect(screen.getByText("Nasi goreng dengan bumbu khas.")).toBeInTheDocument()
+        expect(screen.getByRole("img", { name: "Nasi Goreng" })).toBeInTheDocument()
     })
 
     it("uses the 'Mulai dari' label for a from price", () => {

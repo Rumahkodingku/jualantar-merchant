@@ -93,7 +93,6 @@ export interface CatalogRepository {
     }
     productOutlets: {
         list(productId: string, params?: OutletIndexParams): Promise<OutletProductAssignment[]>
-        assign(productId: string, outletIds: string[]): Promise<OutletProductAssignment[]>
         replace(productId: string, outletIds: string[]): Promise<OutletProductAssignment[]>
         remove(productId: string, outletId: string): Promise<void>
         activate(productId: string, outletId: string): Promise<OutletProductAssignment>

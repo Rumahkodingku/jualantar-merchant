@@ -18,12 +18,6 @@ const TABS = [
         label: "Kategori Produk",
         icon: Tags,
     },
-    // {
-    //     to: CATALOGS_PATHS.modifiers,
-    //     value: "modifier",
-    //     label: "Modifier",
-    //     icon: SlidersHorizontal,
-    // },
 ] as const
 
 type CatalogTabValue = (typeof TABS)[number]["value"]
@@ -33,14 +27,10 @@ function getActiveTab(pathname: string): CatalogTabValue {
         return "kategori"
     }
 
-    // if (pathname.startsWith(CATALOGS_PATHS.modifiers)) {
-    //     return "modifier"
-    // }
-
     return "produk"
 }
 
-export function CatalogTabs() {
+function CatalogTabs() {
     const { pathname } = useLocation()
 
     return (

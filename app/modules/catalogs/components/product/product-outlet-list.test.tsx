@@ -136,7 +136,7 @@ describe("ProductOutletList disclosure", () => {
         const trigger = screen.getByRole("button", { name: /Outlet Utama/ })
 
         expect(trigger).toHaveAttribute("aria-expanded", "true")
-        expect(screen.getByText("Alamat")).toBeInTheDocument()
+        expect(screen.getByText("Alamat Operasional")).toBeInTheDocument()
     })
 
     it("collapses every outlet when there is more than one, keeping the list scannable", () => {
@@ -148,7 +148,7 @@ describe("ProductOutletList disclosure", () => {
         for (const trigger of triggers) {
             expect(trigger).toHaveAttribute("aria-expanded", "false")
         }
-        expect(screen.queryByText("Alamat")).not.toBeInTheDocument()
+        expect(screen.queryByText("Alamat Operasional")).not.toBeInTheDocument()
     })
 
     it("reveals the detail panel when the trigger is pressed", () => {
@@ -157,7 +157,7 @@ describe("ProductOutletList disclosure", () => {
         fireEvent.click(screen.getByRole("button", { name: /Outlet Utama/ }))
 
         expect(screen.getByRole("button", { name: /Outlet Utama/ })).toHaveAttribute("aria-expanded", "true")
-        expect(screen.getByText("Alamat")).toBeInTheDocument()
+        expect(screen.getByText("Alamat Operasional")).toBeInTheDocument()
     })
 
     it("hides the detail panel again on a second press", () => {
@@ -170,10 +170,10 @@ describe("ProductOutletList disclosure", () => {
         const trigger = screen.getByRole("button", { name: /Outlet Utama/ })
 
         fireEvent.click(trigger)
-        expect(screen.getByText("Alamat")).toBeInTheDocument()
+        expect(screen.getByText("Alamat Operasional")).toBeInTheDocument()
 
         fireEvent.click(trigger)
-        expect(screen.queryByText("Alamat")).not.toBeInTheDocument()
+        expect(screen.queryByText("Alamat Operasional")).not.toBeInTheDocument()
     })
 
     it("keeps each outlet's expansion independent", () => {

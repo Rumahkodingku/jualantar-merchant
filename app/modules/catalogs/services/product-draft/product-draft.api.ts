@@ -1,6 +1,6 @@
 import { api } from "~/lib/api"
 
-import { productDraftSchema, type ProductDraft, type SubmissionProgress } from "../../schemas/product-draft.schema"
+import { productDraftSchema, type ProductDraft } from "../../schemas/product-draft.schema"
 import type { MediaUploadTarget, MediaUploadUrlInput } from "../../types/catalog.types"
 
 const BASE = "/merchant/catalog/product-draft"
@@ -59,24 +59,4 @@ export async function deleteDraftMedia(objectKey: string): Promise<ProductDraft>
     })
 
     return toProductDraft(data.data)
-}
-
-export function toDraftData(input: {
-    info: Record<string, unknown>
-    priceRaw: string
-    variants: unknown[]
-    modifierGroups: unknown[]
-    media: unknown[]
-    outletIds: string[]
-    submission: SubmissionProgress | null
-}): Record<string, unknown> {
-    return {
-        info: input.info,
-        price_raw: input.priceRaw,
-        variants: input.variants,
-        modifier_groups: input.modifierGroups,
-        media: input.media,
-        outlet_ids: input.outletIds,
-        ...(input.submission === null ? {} : { submission: input.submission }),
-    }
 }

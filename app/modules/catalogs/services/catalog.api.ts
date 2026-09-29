@@ -414,14 +414,6 @@ export async function fetchProductOutlets(
     )
 }
 
-export async function assignProductOutlets(productId: string, outletIds: string[]): Promise<OutletProductAssignment[]> {
-    const { data } = await api.post<{ data: OutletProductAssignment[] }>(`${BASE}/products/${productId}/outlets`, {
-        outlet_ids: outletIds,
-    })
-
-    return data.data
-}
-
 export async function replaceProductOutlets(
     productId: string,
     outletIds: string[]

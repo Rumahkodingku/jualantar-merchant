@@ -105,20 +105,3 @@ export type DraftVariant = z.infer<typeof draftVariantSchema>
 export type DraftModifier = z.infer<typeof draftModifierSchema>
 export type DraftModifierGroup = z.infer<typeof draftModifierGroupSchema>
 export type DraftMedia = z.infer<typeof draftMediaSchema>
-
-/** The state a merchant's wizard starts from when no draft exists. */
-export function emptyDraftData(): ProductDraftData {
-    return {
-        info: {
-            name: "",
-            category_id: null,
-            description: null,
-            product_type: "simple",
-        },
-        price_raw: "",
-        variants: [],
-        modifier_groups: [],
-        media: [],
-        outlet_ids: [],
-    }
-}

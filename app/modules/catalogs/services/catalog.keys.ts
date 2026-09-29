@@ -3,7 +3,6 @@ import type { CategoryIndexParams, ProductIndexParams } from "../types/catalog.t
 const ROOT = "catalogs"
 
 export const catalogKeys = {
-    all: [ROOT] as const,
     productDraft: () => [ROOT, "product-draft"] as const,
     products: () => [ROOT, "products"] as const,
     productList: (params: ProductIndexParams = {}) => [ROOT, "products", "list", params] as const,

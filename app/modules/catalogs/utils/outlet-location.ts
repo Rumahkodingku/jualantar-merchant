@@ -49,11 +49,3 @@ export function formatOutletLocation(outlet: OperationalOutlet | null | undefine
 
     return street !== "" ? street : region
 }
-
-/**
- * The address block is only worth rendering when it says something beyond what
- * the outlet name already tells the reader.
- */
-export function hasOutletLocation(outlet: OperationalOutlet | null | undefined): boolean {
-    return formatOutletLocation(outlet) !== ""
-}

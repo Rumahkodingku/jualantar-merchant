@@ -318,7 +318,7 @@ describe("ProductDetailPage", () => {
 
         // The address shows twice by design: a truncated scan line in the
         // trigger and the full untruncated value in the detail panel.
-        expect(screen.getByText("Alamat")).toBeInTheDocument()
+        expect(screen.getByText("Alamat Operasional")).toBeInTheDocument()
         expect(screen.getAllByText("Jl. Merdeka No. 1, Tunjungan, Surabaya, Jawa Timur")).toHaveLength(2)
         expect(screen.getByText("0812-3456-7890")).toBeInTheDocument()
         expect(screen.getByText("outlet.utama@jualantar.test")).toBeInTheDocument()

@@ -1,3 +1,5 @@
+import type { OperationalOutlet } from "~/modules/merchant-operations"
+
 export type ProductType = "simple" | "variable"
 
 export type CatalogStatus = "active" | "inactive"
@@ -118,6 +120,16 @@ export interface OutletProductAssignment {
     display_order: number
     created_at: string | null
     updated_at: string | null
+}
+
+/**
+ * A catalog assignment paired with the full outlet record coming from the
+ * merchant-operations outlet directory. `outlet` is null when the assignment
+ * refers to an outlet that the directory query could not resolve.
+ */
+export interface ProductOutletRow {
+    assignment: OutletProductAssignment
+    outlet: OperationalOutlet | null
 }
 
 export type ProductDetailPriceType = "fixed" | "from"

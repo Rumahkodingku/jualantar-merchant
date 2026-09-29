@@ -15,7 +15,7 @@ import { ProductOutletList } from "../components/product/product-outlet-list"
 import { ProductPhotoViewer } from "../components/product/product-photo-viewer"
 import { ProductSummary } from "../components/product/product-summary"
 import { ProductVariantList } from "../components/product/product-variant-list"
-import { useProductAssignments } from "../services/product-outlets/product-outlet.queries"
+import { useProductOutletRows } from "../services/product-outlets/product-outlet.queries"
 import { useProductDetail } from "../services/products/product.queries"
 
 const DEFAULT_TAB: ProductDetailTab = "ringkasan"
@@ -33,7 +33,7 @@ export function ProductDetailPage() {
     const [viewerOpen, setViewerOpen] = useState(false)
 
     const detailQuery = useProductDetail(productId)
-    const assignmentsQuery = useProductAssignments(tab === "outlet" ? productId : undefined)
+    const outletRowsQuery = useProductOutletRows(productId, tab === "outlet")
 
     function setTab(next: ProductDetailTab) {
         const params = new URLSearchParams(searchParams)
@@ -125,12 +125,12 @@ export function ProductDetailPage() {
                 </TabsContent>
 
                 <TabsContent value="outlet">
-                    {assignmentsQuery.isPending ? (
+                    {outletRowsQuery.isPending ? (
                         <ListSkeleton rows={2} className="h-20" />
-                    ) : assignmentsQuery.isError ? (
-                        <ErrorState title="Gagal memuat outlet" onRetry={() => void assignmentsQuery.refetch()} />
+                    ) : outletRowsQuery.isError ? (
+                        <ErrorState title="Gagal memuat outlet" onRetry={() => void outletRowsQuery.refetch()} />
                     ) : (
-                        <ProductOutletList assignments={assignmentsQuery.data ?? []} />
+                        <ProductOutletList rows={outletRowsQuery.rows} />
                     )}
                 </TabsContent>
             </Tabs>

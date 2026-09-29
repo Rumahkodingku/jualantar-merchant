@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { Text } from "~/components/ui/text"
 import { CATALOGS_PATHS } from "../utils/paths"
-import { Package, Tags, SlidersHorizontal } from "lucide-react"
+import { Package, Tags } from "lucide-react"
 import { PageHeader } from "~/components/page-header"
 
 const TABS = [
@@ -15,15 +15,15 @@ const TABS = [
     {
         to: CATALOGS_PATHS.categories,
         value: "kategori",
-        label: "Kategori",
+        label: "Kategori Produk",
         icon: Tags,
     },
-    {
-        to: CATALOGS_PATHS.modifiers,
-        value: "modifier",
-        label: "Modifier",
-        icon: SlidersHorizontal,
-    },
+    // {
+    //     to: CATALOGS_PATHS.modifiers,
+    //     value: "modifier",
+    //     label: "Modifier",
+    //     icon: SlidersHorizontal,
+    // },
 ] as const
 
 type CatalogTabValue = (typeof TABS)[number]["value"]
@@ -33,9 +33,9 @@ function getActiveTab(pathname: string): CatalogTabValue {
         return "kategori"
     }
 
-    if (pathname.startsWith(CATALOGS_PATHS.modifiers)) {
-        return "modifier"
-    }
+    // if (pathname.startsWith(CATALOGS_PATHS.modifiers)) {
+    //     return "modifier"
+    // }
 
     return "produk"
 }

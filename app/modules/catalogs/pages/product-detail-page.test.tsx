@@ -5,6 +5,7 @@ import { MemoryRouter, Route, Routes } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { ProductDetailPage } from "./product-detail-page"
+import type { OperationalOutlet } from "~/modules/merchant-operations"
 import type {
     OutletProductAssignment,
     ProductDetail,
@@ -123,6 +124,51 @@ const ASSIGNMENTS: OutletProductAssignment[] = [
     },
 ]
 
+const OUTLET_DIRECTORY: OperationalOutlet = {
+    id: "o1",
+    merchant_id: "mch-001",
+    name: "Outlet Utama",
+    phone: "0812-3456-7890",
+    email: "outlet.utama@jualantar.test",
+    address: "Jl. Merdeka No. 1",
+    province_id: 1,
+    regency_id: 2,
+    district_id: 3,
+    village_id: 4,
+    postal_code: "60111",
+    latitude: "-7.25790500",
+    longitude: "112.75212000",
+    service_area_type: "radius",
+    service_radius_km: "5.00",
+    operating_hours: null,
+    photos: [],
+    photos_url: [],
+    status: "active",
+    // Village and district intentionally share a name: the location line should
+    // collapse the repeat instead of printing "Tunjungan" twice.
+    geography: {
+        village: "Tunjungan",
+        district: "Tunjungan",
+        regency: "Surabaya",
+        province: "Jawa Timur",
+    },
+    created_at: null,
+    updated_at: null,
+}
+
+function outletDirectory(outlets: OperationalOutlet[]) {
+    return {
+        data: {
+            data: outlets,
+            meta: { current_page: 1, per_page: 100, total: outlets.length, last_page: 1 },
+        },
+        isPending: false,
+        isError: false,
+        error: null,
+        refetch: vi.fn(),
+    }
+}
+
 const PRODUCT: ProductDetail = {
     id: "prd-001",
     category_id: "cat-001",
@@ -179,13 +225,7 @@ beforeEach(() => {
 
     fetchProduct.mockResolvedValue(PRODUCT)
     fetchProductOutlets.mockResolvedValue(ASSIGNMENTS)
-    useOperationalOutlets.mockReturnValue({
-        data: { data: [], meta: { current_page: 1, per_page: 100, total: 0, last_page: 1 } },
-        isPending: false,
-        isError: false,
-        error: null,
-        refetch: vi.fn(),
-    })
+    useOperationalOutlets.mockReturnValue(outletDirectory([OUTLET_DIRECTORY]))
 })
 
 describe("ProductDetailPage", () => {
@@ -264,6 +304,33 @@ describe("ProductDetailPage", () => {
 
         expect(await screen.findByText("Outlet Utama")).toBeInTheDocument()
         expect(fetchProductOutlets).toHaveBeenCalledWith("prd-001")
+        expect(useOperationalOutlets).toHaveBeenCalledWith(
+            { per_page: 100 },
+            expect.objectContaining({ enabled: true })
+        )
+    })
+
+    it("shows the full outlet record joined from the outlet directory", async () => {
+        const user = userEvent.setup()
+        renderPage(["/catalogs/products/prd-001?tab=outlet"])
+
+        await screen.findByText("Outlet Utama")
+
+        // The address shows twice by design: a truncated scan line in the
+        // trigger and the full untruncated value in the detail panel.
+        expect(screen.getByText("Alamat")).toBeInTheDocument()
+        expect(screen.getAllByText("Jl. Merdeka No. 1, Tunjungan, Surabaya, Jawa Timur")).toHaveLength(2)
+        expect(screen.getByText("0812-3456-7890")).toBeInTheDocument()
+        expect(screen.getByText("outlet.utama@jualantar.test")).toBeInTheDocument()
+    })
+
+    it("falls back to the assignment summary when the outlet is missing from the directory", async () => {
+        useOperationalOutlets.mockReturnValue(outletDirectory([]))
+        renderPage(["/catalogs/products/prd-001?tab=outlet"])
+
+        expect(await screen.findByText("Outlet Utama")).toBeInTheDocument()
+        expect(screen.getByText("Rincian alamat outlet tidak tersedia.")).toBeInTheDocument()
+        expect(screen.queryByText("0812-3456-7890")).not.toBeInTheDocument()
     })
 
     it("moves focus with arrow keys and selects with Enter", async () => {

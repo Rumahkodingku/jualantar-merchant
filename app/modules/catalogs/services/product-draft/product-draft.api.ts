@@ -1,7 +1,7 @@
 import { api } from "~/lib/api"
 
 import { productDraftSchema, type ProductDraft } from "../../schemas/product-draft.schema"
-import type { MediaUploadTarget, MediaUploadUrlInput } from "../../types/catalog.types"
+import type { MediaUploadTarget, MediaUploadUrlInput } from "../../types"
 
 const BASE = "/merchant/catalog/product-draft"
 

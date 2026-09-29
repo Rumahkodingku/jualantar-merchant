@@ -21,7 +21,7 @@ import {
 import { useCategories } from "../services/categories/category.queries"
 import { catalogErrorMessage } from "../utils/api-error"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import type { CatalogCategory, CatalogStatus } from "../types/catalog.types"
+import type { CatalogCategory, CatalogStatus } from "../types"
 
 type ConfirmAction = { kind: "status" | "delete"; category: CatalogCategory } | null
 

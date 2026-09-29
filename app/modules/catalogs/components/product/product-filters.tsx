@@ -19,7 +19,7 @@ import { cn } from "~/lib/utils"
 import { ProductFilterFields } from "./product-filter-fields"
 import { CATALOGS_PATHS } from "../../utils/paths"
 import type { ProductFilterValues } from "../../utils/product-filters"
-import type { CatalogCategory } from "../../types/catalog.types"
+import type { CatalogCategory } from "../../types"
 
 const STATUS_CHIPS = [
     { value: "", label: "Semua" },

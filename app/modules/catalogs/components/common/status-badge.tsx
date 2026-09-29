@@ -2,7 +2,7 @@ import { StatusBadge as SharedStatusBadge } from "~/components/status-badge"
 import { cn } from "~/lib/utils"
 
 import { STATUS_LABEL, statusTone } from "../../utils/labels"
-import type { CatalogStatus } from "../../types/catalog.types"
+import type { CatalogStatus } from "../../types"
 
 /**
  * The catalog's reading of a shared status on a label: a dot instead of an

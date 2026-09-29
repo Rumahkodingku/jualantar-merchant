@@ -19,7 +19,7 @@ import {
     useProductDraft as useProductDraftQuery,
 } from "../services/product-draft/product-draft.queries"
 import { productDraftDataSchema, type ProductDraft, type SubmissionProgress } from "../schemas/product-draft.schema"
-import type { ProductInfoFormValues } from "../schemas/catalog.schema"
+import type { ProductInfoFormValues } from "../schemas/"
 import { draftKey } from "../utils/draft-key"
 import { MAX_PRODUCT_MEDIA } from "../utils/media"
 import type { GroupDraft, MediaDraft, VariantDraft } from "../types/product-draft.types"

@@ -9,7 +9,7 @@ import type {
     ModifierGroupUpdateInput,
     ModifierUpdateInput,
     ReorderItem,
-} from "../../types/catalog.types"
+} from "../../types"
 
 export function useCreateModifierGroup(productId: string) {
     const queryClient = useQueryClient()

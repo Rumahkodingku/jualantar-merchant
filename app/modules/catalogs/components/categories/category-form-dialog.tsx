@@ -11,8 +11,8 @@ import { useCreateCategory, useUpdateCategory } from "../../services/categories/
 import { applyServerFieldErrors, catalogErrorMessage } from "../../utils/api-error"
 import { issuesToMessages } from "../../utils/issues"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import { categorySchema, type CategoryFormValues } from "../../schemas/catalog.schema"
-import type { CatalogCategory } from "../../types/catalog.types"
+import { categorySchema, type CategoryFormValues } from "../../schemas/"
+import type { CatalogCategory } from "../../types"
 
 export function CategoryFormDialog({ category, onClose }: { category?: CatalogCategory; onClose: () => void }) {
     const createMutation = useCreateCategory()

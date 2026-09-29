@@ -1,7 +1,7 @@
 import { Checkbox } from "~/components/ui/checkbox"
 import { Text } from "~/components/ui/text"
 
-import type { CatalogOutlet } from "../../types/catalog.types"
+import type { CatalogOutlet } from "../../types"
 
 export function OutletDraftPicker({
     outlets,

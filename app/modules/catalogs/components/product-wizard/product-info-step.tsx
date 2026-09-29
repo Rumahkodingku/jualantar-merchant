@@ -8,8 +8,8 @@ import { Text } from "~/components/ui/text"
 import { Textarea } from "~/components/ui/textarea"
 import { cn } from "~/lib/utils"
 import { PRODUCT_TYPE_FORM_LABEL } from "../../utils/labels"
-import type { ProductType } from "../../types/catalog.types"
-import type { ProductInfoFormValues } from "../../schemas/catalog.schema"
+import type { ProductType } from "../../types"
+import type { ProductInfoFormValues } from "../../schemas/"
 
 export function ProductInfoStep({
     values,

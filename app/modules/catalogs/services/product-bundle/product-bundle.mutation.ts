@@ -3,12 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { catalogRepository } from "../catalog.repository"
 import { invalidateProducts } from "../catalog.invalidation"
-import type {
-    ModifierCreateInput,
-    ModifierGroupCreateInput,
-    ProductCreateInput,
-    VariantCreateInput,
-} from "../../types/catalog.types"
+import type { ModifierCreateInput, ModifierGroupCreateInput, ProductCreateInput, VariantCreateInput } from "../../types"
 
 export type BundleStepKey = "product" | "variants" | "customization" | "media" | "outlets"
 

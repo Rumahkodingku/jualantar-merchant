@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { CatalogCategoriesPage } from "./categories-page"
 import { CatalogsPage } from "./catalogs-page"
 import { ProductNewPage } from "./product-new-page"
-import type { CatalogCategory, Product, ProductIndexParams } from "../types/catalog.types"
+import type { CatalogCategory, Product, ProductIndexParams } from "../types"
 
 const { fetchProducts, fetchCategories, useOperationalOutlets, productDraftApi, putToStorage } = vi.hoisted(() => ({
     fetchProducts: vi.fn(),

@@ -18,18 +18,14 @@ import type {
     CatalogCategory,
     CategoryCreateInput,
     CategoryIndexParams,
-    CategoryReorderRequest,
     CategoryUpdateInput,
     MediaIndexParams,
     MediaRegisterInput,
-    MediaReorderRequest,
     MediaUploadTarget,
     MediaUploadUrlInput,
     ModifierCreateInput,
     ModifierGroupCreateInput,
-    ModifierGroupReorderRequest,
     ModifierGroupUpdateInput,
-    ModifierReorderRequest,
     ModifierUpdateInput,
     OutletAvailabilityInput,
     OutletIndexParams,
@@ -42,41 +38,44 @@ import type {
     ProductMedia,
     ProductModifier,
     ProductModifierGroup,
-    ProductReorderRequest,
     ProductUpdateInput,
     ProductVariant,
     ReorderItem,
     VariantCreateInput,
     VariantIndexParams,
-    VariantReorderRequest,
     VariantUpdateInput,
-} from "../types/catalog.types"
+} from "../types"
 
 const BASE = "/merchant/catalog"
 
-export const MAX_PER_PAGE = 100
+const MAX_PER_PAGE = 100
 
-export function toProductReorderRequest(items: ReorderItem[]): ProductReorderRequest {
+/**
+ * Every reorderable list sends `{ items: [{ <its own key>, display_order }] }`.
+ * The wire shape is the same everywhere; only the key name changes, so each
+ * list maps its own `ReorderItem[]` onto that shape right here.
+ */
+export function toProductReorderRequest(items: ReorderItem[]) {
     return { items: items.map((item) => ({ product_id: item.id, display_order: item.display_order })) }
 }
 
-export function toCategoryReorderRequest(items: ReorderItem[]): CategoryReorderRequest {
+export function toCategoryReorderRequest(items: ReorderItem[]) {
     return { items: items.map((item) => ({ category_id: item.id, display_order: item.display_order })) }
 }
 
-export function toVariantReorderRequest(items: ReorderItem[]): VariantReorderRequest {
+export function toVariantReorderRequest(items: ReorderItem[]) {
     return { items: items.map((item) => ({ variant_id: item.id, display_order: item.display_order })) }
 }
 
-export function toMediaReorderRequest(items: ReorderItem[]): MediaReorderRequest {
+export function toMediaReorderRequest(items: ReorderItem[]) {
     return { items: items.map((item) => ({ media_id: item.id, display_order: item.display_order })) }
 }
 
-export function toModifierGroupReorderRequest(items: ReorderItem[]): ModifierGroupReorderRequest {
+export function toModifierGroupReorderRequest(items: ReorderItem[]) {
     return { items: items.map((item) => ({ group_id: item.id, display_order: item.display_order })) }
 }
 
-export function toModifierReorderRequest(items: ReorderItem[]): ModifierReorderRequest {
+export function toModifierReorderRequest(items: ReorderItem[]) {
     return { items: items.map((item) => ({ modifier_id: item.id, display_order: item.display_order })) }
 }
 

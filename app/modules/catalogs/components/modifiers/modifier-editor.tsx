@@ -6,7 +6,7 @@ import { Text } from "~/components/ui/text"
 
 import { ModifierGroupCard } from "./modifier-group-card"
 import { ModifierGroupFormDialog } from "./modifier-group-form-dialog"
-import type { ProductModifierGroup } from "../../types/catalog.types"
+import type { ProductModifierGroup } from "../../types"
 
 export function ModifierEditor({ productId, groups }: { productId: string; groups: ProductModifierGroup[] }) {
     const [groupDialog, setGroupDialog] = useState<{ open: boolean; group?: ProductModifierGroup }>({ open: false })

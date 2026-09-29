@@ -10,7 +10,7 @@ import type {
     ProductModifierGroup,
     ProductPrimaryMedia,
     ProductVariant,
-} from "../types/catalog.types"
+} from "../types"
 import { normalizePrice, normalizeRequiredPrice } from "../utils/normalize"
 
 export type ProductWire = Omit<Product, "price" | "primary_media" | "min_price"> & {

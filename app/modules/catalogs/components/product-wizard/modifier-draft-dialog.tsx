@@ -6,7 +6,7 @@ import { Field, FieldError, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
 
 import { issuesToMessages } from "../../utils/issues"
-import { modifierSchema } from "../../schemas/catalog.schema"
+import { modifierSchema } from "../../schemas/"
 import type { ModifierDraft, ModifierDraftPayload } from "../../types/product-draft.types"
 
 export function ModifierDraftDialog({

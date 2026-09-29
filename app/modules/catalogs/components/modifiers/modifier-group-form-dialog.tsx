@@ -14,8 +14,8 @@ import { applyServerFieldErrors, catalogErrorMessage, firstServerFieldError } fr
 import { issuesToMessages } from "../../utils/issues"
 import { SELECTION_TYPE_OPTIONS } from "../../utils/labels"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import { modifierGroupSchema, type ModifierGroupFormValues } from "../../schemas/catalog.schema"
-import type { ProductModifierGroup, SelectionType } from "../../types/catalog.types"
+import { modifierGroupSchema, type ModifierGroupFormValues } from "../../schemas/"
+import type { ProductModifierGroup, SelectionType } from "../../types"
 
 function groupDefaults(group?: ProductModifierGroup): ModifierGroupFormValues {
     return {

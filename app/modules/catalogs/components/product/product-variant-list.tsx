@@ -6,7 +6,7 @@ import { StatusBadge } from "../common/status-badge"
 import { ProductMediaThumbnail } from "./product-media-thumbnail"
 import { formatCurrency } from "../../utils/format-currency"
 import { sortByDisplayOrder } from "../../utils/media-order"
-import type { ProductDetail } from "../../types/catalog.types"
+import type { ProductDetail } from "../../types"
 
 export function ProductVariantList({ product }: { product: ProductDetail }) {
     const variants = sortByDisplayOrder(product.variants ?? [])

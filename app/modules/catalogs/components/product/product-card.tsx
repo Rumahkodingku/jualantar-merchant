@@ -9,7 +9,7 @@ import { formatCurrency } from "../../utils/format-currency"
 import { PRODUCT_TYPE_LABEL } from "../../utils/labels"
 import { buildProductMeta } from "../../utils/product-meta"
 import { CATALOGS_PATHS } from "../../utils/paths"
-import type { Product } from "../../types/catalog.types"
+import type { Product } from "../../types"
 
 export function ProductCard({
     product,

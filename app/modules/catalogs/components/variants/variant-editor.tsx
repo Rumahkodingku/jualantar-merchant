@@ -10,7 +10,7 @@ import { VariantRow } from "./variant-row"
 import { useDeleteVariant, useReorderVariants } from "../../services/variants/variant.mutations"
 import { useEntityReorder } from "../../hooks/use-entity-reorder"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import type { ProductVariant } from "../../types/catalog.types"
+import type { ProductVariant } from "../../types"
 
 export function VariantEditor({ productId, variants }: { productId: string; variants: ProductVariant[] }) {
     const [dialog, setDialog] = useState<{ open: boolean; variant?: ProductVariant }>({ open: false })

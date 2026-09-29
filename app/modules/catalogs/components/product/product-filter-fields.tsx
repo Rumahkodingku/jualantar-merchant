@@ -3,7 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~
 
 import { PRODUCT_TYPE_LABEL } from "../../utils/labels"
 import type { ProductFilterValues } from "../../utils/product-filters"
-import type { CatalogCategory, ProductType } from "../../types/catalog.types"
+import type { CatalogCategory, ProductType } from "../../types"
 
 const ALL = "all"
 

@@ -17,7 +17,7 @@ import { Switch } from "~/components/ui/switch"
 import { useSetOutletAvailability } from "../../services/product-outlets/product-outlet.mutations"
 import { catalogErrorMessage } from "../../utils/api-error"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import type { OutletProductAssignment } from "../../types/catalog.types"
+import type { OutletProductAssignment } from "../../types"
 
 export function AvailabilityControl({
     productId,

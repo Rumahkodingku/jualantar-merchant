@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { buildProductMeta } from "./product-meta"
-import type { Product } from "../types/catalog.types"
+import type { Product } from "../types"
 
 const PRODUCT: Product = {
     id: "p1",

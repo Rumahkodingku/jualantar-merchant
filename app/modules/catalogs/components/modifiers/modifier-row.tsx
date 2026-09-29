@@ -7,7 +7,7 @@ import { StatusBadge } from "../common/status-badge"
 import { EntityStatusSwitch } from "../common/entity-status-switch"
 import { useSetModifierStatus } from "../../services/modifiers/modifier.mutations"
 import { formatCurrency } from "../../utils/format-currency"
-import type { ProductModifier } from "../../types/catalog.types"
+import type { ProductModifier } from "../../types"
 
 export function ModifierRow({
     productId,

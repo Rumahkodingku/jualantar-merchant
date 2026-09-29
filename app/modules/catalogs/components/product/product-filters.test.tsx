@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
 import { ProductFilters } from "./product-filters"
-import type { CatalogCategory } from "../../types/catalog.types"
+import type { CatalogCategory } from "../../types"
 
 const CATEGORIES: CatalogCategory[] = [
     {

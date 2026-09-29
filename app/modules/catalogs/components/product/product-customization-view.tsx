@@ -8,7 +8,7 @@ import { CatalogEmptyState } from "../catalog-empty-state"
 import { StatusBadge } from "../common/status-badge"
 import { formatCurrency } from "../../utils/format-currency"
 import { SELECTION_TYPE_LABEL } from "../../utils/labels"
-import type { ProductModifierGroup } from "../../types/catalog.types"
+import type { ProductModifierGroup } from "../../types"
 
 function ModifierGroupItem({ group }: { group: ProductModifierGroup }) {
     const hasDescription = group.description !== null && group.description !== ""

@@ -12,8 +12,8 @@ import { useCreateModifier, useUpdateModifier } from "../../services/modifiers/m
 import { applyServerFieldErrors, catalogErrorMessage } from "../../utils/api-error"
 import { issuesToMessages } from "../../utils/issues"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import { modifierSchema, type ModifierFormValues } from "../../schemas/catalog.schema"
-import type { ProductModifier } from "../../types/catalog.types"
+import { modifierSchema, type ModifierFormValues } from "../../schemas/"
+import type { ProductModifier } from "../../types"
 
 function modifierDefaults(modifier?: ProductModifier): ModifierFormValues {
     return {

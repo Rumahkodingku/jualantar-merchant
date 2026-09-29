@@ -1,6 +1,6 @@
 import { Text } from "~/components/ui/text"
 
-import type { ProductDetail } from "../../types/catalog.types"
+import type { ProductDetail } from "../../types"
 
 export function ProductMediaGrid({ product }: { product: ProductDetail }) {
     const media = product.media ?? []

@@ -1,7 +1,7 @@
 import { Switch } from "~/components/ui/switch"
 
 import { notifyError, notifySuccess } from "~/lib/notify"
-import type { CatalogStatus } from "../../types/catalog.types"
+import type { CatalogStatus } from "../../types"
 
 type StatusMutator = (status: CatalogStatus, options: { onSuccess: () => void; onError: () => void }) => void
 

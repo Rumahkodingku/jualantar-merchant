@@ -31,7 +31,7 @@ import { useCreateProductBundle, type ProductBundleInput } from "../services/pro
 import { useCategories } from "../services/categories/category.queries"
 import { useOutlets } from "../services/product-outlets/product-outlet.queries"
 import { useProductDraft } from "../hooks/use-product-draft"
-import { productInfoSchema, simplePriceSchema, type ProductInfoFormValues } from "../schemas/catalog.schema"
+import { productInfoSchema, simplePriceSchema, type ProductInfoFormValues } from "../schemas/"
 import { issuesToMessages } from "../utils/issues"
 import { notifySuccess } from "~/lib/notify"
 import { CATALOGS_PATHS } from "../utils/paths"

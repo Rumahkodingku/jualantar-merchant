@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { modifierGroupSchema } from "./catalog.schema"
+import { modifierGroupSchema } from "./modifier.schema"
 
 const base = {
     name: "Level Pedas",

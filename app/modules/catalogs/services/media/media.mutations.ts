@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { catalogRepository } from "../catalog.repository"
 import { invalidateProducts } from "../catalog.invalidation"
-import type { MediaRegisterInput, ReorderItem } from "../../types/catalog.types"
+import type { MediaRegisterInput, ReorderItem } from "../../types"
 
 export function useAddMedia(productId: string) {
     const queryClient = useQueryClient()

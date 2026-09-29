@@ -14,7 +14,7 @@ import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
 
 import { StatusBadge } from "../common/status-badge"
-import type { CatalogCategory } from "../../types/catalog.types"
+import type { CatalogCategory } from "../../types"
 
 export type CategoryRowAction = "edit" | "status" | "delete"
 

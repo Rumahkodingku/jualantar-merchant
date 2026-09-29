@@ -17,7 +17,7 @@ import { Text } from "~/components/ui/text"
 
 import { formatCurrency } from "../../utils/format-currency"
 import { issuesToMessages } from "../../utils/issues"
-import { variantRowSchema } from "../../schemas/catalog.schema"
+import { variantRowSchema } from "../../schemas/"
 import { draftKey } from "../../utils/draft-key"
 import type { VariantDraft } from "../../types/product-draft.types"
 

@@ -18,7 +18,7 @@ import {
 import { useEntityReorder } from "../../hooks/use-entity-reorder"
 import { notifyError, notifySuccess } from "~/lib/notify"
 import { SELECTION_TYPE_LABEL } from "../../utils/labels"
-import type { ProductModifier, ProductModifierGroup } from "../../types/catalog.types"
+import type { ProductModifier, ProductModifierGroup } from "../../types"
 
 export function ModifierGroupCard({
     productId,

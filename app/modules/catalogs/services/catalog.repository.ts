@@ -28,7 +28,7 @@ import type {
     ReorderItem,
     VariantCreateInput,
     VariantUpdateInput,
-} from "../types/catalog.types"
+} from "../types"
 
 export interface CatalogRepository {
     products: {

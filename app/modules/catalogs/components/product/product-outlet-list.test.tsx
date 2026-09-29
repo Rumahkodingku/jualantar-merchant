@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 
 import type { OperationalOutlet } from "~/modules/merchant-operations"
 
-import type { OutletProductAssignment, ProductOutletRow } from "../../types/catalog.types"
+import type { OutletProductAssignment, ProductOutletRow } from "../../types"
 
 import { ProductOutletList } from "./product-outlet-list"
 

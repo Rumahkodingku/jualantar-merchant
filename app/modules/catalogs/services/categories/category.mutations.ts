@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { catalogRepository } from "../catalog.repository"
 import { invalidateCategories } from "../catalog.invalidation"
-import type { CatalogStatus, CategoryCreateInput, CategoryUpdateInput, ReorderItem } from "../../types/catalog.types"
+import type { CatalogStatus, CategoryCreateInput, CategoryUpdateInput, ReorderItem } from "../../types"
 
 export function useCreateCategory() {
     const queryClient = useQueryClient()

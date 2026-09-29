@@ -26,7 +26,7 @@ import { useDeleteProduct, useSetProductStatus } from "../../services/products/p
 import { CATALOGS_PATHS } from "../../utils/paths"
 import { catalogErrorMessage } from "../../utils/api-error"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import type { Product } from "../../types/catalog.types"
+import type { Product } from "../../types"
 
 type ConfirmAction = "status" | "delete"
 

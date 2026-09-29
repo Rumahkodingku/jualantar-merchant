@@ -7,7 +7,7 @@ import { cn } from "~/lib/utils"
 
 import { ProductActionsMenu } from "./product-actions-menu"
 import { ProductCard } from "./product-card"
-import type { Product } from "../../types/catalog.types"
+import type { Product } from "../../types"
 
 function SortableProductCard({ product }: { product: Product }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: product.id })

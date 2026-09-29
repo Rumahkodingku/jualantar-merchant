@@ -5,7 +5,7 @@ import { ProductMediaThumbnail } from "./product-media-thumbnail"
 import { ProductSummaryMetrics } from "./product-summary-metrics"
 import { sortByDisplayOrder } from "../../utils/media-order"
 import { formatSummaryPrice } from "../../utils/product-price"
-import type { ProductDetail } from "../../types/catalog.types"
+import type { ProductDetail } from "../../types"
 
 export function ProductSummary({
     product,

@@ -4,7 +4,7 @@ import { DetailRows } from "./detail-rows"
 import { formatDateTime } from "../../utils/format-datetime"
 import { PRODUCT_TYPE_LABEL, STATUS_LABEL } from "../../utils/labels"
 import { formatSummaryPrice } from "../../utils/product-price"
-import type { ProductDetail } from "../../types/catalog.types"
+import type { ProductDetail } from "../../types"
 
 export function ProductInfoDetails({ product }: { product: ProductDetail }) {
     const summary = product.summary

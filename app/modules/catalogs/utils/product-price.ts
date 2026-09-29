@@ -1,5 +1,5 @@
 import { formatCurrency } from "./format-currency"
-import type { ProductDetailPriceSummary } from "../types/catalog.types"
+import type { ProductDetailPriceSummary } from "../types"
 
 export function formatSummaryPrice(price: ProductDetailPriceSummary): string {
     if (price.value === null) {

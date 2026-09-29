@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { catalogRepository } from "../catalog.repository"
 import { invalidateProducts } from "../catalog.invalidation"
-import type { CatalogStatus, ReorderItem, VariantCreateInput, VariantUpdateInput } from "../../types/catalog.types"
+import type { CatalogStatus, ReorderItem, VariantCreateInput, VariantUpdateInput } from "../../types"
 
 export function useCreateVariant(productId: string) {
     const queryClient = useQueryClient()

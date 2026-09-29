@@ -2,7 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 
 import { catalogKeys } from "../catalog.keys"
 import { catalogRepository } from "../catalog.repository"
-import type { ProductIndexParams } from "../../types/catalog.types"
+import type { ProductIndexParams } from "../../types"
 
 type QueryGate = { enabled?: boolean }
 

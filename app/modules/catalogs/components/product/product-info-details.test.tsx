@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
 import { ProductInfoDetails } from "./product-info-details"
-import type { ProductDetail } from "../../types/catalog.types"
+import type { ProductDetail } from "../../types"
 
 const PRODUCT: ProductDetail = {
     id: "prd-001",

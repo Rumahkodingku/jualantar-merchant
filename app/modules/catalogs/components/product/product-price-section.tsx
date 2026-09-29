@@ -11,8 +11,8 @@ import { applyServerFieldErrors, catalogErrorMessage } from "../../utils/api-err
 import { issuesToMessages } from "../../utils/issues"
 import { notifyError, notifySuccess } from "~/lib/notify"
 import { formatCurrency } from "../../utils/format-currency"
-import { simplePriceSchema } from "../../schemas/catalog.schema"
-import type { ProductDetail } from "../../types/catalog.types"
+import { simplePriceSchema } from "../../schemas/"
+import type { ProductDetail } from "../../types"
 
 export function ProductPriceSection({
     product,

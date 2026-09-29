@@ -1,4 +1,4 @@
-import type { Product } from "../types/catalog.types"
+import type { Product } from "../types"
 
 export function buildProductMeta(product: Product): string[] {
     const parts: string[] = []

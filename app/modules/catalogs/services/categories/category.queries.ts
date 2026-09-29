@@ -2,7 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 
 import { catalogKeys } from "../catalog.keys"
 import { catalogRepository } from "../catalog.repository"
-import type { CategoryIndexParams } from "../../types/catalog.types"
+import type { CategoryIndexParams } from "../../types"
 
 export function useCategories(params: CategoryIndexParams = {}) {
     return useQuery({

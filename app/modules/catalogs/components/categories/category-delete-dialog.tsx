@@ -1,5 +1,5 @@
 import { ConfirmDialog } from "../common/confirm-dialog"
-import type { CatalogCategory } from "../../types/catalog.types"
+import type { CatalogCategory } from "../../types"
 
 export function CategoryDeleteDialog({
     category,

@@ -1,4 +1,4 @@
-import type { CatalogStatus, ProductType } from "../types/catalog.types"
+import type { CatalogStatus, ProductType } from "../types"
 
 export interface ProductFilterValues {
     search: string

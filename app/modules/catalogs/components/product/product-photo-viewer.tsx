@@ -7,7 +7,7 @@ import { cn } from "~/lib/utils"
 
 import { ProductMediaThumbnail } from "./product-media-thumbnail"
 import { sortByDisplayOrder } from "../../utils/media-order"
-import type { ProductMedia } from "../../types/catalog.types"
+import type { ProductMedia } from "../../types"
 
 export function ProductPhotoViewer({
     media,

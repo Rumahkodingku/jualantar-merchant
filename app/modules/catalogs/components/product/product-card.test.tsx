@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest"
 
 import { ProductCard } from "./product-card"
 import { PRODUCT_TYPE_LABEL } from "../../utils/labels"
-import type { Product } from "../../types/catalog.types"
+import type { Product } from "../../types"
 
 const PRODUCT: Product = {
     id: "p1",

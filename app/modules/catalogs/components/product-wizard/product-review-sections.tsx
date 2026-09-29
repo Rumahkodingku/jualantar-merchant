@@ -5,8 +5,8 @@ import { Text } from "~/components/ui/text"
 import { ReviewSection } from "../review-section"
 import { formatCurrency } from "../../utils/format-currency"
 import { PRODUCT_TYPE_LABEL } from "../../utils/labels"
-import type { ProductInfoFormValues } from "../../schemas/catalog.schema"
-import type { CatalogOutlet } from "../../types/catalog.types"
+import type { ProductInfoFormValues } from "../../schemas/"
+import type { CatalogOutlet } from "../../types"
 import type { GroupDraft, MediaDraft, VariantDraft } from "../../types/product-draft.types"
 
 export function ProductReviewSections({

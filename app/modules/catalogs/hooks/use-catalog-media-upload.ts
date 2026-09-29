@@ -4,7 +4,7 @@ import { usePresignedUpload, type PresignedUploadController } from "~/hooks/use-
 import { validateUploadFile } from "~/lib/upload"
 
 import { catalogRepository } from "../services/catalog.repository"
-import type { MediaUploadTarget } from "../types/catalog.types"
+import type { MediaUploadTarget } from "../types"
 
 export function useCatalogMediaUpload(productId: string): PresignedUploadController<MediaUploadTarget> {
     const createUpload = useCallback(

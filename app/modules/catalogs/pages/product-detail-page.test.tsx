@@ -12,7 +12,7 @@ import type {
     ProductMedia,
     ProductModifierGroup,
     ProductVariant,
-} from "../types/catalog.types"
+} from "../types"
 
 const { fetchProduct, fetchProductOutlets, useOperationalOutlets } = vi.hoisted(() => ({
     fetchProduct: vi.fn(),

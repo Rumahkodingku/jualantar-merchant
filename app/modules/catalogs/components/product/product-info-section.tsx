@@ -14,8 +14,8 @@ import { applyServerFieldErrors, catalogErrorMessage } from "../../utils/api-err
 import { issuesToMessages } from "../../utils/issues"
 import { notifyError, notifySuccess } from "~/lib/notify"
 import { PRODUCT_TYPE_LABEL } from "../../utils/labels"
-import { productInfoSchema, type ProductInfoFormValues } from "../../schemas/catalog.schema"
-import type { ProductDetail } from "../../types/catalog.types"
+import { productInfoSchema, type ProductInfoFormValues } from "../../schemas/"
+import type { ProductDetail } from "../../types"
 
 export function ProductInfoSection({
     product,

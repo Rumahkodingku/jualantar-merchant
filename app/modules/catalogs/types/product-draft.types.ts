@@ -1,4 +1,4 @@
-import type { CatalogStatus, SelectionType } from "./catalog.types"
+import type { CatalogStatus, SelectionType } from "./common.types"
 
 export interface VariantDraft {
     key: string

@@ -5,7 +5,7 @@ import { useOperationalOutlets, type OperationalOutlet } from "~/modules/merchan
 
 import { catalogKeys } from "../catalog.keys"
 import { catalogRepository } from "../catalog.repository"
-import type { CatalogOutlet, ProductOutletRow } from "../../types/catalog.types"
+import type { CatalogOutlet, ProductOutletRow } from "../../types"
 
 const OUTLETS_PAGE_SIZE = 100
 

@@ -1,5 +1,5 @@
 import { notifyError } from "~/lib/notify"
-import type { ReorderItem } from "../types/catalog.types"
+import type { ReorderItem } from "../types"
 
 export function useEntityReorder<T extends { id: string }>({
     items,

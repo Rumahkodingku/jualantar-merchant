@@ -11,7 +11,7 @@ import { MAX_PRODUCT_MEDIA, MEDIA_ACCEPT } from "../../utils/media"
 import { useAddMedia } from "../../services/media/media.mutations"
 import { catalogErrorMessage } from "../../utils/api-error"
 import { notifySuccess } from "~/lib/notify"
-import type { MediaUploadTarget } from "../../types/catalog.types"
+import type { MediaUploadTarget } from "../../types"
 
 export function MediaUploadTile({ productId, mediaCount }: { productId: string; mediaCount: number }) {
     const inputRef = useRef<HTMLInputElement>(null)

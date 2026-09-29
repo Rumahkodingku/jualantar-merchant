@@ -11,7 +11,7 @@ import { MAX_PRODUCT_MEDIA } from "../../utils/media"
 import { useDeleteMedia, useReorderMedia, useSetPrimaryMedia } from "../../services/media/media.mutations"
 import { catalogErrorMessage } from "../../utils/api-error"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import type { ProductMedia } from "../../types/catalog.types"
+import type { ProductMedia } from "../../types"
 
 export function MediaManager({ productId, media }: { productId: string; media: ProductMedia[] }) {
     const [pendingDelete, setPendingDelete] = useState<ProductMedia | null>(null)

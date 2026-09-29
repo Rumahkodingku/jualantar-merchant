@@ -3,7 +3,7 @@ import { Text } from "~/components/ui/text"
 import { CatalogEmptyState } from "../catalog-empty-state"
 import { ProductMediaThumbnail } from "./product-media-thumbnail"
 import { sortByDisplayOrder } from "../../utils/media-order"
-import type { ProductMedia } from "../../types/catalog.types"
+import type { ProductMedia } from "../../types"
 
 export function ProductMediaGallery({ media, onOpen }: { media: ProductMedia[]; onOpen: (index: number) => void }) {
     const items = sortByDisplayOrder(media)

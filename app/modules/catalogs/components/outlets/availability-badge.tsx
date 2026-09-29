@@ -2,7 +2,7 @@ import { Badge } from "~/components/ui/badge"
 import { cn } from "~/lib/utils"
 
 import { AVAILABILITY_LABEL, availabilityTone } from "../../utils/labels"
-import type { AvailabilityStatus } from "../../types/catalog.types"
+import type { AvailabilityStatus } from "../../types"
 
 export function AvailabilityBadge({ status }: { status: AvailabilityStatus }) {
     return (

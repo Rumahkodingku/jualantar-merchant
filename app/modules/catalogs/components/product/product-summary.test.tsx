@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { ProductSummary } from "./product-summary"
 import { Tabs } from "~/components/ui/tabs"
-import type { ProductDetail } from "../../types/catalog.types"
+import type { ProductDetail } from "../../types"
 
 function makeProduct(overrides: Partial<ProductDetail> = {}): ProductDetail {
     return {

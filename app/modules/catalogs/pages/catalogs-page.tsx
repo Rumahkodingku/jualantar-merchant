@@ -15,7 +15,7 @@ import { useProducts, PRODUCT_MEDIA_REFRESH_INTERVAL } from "../services/product
 import { notifyError, notifySuccess } from "~/lib/notify"
 import { CATALOGS_PATHS } from "../utils/paths"
 import { readProductFilters, type ProductFilterValues } from "../utils/product-filters"
-import type { CatalogStatus, ProductIndexParams, ProductType } from "../types/catalog.types"
+import type { CatalogStatus, ProductIndexParams, ProductType } from "../types"
 
 export function CatalogsPage() {
     const [searchParams, setSearchParams] = useStableSearchParams()

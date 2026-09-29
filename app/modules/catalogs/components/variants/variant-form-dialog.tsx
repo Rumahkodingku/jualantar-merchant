@@ -12,8 +12,8 @@ import { useCreateVariant, useUpdateVariant } from "../../services/variants/vari
 import { applyServerFieldErrors, catalogErrorMessage } from "../../utils/api-error"
 import { issuesToMessages } from "../../utils/issues"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import { variantRowSchema, type VariantRowValues } from "../../schemas/catalog.schema"
-import type { ProductVariant } from "../../types/catalog.types"
+import { variantRowSchema, type VariantRowValues } from "../../schemas/"
+import type { ProductVariant } from "../../types"
 
 export function VariantFormDialog({
     productId,

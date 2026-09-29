@@ -1,4 +1,4 @@
-import type { AvailabilityStatus, CatalogStatus, ProductType, SelectionType } from "../types/catalog.types"
+import type { AvailabilityStatus, CatalogStatus, ProductType, SelectionType } from "../types"
 
 export const PRODUCT_TYPE_LABEL: Record<ProductType, string> = {
     simple: "Simple",

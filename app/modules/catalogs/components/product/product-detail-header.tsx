@@ -18,7 +18,7 @@ import { StatusBadge } from "../common/status-badge"
 import { useDeleteProduct, useSetProductStatus } from "../../services/products/product.mutations"
 import { catalogErrorMessage } from "../../utils/api-error"
 import { CATALOGS_PATHS } from "../../utils/paths"
-import type { Product } from "../../types/catalog.types"
+import type { Product } from "../../types"
 
 type ConfirmAction = "status" | "delete"
 

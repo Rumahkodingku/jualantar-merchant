@@ -10,7 +10,7 @@ import { AvailabilityBadge } from "../outlets/availability-badge"
 import { StatusBadge } from "../common/status-badge"
 import { outletPhotoUrl } from "../../utils/outlet-photo"
 import { formatOutletLocation } from "../../utils/outlet-location"
-import type { ProductOutletRow } from "../../types/catalog.types"
+import type { ProductOutletRow } from "../../types"
 
 function OutletPhoto({
     outlet,

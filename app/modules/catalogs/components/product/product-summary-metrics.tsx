@@ -1,7 +1,7 @@
 import { BoxesIcon, ImagesIcon, StoreIcon, UtensilsCrossedIcon, type LucideIcon } from "lucide-react"
 import { Text } from "~/components/ui/text"
 import type { ProductDetailTab } from "./product-detail-tabs"
-import type { ProductDetailSummary } from "../../types/catalog.types"
+import type { ProductDetailSummary } from "../../types"
 
 export function ProductSummaryMetrics({
     summary,

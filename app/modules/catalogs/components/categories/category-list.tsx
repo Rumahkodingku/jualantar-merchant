@@ -2,7 +2,7 @@ import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type D
 import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable"
 
 import { CategoryRow, type CategoryRowAction } from "./category-row"
-import type { CatalogCategory } from "../../types/catalog.types"
+import type { CatalogCategory } from "../../types"
 
 export function CategoryList({
     categories,

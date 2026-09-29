@@ -1,6 +1,6 @@
 import { TabsList, TabsTrigger } from "~/components/ui/tabs"
 
-import type { ProductDetailSummary } from "../../types/catalog.types"
+import type { ProductDetailSummary } from "../../types"
 import { Text } from "~/components/ui/text"
 
 export const PRODUCT_DETAIL_TABS = [

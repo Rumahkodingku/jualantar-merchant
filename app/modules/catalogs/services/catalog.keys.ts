@@ -1,4 +1,4 @@
-import type { CategoryIndexParams, ProductIndexParams } from "../types/catalog.types"
+import type { CategoryIndexParams, ProductIndexParams } from "../types"
 
 const ROOT = "catalogs"
 

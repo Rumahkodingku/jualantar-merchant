@@ -196,6 +196,9 @@ export function ModifierGroupFormDialog({
     return (
         <FormDialog
             title={group === undefined ? "Tambah modifier group" : "Edit modifier group"}
+            description={
+                group === undefined ? "Tambah modifier group sesuai kebutuhan" : "Edit modofier group sesuai kebutuhan"
+            }
             isPending={isPending}
             onClose={onClose}
             onSubmit={handleSubmit}
@@ -209,6 +212,7 @@ export function ModifierGroupFormDialog({
                     setValues((current) => ({ ...current, name }))
                     clear("name")
                 }}
+                placeholder="cth: Tambahan"
             />
 
             <NameField
@@ -219,6 +223,7 @@ export function ModifierGroupFormDialog({
                     setValues((current) => ({ ...current, description }))
                     clear("description")
                 }}
+                placeholder="cth: Ini adalah tambahan "
             />
 
             <Field>
@@ -231,9 +236,9 @@ export function ModifierGroupFormDialog({
                     <SelectTrigger className="w-full" aria-labelledby="group-selection-label">
                         <SelectValue placeholder="Pilih tipe seleksi" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="p-2">
                         {SELECTION_TYPE_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
+                            <SelectItem className="p-3 rounded-xl" key={option.value} value={option.value}>
                                 {option.label}
                             </SelectItem>
                         ))}

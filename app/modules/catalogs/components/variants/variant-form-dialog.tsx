@@ -1,5 +1,4 @@
 import { useState } from "react"
-
 import { FormDialog } from "../common/form-dialog"
 import { MoneyField, NameField, ToggleField } from "../common/form-fields"
 import { useFieldErrors } from "../common/use-field-errors"
@@ -10,28 +9,12 @@ import { variantRowSchema, type VariantRowValues } from "../../schemas"
 import { useCreateVariant, useUpdateVariant } from "../../services/variants/variant.mutations"
 import type { CatalogStatus } from "../../types"
 
-/**
- * Where the form ends up decides how it saves, and nothing else.
- *
- * `server` writes straight to the API and reports field errors the backend
- * sends back. `draft` and `edit` hand the validated values to `onSubmit` and
- * stop there, because the wizard owns the row until the whole product is
- * saved — there is no server to report against yet.
- *
- * The two staged modes differ in one field. A product being created has no
- * status to speak of, so a staged variant is always live and the form does not
- * offer a choice. A product being edited already has one, and changing it is
- * exactly the kind of edit this screen exists for — so `edit` shows the toggle
- * and the status travels back with the rest of the row.
- */
 export type FormMode = "server" | "draft" | "edit"
 
-/** Whether the merchant is allowed to choose a row's active status. */
 export function allowsStatusChoice(mode: FormMode): boolean {
     return mode === "server" || mode === "edit"
 }
 
-/** The parts of a variant the API takes, with the blank-SKU difference folded in. */
 export interface VariantPayload {
     name: string
     sku: string | null
@@ -39,19 +22,10 @@ export interface VariantPayload {
     is_default: boolean
 }
 
-/**
- * What a staged row gets back. The API's variant endpoints do not take a status
- * — that changes through activate/deactivate — so the status is carried beside
- * the payload and applied separately by whoever saves the row.
- */
 export interface VariantPayloadWithStatus extends VariantPayload {
     status: CatalogStatus
 }
 
-/**
- * The subset of a variant the form reads. Both a saved variant and a staged
- * draft row satisfy it, which is what lets one dialog edit either.
- */
 export interface ExistingVariant {
     id?: string
     name: string
@@ -61,7 +35,6 @@ export interface ExistingVariant {
     is_default: boolean
 }
 
-/** A staged draft row has no server id yet, which is how the two are told apart. */
 function variantIdOf(variant: ExistingVariant | undefined): string {
     return variant?.id ?? ""
 }
@@ -74,7 +47,6 @@ export function VariantFormDialog({
     onSubmit,
 }: {
     mode: FormMode
-    /** Only needed in `server` mode; a draft row is not attached to a product yet. */
     productId?: string
     variant?: ExistingVariant
     onClose: () => void
@@ -101,8 +73,6 @@ export function VariantFormDialog({
             return
         }
 
-        // The API reads a blank SKU as `null`; the draft keeps it as an empty
-        // string, which is the state the input actually holds.
         const payload: VariantPayload = {
             name: parsed.data.name,
             sku: parsed.data.sku === "" || parsed.data.sku === undefined ? null : parsed.data.sku,
@@ -141,6 +111,9 @@ export function VariantFormDialog({
     return (
         <FormDialog
             title={variant === undefined ? "Tambah variant" : "Edit variant"}
+            description={
+                variant === undefined ? "Tambah variant sesuai kebutuhan produk" : "Edit variant sesuai kebutuan produk"
+            }
             isPending={isPending}
             onClose={onClose}
             onSubmit={handleSubmit}
@@ -154,6 +127,7 @@ export function VariantFormDialog({
                     setValues((current) => ({ ...current, name }))
                     clear("name")
                 }}
+                placeholder="cth: Biasa"
             />
 
             <NameField
@@ -165,6 +139,7 @@ export function VariantFormDialog({
                     setValues((current) => ({ ...current, sku }))
                     clear("sku")
                 }}
+                placeholder="cth: SKU-001-XYZ"
             />
 
             <MoneyField
@@ -188,10 +163,6 @@ export function VariantFormDialog({
                 }}
             />
 
-            {/* A staged variant on a product that does not exist yet cannot be
-                deactivated: the draft always keeps it live, and status is decided
-                when the product itself is created. An edit is a different matter —
-                the product is already there with a status to change. */}
             {allowsStatusChoice(mode) ? (
                 <ToggleField
                     label="Status aktif"

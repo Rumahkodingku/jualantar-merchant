@@ -1,14 +1,17 @@
 import { useState } from "react"
+import { XIcon } from "lucide-react"
 
-import { Button } from "~/components/ui/button"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "~/components/ui/dialog"
+    BottomSheet,
+    BottomSheetBody,
+    BottomSheetClose,
+    BottomSheetContent,
+    BottomSheetDescription,
+    BottomSheetFooter,
+    BottomSheetHeader,
+    BottomSheetTitle,
+} from "~/components/ui/bottom-sheet"
+import { Button } from "~/components/ui/button"
 import { Field, FieldLabel } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
 import { Spinner } from "~/components/ui/spinner"
@@ -69,38 +72,57 @@ export function AvailabilityControl({
                 onCheckedChange={handleToggle}
             />
 
-            <Dialog open={reasonOpen} onOpenChange={setReasonOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Tandai tidak tersedia</DialogTitle>
-                        <DialogDescription>
+            <BottomSheet open={reasonOpen} onOpenChange={setReasonOpen}>
+                <BottomSheetContent>
+                    <BottomSheetHeader>
+                        <BottomSheetTitle>Tandai tidak tersedia</BottomSheetTitle>
+                        <BottomSheetDescription>
                             Alasan bersifat opsional dan membantu tim outlet memahami kenapa produk tidak tersedia.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <Field>
-                        <FieldLabel htmlFor={`availability-reason-${assignment.outlet_id}`}>
-                            Alasan (opsional)
-                        </FieldLabel>
-                        <Input
-                            id={`availability-reason-${assignment.outlet_id}`}
-                            value={reason}
-                            maxLength={255}
-                            placeholder="cth. Stok habis"
-                            onChange={(event) => setReason(event.target.value)}
-                            className="h-11"
-                        />
-                    </Field>
-                    <DialogFooter>
+                        </BottomSheetDescription>
+                        <BottomSheetClose
+                            render={
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    className="absolute top-3 right-3 hidden md:inline-flex"
+                                    aria-label="Tutup alasan"
+                                />
+                            }
+                        >
+                            <XIcon aria-hidden="true" />
+                        </BottomSheetClose>
+                    </BottomSheetHeader>
+                    <BottomSheetBody className="px-4">
+                        <Field>
+                            <FieldLabel htmlFor={`availability-reason-${assignment.outlet_id}`}>
+                                Alasan (opsional)
+                            </FieldLabel>
+                            <Input
+                                id={`availability-reason-${assignment.outlet_id}`}
+                                value={reason}
+                                maxLength={255}
+                                placeholder="cth. Stok habis"
+                                onChange={(event) => setReason(event.target.value)}
+                                className="h-11"
+                            />
+                        </Field>
+                    </BottomSheetBody>
+                    <BottomSheetFooter className="flex-row">
                         <Button
+                            size="lg"
                             type="button"
                             variant="outline"
+                            className="flex-1"
                             disabled={availabilityMutation.isPending}
                             onClick={() => submitUnavailable(false)}
                         >
                             Lewati
                         </Button>
                         <Button
+                            size="lg"
                             type="button"
+                            className="flex-1"
                             disabled={availabilityMutation.isPending}
                             onClick={() => submitUnavailable(true)}
                         >
@@ -112,9 +134,9 @@ export function AvailabilityControl({
                                 "Simpan"
                             )}
                         </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                    </BottomSheetFooter>
+                </BottomSheetContent>
+            </BottomSheet>
         </>
     )
 }

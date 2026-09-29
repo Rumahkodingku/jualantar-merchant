@@ -58,7 +58,7 @@ export function ProductVariantList({ product }: { product: ProductDetail }) {
                                 {variant.is_default ? <Badge className="text-xs">Default</Badge> : null}
                             </div>
 
-                            <Text variant="sm" weight="semibold">
+                            <Text variant="sm" weight="medium">
                                 {formatCurrency(variant.price)}
                             </Text>
 

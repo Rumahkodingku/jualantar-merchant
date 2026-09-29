@@ -34,7 +34,9 @@ export function ProductFilterFields({
     return (
         <>
             <div className="flex flex-col gap-1.5">
-                <Label htmlFor="filter-category">Kategori</Label>
+                <Label htmlFor="filter-category" className="font-semibold">
+                    Kategori
+                </Label>
                 <Select
                     items={categoryItems}
                     value={values.category_id === "" ? ALL : values.category_id}
@@ -43,9 +45,9 @@ export function ProductFilterFields({
                     <SelectTrigger id="filter-category" className="w-full">
                         <SelectValue placeholder="Semua kategori" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="p-2">
                         {categoryItems.map((category) => (
-                            <SelectItem key={category.value} value={category.value}>
+                            <SelectItem className="py-3" key={category.value} value={category.value}>
                                 {category.label}
                             </SelectItem>
                         ))}
@@ -54,7 +56,9 @@ export function ProductFilterFields({
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <Label htmlFor="filter-type">Tipe produk</Label>
+                <Label htmlFor="filter-type" className="font-semibold">
+                    Tipe produk
+                </Label>
                 <Select
                     items={productTypeItems}
                     value={values.product_type === "" ? ALL : values.product_type}
@@ -65,9 +69,9 @@ export function ProductFilterFields({
                     <SelectTrigger id="filter-type" className="w-full">
                         <SelectValue placeholder="Semua tipe" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="p-2">
                         {productTypeItems.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
+                            <SelectItem className="py-3" key={option.value} value={option.value}>
                                 {option.label}
                             </SelectItem>
                         ))}

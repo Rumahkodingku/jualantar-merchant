@@ -1,22 +1,8 @@
 import { useState } from "react"
-
 import { ConfirmDialog } from "../common/confirm-dialog"
 import { OutletAssignmentRow } from "./outlet-assignment-row"
 import type { OutletProductAssignment } from "../../types"
 
-/**
- * The per-outlet management under the wizard's outlet picker.
- *
- * The picker answers "which outlets does this product belong in", and this
- * answers the two questions that can only be asked of one outlet at a time: is
- * the assignment live, and is the product actually in stock there. Those are
- * written straight through rather than held for the save, because each is its
- * own call against a single assignment and holding them would mean the merchant
- * could not mark something out of stock without re-saving the whole product.
- *
- * Removal is the exception — it only reports the wish, and the assignment really
- * goes when the wizard is saved, so changing one's mind costs nothing.
- */
 export function OutletAssignments({
     productId,
     assignments,

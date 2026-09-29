@@ -119,18 +119,16 @@ export function ToggleField({
     uncheckedDescription?: string
     onCheckedChange: (checked: boolean) => void
     error?: string
-    /** Needed when the visible label is not adjacent to the switch. */
     ariaLabel?: string
-    /** Rendered on the trailing edge, for a control that needs its own label. */
     control?: ReactNode
 }) {
     const hint = checked ? (checkedDescription ?? description) : (uncheckedDescription ?? description)
 
     return (
         <Field>
-            <div className="flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5">
+            <div className="flex items-center justify-between gap-3">
                 <div className="flex flex-col">
-                    <Text variant="sm" weight="medium">
+                    <Text variant="sm" weight="semibold">
                         {label}
                     </Text>
                     <Text variant="xs" className="text-muted-foreground">

@@ -1,21 +1,20 @@
-import { useState } from "react"
 import { CircleCheck, PlusIcon, RotateCcw, SearchIcon, SlidersHorizontalIcon, XIcon } from "lucide-react"
 import { Link } from "react-router"
-
+import {
+    BottomSheet,
+    BottomSheetBody,
+    BottomSheetClose,
+    BottomSheetContent,
+    BottomSheetDescription,
+    BottomSheetFooter,
+    BottomSheetHeader,
+    BottomSheetTitle,
+    BottomSheetTrigger,
+} from "~/components/ui/bottom-sheet"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from "~/components/ui/sheet"
 import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
-
 import { ProductFilterFields } from "./product-filter-fields"
 import { CATALOGS_PATHS } from "../../utils/paths"
 import type { ProductFilterValues } from "../../utils/product-filters"
@@ -46,8 +45,6 @@ export function ProductFilters({
     canReorder: boolean
     onToggleReorder: () => void
 }) {
-    const [sheetOpen, setSheetOpen] = useState(false)
-
     const activeFacetCount = [values.category_id, values.product_type].filter((value) => value !== "").length
 
     return (
@@ -113,8 +110,8 @@ export function ProductFilters({
                         })}
                     </div>
 
-                    <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-                        <SheetTrigger
+                    <BottomSheet>
+                        <BottomSheetTrigger
                             render={
                                 <Button
                                     type="button"
@@ -140,29 +137,44 @@ export function ProductFilters({
                                     <span className="sr-only">{activeFacetCount} filter aktif</span>
                                 </>
                             ) : null}
-                        </SheetTrigger>
-                        <SheetContent side="bottom" className="rounded-t-4xl md:mx-auto md:max-w-md">
-                            <SheetHeader>
-                                <SheetTitle className="text-lg font-bold">Filter produk</SheetTitle>
-                                <SheetDescription className="text-xs">
+                        </BottomSheetTrigger>
+                        <BottomSheetContent className="rounded-t-4xl">
+                            <BottomSheetHeader>
+                                <BottomSheetTitle>
+                                    Filter produk
+                                </BottomSheetTitle>
+                                <BottomSheetDescription>
                                     Saring daftar produk berdasarkan kategori dan tipe.
-                                </SheetDescription>
-                            </SheetHeader>
-                            <div className="flex flex-col gap-4 px-4">
+                                </BottomSheetDescription>
+                                <BottomSheetClose
+                                    render={
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon-sm"
+                                            className="absolute top-3 right-3 hidden md:inline-flex"
+                                            aria-label="Tutup filter produk"
+                                        />
+                                    }
+                                >
+                                    <XIcon aria-hidden="true" />
+                                </BottomSheetClose>
+                            </BottomSheetHeader>
+                            <BottomSheetBody className="gap-5 px-4">
                                 <ProductFilterFields values={values} categories={categories} onChange={onChange} />
-                            </div>
-                            <SheetFooter className="flex-row">
+                            </BottomSheetBody>
+                            <BottomSheetFooter className="mt-4 flex-row">
                                 <Button size="lg" type="button" variant="outline" className="flex-1" onClick={onReset}>
                                     <RotateCcw />
                                     Reset
                                 </Button>
-                                <Button size="lg" type="button" className="flex-1" onClick={() => setSheetOpen(false)}>
+                                <BottomSheetClose render={<Button size="lg" type="button" className="flex-1" />}>
                                     <CircleCheck />
                                     Terapkan
-                                </Button>
-                            </SheetFooter>
-                        </SheetContent>
-                    </Sheet>
+                                </BottomSheetClose>
+                            </BottomSheetFooter>
+                        </BottomSheetContent>
+                    </BottomSheet>
                 </div>
 
                 <div className="flex items-center justify-between gap-3 lg:justify-end">

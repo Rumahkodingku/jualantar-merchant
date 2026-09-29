@@ -60,17 +60,17 @@ export function ProductSummaryMetrics({
                         className="flex flex-col gap-1 rounded-2xl border bg-card p-4 text-left transition-colors outline-none hover:border-primary/40 focus-visible:ring-3 focus-visible:ring-ring/50"
                     >
                         <Icon aria-hidden="true" className="size-4 text-muted-foreground" />
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col items-start gap-2">
                             <Text variant="lg" weight="semibold" className="tabular-nums">
                                 {metric.value}
                             </Text>
-                            <Text variant="xs" weight="semibold">
+                            <Text variant="xs" weight="medium">
                                 {metric.label}
                             </Text>
                         </div>
-                        <Text variant="xs" className="text-muted-foreground">
+                        {/* <Text variant="xs" className="text-muted-foreground">
                             {metric.description}
-                        </Text>
+                        </Text> */}
                     </button>
                 )
             })}

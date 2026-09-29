@@ -19,7 +19,7 @@ export function ReviewSection({
     children?: React.ReactNode
 }) {
     return (
-        <div className="rounded-2xl border bg-card ring-1 ring-foreground/5">
+        <div className="rounded-xl border">
             <div className="flex items-center gap-2">
                 <button
                     type="button"

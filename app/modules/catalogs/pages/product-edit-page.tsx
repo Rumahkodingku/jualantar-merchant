@@ -72,13 +72,14 @@ export function ProductEditPage() {
     const categories = categoriesQuery.data?.data ?? []
     const outlets = outletsQuery.data ?? []
     const outletIds = (assignmentsQuery.data ?? []).map((assignment) => assignment.outlet_id)
+    const detailPath = CATALOGS_PATHS.detail(product.id)
 
     return (
         <div className="flex flex-1 flex-col gap-4">
             <SubpageHeader
                 title="Edit Produk"
                 description="Lengkapi langkah untuk mengubah produk."
-                backTo={CATALOGS_PATHS.detail(productId)}
+                backTo={detailPath}
             />
 
             <ProductEditWizard
@@ -93,7 +94,8 @@ export function ProductEditPage() {
                 onRetryOutlets={() => void outletsQuery.refetch()}
                 form={toEditForm(product, outletIds)}
                 snapshot={toEditSnapshot(product, outletIds)}
-                onSaved={() => void navigate(CATALOGS_PATHS.detail(product.id))}
+                onSaved={() => void navigate(detailPath)}
+                onExit={() => void navigate(detailPath)}
             />
         </div>
     )

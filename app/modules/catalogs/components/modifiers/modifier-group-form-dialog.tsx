@@ -238,7 +238,7 @@ export function ModifierGroupFormDialog({
                     </SelectTrigger>
                     <SelectContent className="p-2">
                         {SELECTION_TYPE_OPTIONS.map((option) => (
-                            <SelectItem className="p-3 rounded-xl" key={option.value} value={option.value}>
+                            <SelectItem className="rounded-xl p-3" key={option.value} value={option.value}>
                                 {option.label}
                             </SelectItem>
                         ))}

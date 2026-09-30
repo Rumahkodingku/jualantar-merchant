@@ -1,16 +1,5 @@
-import {
-    EyeIcon,
-    ImagesIcon,
-    MoreVerticalIcon,
-    PencilIcon,
-    PowerIcon,
-    SlidersHorizontalIcon,
-    StoreIcon,
-    Trash2Icon,
-    UtensilsCrossedIcon,
-} from "lucide-react"
+import { EyeIcon, MoreVerticalIcon, PencilIcon, PowerIcon, Trash2Icon } from "lucide-react"
 import { useNavigate } from "react-router"
-
 import { Button } from "~/components/ui/button"
 import {
     DropdownMenu,
@@ -19,7 +8,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
-
 import { ProductActionDialogs } from "./product-action-dialogs"
 import { useProductActions } from "../../hooks/use-product-actions"
 import { CATALOGS_PATHS } from "../../utils/paths"
@@ -44,34 +32,33 @@ export function ProductActionsMenu({ product }: { product: Product }) {
                 >
                     <MoreVerticalIcon />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => void navigate(CATALOGS_PATHS.detail(product.id))}>
-                        <EyeIcon /> Lihat detail
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => void navigate(CATALOGS_PATHS.edit(product.id))}>
-                        <PencilIcon /> Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => void navigate(`${CATALOGS_PATHS.detail(product.id)}?tab=variant`)}>
-                        <SlidersHorizontalIcon /> Kelola variant
+                <DropdownMenuContent align="end" className="w-64">
+                    <DropdownMenuItem
+                        className="cursor-pointer p-2 font-medium"
+                        onClick={() => void navigate(CATALOGS_PATHS.detail(product.id))}
+                    >
+                        <EyeIcon /> Lihat detail Produk
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                        onClick={() => void navigate(`${CATALOGS_PATHS.detail(product.id)}?tab=customization`)}
+                        className="cursor-pointer p-2 font-medium"
+                        onClick={() => void navigate(CATALOGS_PATHS.edit(product.id))}
                     >
-                        <UtensilsCrossedIcon /> Kelola customization
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => void navigate(`${CATALOGS_PATHS.detail(product.id)}?tab=media`)}>
-                        <ImagesIcon /> Kelola media
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => void navigate(`${CATALOGS_PATHS.detail(product.id)}?tab=outlet`)}>
-                        <StoreIcon /> Kelola outlet
+                        <PencilIcon /> Edit Produk
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => actions.request("status")}>
-                        <PowerIcon /> {actions.nextStatus === "active" ? "Nonaktifkan" : "Aktifkan"}
+
+                    <DropdownMenuItem
+                        className="cursor-pointer p-2 font-medium"
+                        onClick={() => actions.request("status")}
+                    >
+                        <PowerIcon /> {actions.nextStatus === "active" ? "Nonaktifkan Produk" : "Aktifkan Produk"}
                     </DropdownMenuItem>
-                    <DropdownMenuItem variant="destructive" onClick={() => actions.request("delete")}>
-                        <Trash2Icon /> Hapus
+                    <DropdownMenuItem
+                        className="cursor-pointer p-2 font-medium"
+                        variant="destructive"
+                        onClick={() => actions.request("delete")}
+                    >
+                        <Trash2Icon /> Hapus Produk
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

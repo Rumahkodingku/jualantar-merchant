@@ -25,7 +25,7 @@ export function OutletAssignmentRow({
     const name = assignment.outlet?.name ?? assignment.outlet_id
 
     return (
-        <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 ">
+        <div className="flex flex-col gap-3 rounded-xl border bg-card p-3">
             <div className="flex items-center justify-between gap-2">
                 <Text variant="sm" weight="medium" truncate>
                     {name}

@@ -139,6 +139,7 @@ function renderWizard(target: ProductDetail, outletIds: string[] = ["o1"], onSav
                         form={toEditForm(target, outletIds)}
                         snapshot={snapshotOf(target, outletIds)}
                         onSaved={onSaved}
+                        onExit={() => void router.navigate(`/catalogs/products/${target.id}`)}
                     />
                 ),
             },
@@ -348,5 +349,72 @@ describe("a variable product's variants are patched by the id they already have"
 
         expect(api.updateProductVariant).toHaveBeenCalledWith("p1", "v1", { name: "Reguler Besar" })
         expect(api.deactivateProductVariant).toHaveBeenCalledWith("p1", "v1")
+    })
+})
+
+describe("leaving an unsaved edit asks before throwing the work away", () => {
+    it("warns, then leaves once the merchant says so", async () => {
+        const user = userEvent.setup()
+
+        renderWizard(product())
+
+        await user.clear(screen.getByLabelText(/Nama Produk/))
+        await user.type(screen.getByLabelText(/Nama Produk/), "Ayam Geprek Sambal")
+
+        await user.click(screen.getByRole("button", { name: /Kembali/ }))
+
+        expect(screen.getByText("Tinggalkan tanpa menyimpan?")).toBeInTheDocument()
+        expect(screen.getByText("Informasi produk")).toBeInTheDocument()
+
+        await user.click(screen.getByRole("button", { name: "Tinggalkan" }))
+
+        expect(await screen.findByText("Detail produk")).toBeInTheDocument()
+    })
+
+    it("stays put when the merchant changes their mind", async () => {
+        const user = userEvent.setup()
+
+        renderWizard(product())
+
+        await user.clear(screen.getByLabelText(/Nama Produk/))
+        await user.type(screen.getByLabelText(/Nama Produk/), "Ayam Geprek Sambal")
+
+        await user.click(screen.getByRole("button", { name: /Kembali/ }))
+        await user.click(screen.getByRole("button", { name: "Batal" }))
+
+        await waitFor(() => expect(screen.queryByText("Tinggalkan tanpa menyimpan?")).not.toBeInTheDocument())
+
+        expect(screen.getByText("Informasi produk")).toBeInTheDocument()
+        expect(screen.getByLabelText(/Nama Produk/)).toHaveValue("Ayam Geprek Sambal")
+    })
+
+    it("leaves without asking when there is nothing to lose", async () => {
+        const user = userEvent.setup()
+
+        renderWizard(product())
+
+        await user.click(screen.getByRole("button", { name: /Kembali/ }))
+
+        expect(screen.queryByText("Tinggalkan tanpa menyimpan?")).not.toBeInTheDocument()
+        expect(await screen.findByText("Detail produk")).toBeInTheDocument()
+    })
+
+    it("stops warning once the merchant puts the form back as it was", async () => {
+        const user = userEvent.setup()
+
+        renderWizard(product())
+
+        const name = screen.getByLabelText(/Nama Produk/)
+        const original = (name as HTMLInputElement).value
+
+        await user.clear(name)
+        await user.type(name, "Ayam Geprek Sambal")
+        await user.clear(name)
+        await user.type(name, original)
+
+        await user.click(screen.getByRole("button", { name: /Kembali/ }))
+
+        expect(screen.queryByText("Tinggalkan tanpa menyimpan?")).not.toBeInTheDocument()
+        expect(await screen.findByText("Detail produk")).toBeInTheDocument()
     })
 })

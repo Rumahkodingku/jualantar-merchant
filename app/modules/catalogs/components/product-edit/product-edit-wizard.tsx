@@ -36,6 +36,7 @@ interface ProductEditWizardProps {
     form: EditForm
     snapshot: EditSnapshot
     onSaved: () => void
+    onExit: () => void
 }
 
 export function ProductEditWizard({
@@ -51,6 +52,7 @@ export function ProductEditWizard({
     form: initialForm,
     snapshot,
     onSaved,
+    onExit,
 }: ProductEditWizardProps) {
     const edit = useEditForm({ form: initialForm, snapshot })
     const bundle = useUpdateProductBundle(productId)
@@ -77,7 +79,7 @@ export function ProductEditWizard({
         }
     }, [bundle, isSubmitting, isSaved, onSaved, productName])
 
-    useLeaveGuard({ isDirty: edit.isDirty && !isSaved, onDiscard: () => undefined })
+    const leaveGuard = useLeaveGuard({ isDirty: edit.isDirty && !isSaved, onDiscard: () => undefined })
 
     const patchInfo = useCallback(
         (patch: Partial<ProductInfoFormValues>) => {
@@ -141,8 +143,14 @@ export function ProductEditWizard({
 
     const handleBack = useCallback(() => {
         setStepError(null)
-        edit.setStepIndex(Math.max(edit.stepIndex - 1, 0))
-    }, [edit])
+
+        if (edit.stepIndex === 0) {
+            onExit()
+            return
+        }
+
+        edit.setStepIndex(edit.stepIndex - 1)
+    }, [edit, onExit])
 
     const changePrice = useCallback(
         (value: string) => {
@@ -270,7 +278,7 @@ export function ProductEditWizard({
                     type="button"
                     variant="outline"
                     className="flex-1 font-semibold"
-                    disabled={isSubmitting || edit.stepIndex === 0}
+                    disabled={isSubmitting}
                     onClick={handleBack}
                     size="lg"
                 >
@@ -307,6 +315,8 @@ export function ProductEditWizard({
                     </Button>
                 )}
             </div>
+
+            {leaveGuard}
         </>
     )
 }

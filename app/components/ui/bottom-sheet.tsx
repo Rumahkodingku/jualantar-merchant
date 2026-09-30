@@ -114,7 +114,7 @@ function BottomSheetFooter({ className, ...props }: React.ComponentProps<typeof 
     return (
         <DrawerFooter
             data-slot="bottom-sheet-footer"
-            className={cn("pb-[max(1rem,env(safe-area-inset-bottom))] mt-5", className)}
+            className={cn("mt-5 pb-[max(1rem,env(safe-area-inset-bottom))]", className)}
             {...props}
         />
     )

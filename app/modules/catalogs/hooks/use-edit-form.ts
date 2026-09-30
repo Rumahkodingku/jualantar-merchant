@@ -17,6 +17,17 @@ export function useEditForm({ form, snapshot }: { form: EditForm; snapshot: Edit
     const [state, setState] = useState<EditForm>(form)
     const [stepIndex, setStepIndex] = useState(0)
 
+    /**
+     * The pristine form, as a signature, taken once.
+     *
+     * The `form` prop cannot be the baseline: the page rebuilds it on every
+     * render, and `toEditForm` mints fresh draft keys as it does, so comparing
+     * against the prop would report the form as dirty the moment a draft key
+     * changed — which happens on any query update — and the leave guard would
+     * stay armed even after the merchant put everything back.
+     */
+    const [baseline] = useState(() => signature(form))
+
     const patchInfo = useCallback((patch: Partial<EditForm["info"]>) => {
         setState((current) => ({ ...current, info: { ...current.info, ...patch } }))
     }, [])
@@ -48,12 +59,12 @@ export function useEditForm({ form, snapshot }: { form: EditForm; snapshot: Edit
     }, [])
 
     /**
-     * Whether the merchant has touched anything. Compared against the snapshot
-     * rather than a flag, because "dirty" has to mean "the save would send
-     * something" — otherwise walking through six steps and changing nothing would
-     * still block the back button.
+     * Whether the merchant has touched anything. Compared against the form as it
+     * arrived rather than tracked with a flag, because "dirty" has to mean "the
+     * save would send something" — otherwise walking through six steps and
+     * changing nothing would still block the back button.
      */
-    const isDirty = signature(state) !== signature(form)
+    const isDirty = signature(state) !== baseline
 
     return {
         form: state,

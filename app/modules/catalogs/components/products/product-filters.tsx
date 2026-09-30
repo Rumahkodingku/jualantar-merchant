@@ -140,9 +140,7 @@ export function ProductFilters({
                         </BottomSheetTrigger>
                         <BottomSheetContent className="rounded-t-4xl">
                             <BottomSheetHeader>
-                                <BottomSheetTitle>
-                                    Filter produk
-                                </BottomSheetTitle>
+                                <BottomSheetTitle>Filter produk</BottomSheetTitle>
                                 <BottomSheetDescription>
                                     Saring daftar produk berdasarkan kategori dan tipe.
                                 </BottomSheetDescription>

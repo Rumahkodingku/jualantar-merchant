@@ -37,7 +37,7 @@ export function CategoryRow({
             ref={setNodeRef}
             style={{ transform: CSS.Transform.toString(transform), transition }}
             className={cn(
-                "flex items-center gap-2 rounded-2xl border bg-card px-3 py-3 ring-1 ring-foreground/5",
+                "flex items-center gap-2 rounded-2xl border bg-card p-4",
                 isDragging && "relative z-10 opacity-70"
             )}
             {...attributes}

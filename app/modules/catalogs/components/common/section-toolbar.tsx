@@ -1,14 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 
-/**
- * The search / reorder / add row that sits above a catalogue list.
- *
- * Every list in this module is a set of rows the merchant can search, reorder
- * and add to, so the three controls are laid out once here. The reorder hint
- * and the "you are searching" note are mutually exclusive: while a search is
- * active, reordering is not offered at all, and the note says why.
- */
 export function SectionToolbar({
     searchValue,
     searchPlaceholder,
@@ -31,9 +23,7 @@ export function SectionToolbar({
     addLabel: string
     addIcon: React.ReactNode
     onAdd: () => void
-    /** Shown while reordering, when the search is not in the way. */
     reorderHint?: string
-    /** Shown when a search is active and reordering is therefore unavailable. */
     searchBlocksReorderNote?: string
 }) {
     return (
@@ -50,7 +40,7 @@ export function SectionToolbar({
                 <Button
                     type="button"
                     variant={reorderMode ? "secondary" : "outline"}
-                    size="sm"
+                    size="lg"
                     className="h-10 shrink-0"
                     disabled={!canReorder && !reorderMode}
                     onClick={onToggleReorder}
@@ -59,7 +49,7 @@ export function SectionToolbar({
                     {reorderMode ? "Selesai" : "Urutkan"}
                 </Button>
 
-                <Button type="button" size="sm" className="h-10 shrink-0" onClick={onAdd}>
+                <Button type="button" size="lg" className="shrink-0" onClick={onAdd}>
                     {addIcon}
                     <span className="hidden sm:inline">{addLabel}</span>
                     <span className="sm:hidden">Tambah</span>

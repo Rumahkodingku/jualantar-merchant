@@ -1,12 +1,11 @@
 import { useState } from "react"
 
-import { Button } from "~/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog"
 import { Field, FieldError, FieldLabel } from "~/components/ui/field"
-import { Input } from "~/components/ui/input"
-import { Spinner } from "~/components/ui/spinner"
 import { Textarea } from "~/components/ui/textarea"
 
+import { FormDialog } from "../common/form-dialog"
+import { NameField } from "../common/form-fields"
+import { useFieldErrors } from "../common/use-field-errors"
 import { useCreateCategory, useUpdateCategory } from "../../services/categories/category.mutations"
 import { applyServerFieldErrors, catalogErrorMessage } from "../../utils/api-error"
 import { issuesToMessages } from "../../utils/issues"
@@ -21,13 +20,11 @@ export function CategoryFormDialog({ category, onClose }: { category?: CatalogCa
         name: category?.name ?? "",
         description: category?.description ?? "",
     })
-    const [errors, setErrors] = useState<Record<string, string>>({})
+    const { errors, setErrors, clear, reset } = useFieldErrors()
 
     const isPending = createMutation.isPending || updateMutation.isPending
 
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-
+    function handleSubmit() {
         const parsed = categorySchema.safeParse(values)
 
         if (!parsed.success) {
@@ -35,7 +32,7 @@ export function CategoryFormDialog({ category, onClose }: { category?: CatalogCa
             return
         }
 
-        setErrors({})
+        reset()
 
         const onSuccess = () => {
             notifySuccess(category === undefined ? "Kategori dibuat" : "Kategori diperbarui")
@@ -63,56 +60,39 @@ export function CategoryFormDialog({ category, onClose }: { category?: CatalogCa
     }
 
     return (
-        <Dialog open onOpenChange={(open) => (open ? undefined : onClose())}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{category === undefined ? "Tambah kategori" : "Edit kategori"}</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-                    <Field>
-                        <FieldLabel htmlFor="category-name">Nama kategori</FieldLabel>
-                        <Input
-                            id="category-name"
-                            value={values.name}
-                            onChange={(event) => {
-                                setValues((current) => ({ ...current, name: event.target.value }))
-                                setErrors({})
-                            }}
-                            placeholder="cth. Makanan"
-                            aria-invalid={errors.name !== undefined}
-                            className="h-11"
-                        />
-                        {errors.name !== undefined ? <FieldError>{errors.name}</FieldError> : null}
-                    </Field>
+        <FormDialog
+            title={category === undefined ? "Tambah kategori" : "Edit kategori"}
+            description="Kelompokkan produk agar mudah dicari merchant."
+            isPending={isPending}
+            onClose={onClose}
+            onSubmit={handleSubmit}
+        >
+            <NameField
+                id="category-name"
+                label="Nama kategori"
+                value={values.name}
+                error={errors.name}
+                placeholder="cth. Makanan"
+                onChange={(name) => {
+                    setValues((current) => ({ ...current, name }))
+                    clear("name")
+                }}
+            />
 
-                    <Field>
-                        <FieldLabel htmlFor="category-description">Deskripsi (opsional)</FieldLabel>
-                        <Textarea
-                            id="category-description"
-                            value={values.description ?? ""}
-                            onChange={(event) =>
-                                setValues((current) => ({ ...current, description: event.target.value }))
-                            }
-                            rows={3}
-                        />
-                    </Field>
-
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose}>
-                            Batal
-                        </Button>
-                        <Button type="submit" disabled={isPending}>
-                            {isPending ? (
-                                <>
-                                    <Spinner /> Menyimpan…
-                                </>
-                            ) : (
-                                "Simpan"
-                            )}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+            <Field>
+                <FieldLabel htmlFor="category-description">Deskripsi (opsional)</FieldLabel>
+                <Textarea
+                    id="category-description"
+                    value={values.description ?? ""}
+                    onChange={(event) => {
+                        setValues((current) => ({ ...current, description: event.target.value }))
+                        clear("description")
+                    }}
+                    rows={3}
+                    aria-invalid={errors.description !== undefined}
+                />
+                {errors.description !== undefined ? <FieldError>{errors.description}</FieldError> : null}
+            </Field>
+        </FormDialog>
     )
 }

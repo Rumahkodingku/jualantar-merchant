@@ -1,5 +1,5 @@
-import { CatalogsPage } from "../pages/catalogs-page"
+import { CatalogsHomePage } from "../pages/catalogs-home-page"
 
 export default function CatalogsRoute() {
-    return <CatalogsPage />
+    return <CatalogsHomePage />
 }

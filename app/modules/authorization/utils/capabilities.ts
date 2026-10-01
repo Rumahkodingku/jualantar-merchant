@@ -17,6 +17,10 @@ export const CAP = {
     serviceAreaView: "merchant.operations.service_area.view",
     serviceAreaUpdate: "merchant.operations.service_area.update",
     availabilityView: "merchant.operations.availability.view",
+    catalogView: "merchant.operations.catalog.view",
+    catalogAvailabilityUpdate: "merchant.operations.catalog.availability.update",
+    catalogAssignmentStatusUpdate: "merchant.operations.catalog.assignment.status.update",
+    catalogOrderUpdate: "merchant.operations.catalog.order.update",
 } as const
 
 export type OperationsCapability = (typeof CAP)[keyof typeof CAP]
@@ -36,8 +40,20 @@ export const OUTLET_ROLE_CAPABILITIES: Record<OutletUserRole, readonly Operation
         CAP.serviceAreaView,
         CAP.serviceAreaUpdate,
         CAP.availabilityView,
+        CAP.catalogView,
+        CAP.catalogAvailabilityUpdate,
+        CAP.catalogAssignmentStatusUpdate,
+        CAP.catalogOrderUpdate,
     ],
-    outlet_staff: [CAP.view, CAP.outletsView, CAP.hoursView, CAP.serviceAreaView, CAP.availabilityView],
+    outlet_staff: [
+        CAP.view,
+        CAP.outletsView,
+        CAP.hoursView,
+        CAP.serviceAreaView,
+        CAP.availabilityView,
+        CAP.catalogView,
+        CAP.catalogAvailabilityUpdate,
+    ],
 }
 
 /** Global role that identifies the merchant owner (owner bypass on the API). */

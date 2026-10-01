@@ -98,6 +98,37 @@ describe("canForOutlet", () => {
     })
 })
 
+describe("catalog capabilities", () => {
+    it("grants every catalog capability to the manager", () => {
+        expect(canForOutlet(multiOutlet, "A", CAP.catalogView)).toBe(true)
+        expect(canForOutlet(multiOutlet, "A", CAP.catalogAvailabilityUpdate)).toBe(true)
+        expect(canForOutlet(multiOutlet, "A", CAP.catalogAssignmentStatusUpdate)).toBe(true)
+        expect(canForOutlet(multiOutlet, "A", CAP.catalogOrderUpdate)).toBe(true)
+    })
+
+    it("grants only view + availability to the staff", () => {
+        expect(canForOutlet(multiOutlet, "B", CAP.catalogView)).toBe(true)
+        expect(canForOutlet(multiOutlet, "B", CAP.catalogAvailabilityUpdate)).toBe(true)
+        expect(canForOutlet(multiOutlet, "B", CAP.catalogAssignmentStatusUpdate)).toBe(false)
+        expect(canForOutlet(multiOutlet, "B", CAP.catalogOrderUpdate)).toBe(false)
+    })
+
+    it("lets the owner reach outlet catalog caps through global permissions", () => {
+        const catalogOwner = makeUser({
+            roles: ["merchant"],
+            permissions: [
+                CAP.catalogView,
+                CAP.catalogAvailabilityUpdate,
+                CAP.catalogAssignmentStatusUpdate,
+                CAP.catalogOrderUpdate,
+            ],
+        })
+
+        expect(canForOutlet(catalogOwner, "any-outlet", CAP.catalogView)).toBe(true)
+        expect(canForOutlet(catalogOwner, "any-outlet", CAP.catalogOrderUpdate)).toBe(true)
+    })
+})
+
 describe("canViewOutletList", () => {
     it("allows owners and assigned users, denies users without access", () => {
         expect(canViewOutletList(owner)).toBe(true)

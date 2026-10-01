@@ -20,20 +20,31 @@ import { Switch } from "~/components/ui/switch"
 import { useSetOutletAvailability } from "../../services/product-outlets/product-outlet.mutations"
 import { catalogErrorMessage } from "../../utils/api-error"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import type { OutletProductAssignment } from "../../types"
+import type { AvailabilityStatus } from "../../types"
 
+/**
+ * Availability switch for one product at one outlet. Takes the outlet explicitly
+ * (rather than a full assignment) so it can be reused by both the master outlet
+ * tab and the outlet catalog detail, whose assignment shapes differ.
+ */
 export function AvailabilityControl({
     productId,
-    assignment,
+    outletId,
+    availabilityStatus,
+    disabled = false,
+    outletLabel,
 }: {
     productId: string
-    assignment: OutletProductAssignment
+    outletId: string
+    availabilityStatus: AvailabilityStatus
+    disabled?: boolean
+    outletLabel?: string
 }) {
-    const availabilityMutation = useSetOutletAvailability(productId, assignment.outlet_id)
+    const availabilityMutation = useSetOutletAvailability(productId, outletId)
     const [reasonOpen, setReasonOpen] = useState(false)
     const [reason, setReason] = useState("")
 
-    const outletLabel = assignment.outlet?.name ?? assignment.outlet_id
+    const label = outletLabel ?? outletId
 
     function handleSuccess() {
         setReasonOpen(false)
@@ -66,9 +77,9 @@ export function AvailabilityControl({
     return (
         <>
             <Switch
-                checked={assignment.availability_status === "available"}
-                disabled={availabilityMutation.isPending || assignment.status === "inactive"}
-                aria-label={`Ketersediaan ${outletLabel}`}
+                checked={availabilityStatus === "available"}
+                disabled={availabilityMutation.isPending || disabled}
+                aria-label={`Ketersediaan ${label}`}
                 onCheckedChange={handleToggle}
             />
 
@@ -95,11 +106,9 @@ export function AvailabilityControl({
                     </BottomSheetHeader>
                     <BottomSheetBody className="px-4">
                         <Field>
-                            <FieldLabel htmlFor={`availability-reason-${assignment.outlet_id}`}>
-                                Alasan (opsional)
-                            </FieldLabel>
+                            <FieldLabel htmlFor={`availability-reason-${outletId}`}>Alasan (opsional)</FieldLabel>
                             <Input
-                                id={`availability-reason-${assignment.outlet_id}`}
+                                id={`availability-reason-${outletId}`}
                                 value={reason}
                                 maxLength={255}
                                 placeholder="cth. Stok habis"

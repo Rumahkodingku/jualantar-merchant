@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react"
 import { FolderPlusIcon, SearchXIcon } from "lucide-react"
-
-import { Button } from "~/components/ui/button"
 import { ErrorState } from "~/components/error-state"
 import { useDebouncedValue } from "~/hooks/use-debounced-value"
-
 import { CatalogEmptyState } from "../components/common/catalog-empty-state"
 import { SectionToolbar } from "../components/common/section-toolbar"
 import { ListSkeleton } from "~/components/list-skeleton"
@@ -23,13 +20,18 @@ import { catalogErrorMessage } from "../utils/api-error"
 import { notifyError, notifySuccess } from "~/lib/notify"
 import type { CatalogCategory, CatalogStatus } from "../types"
 
-type ConfirmAction = { kind: "status" | "delete"; category: CatalogCategory } | null
+type ConfirmAction = {
+    kind: "status" | "delete"
+    category: CatalogCategory
+} | null
 
 export function CatalogCategoriesPage() {
     const [searchInput, setSearchInput] = useState("")
     const debouncedSearch = useDebouncedValue(searchInput, 300)
     const [reorderMode, setReorderMode] = useState(false)
-    const [dialog, setDialog] = useState<{ open: boolean; category?: CatalogCategory }>({ open: false })
+    const [dialog, setDialog] = useState<{ open: boolean; category?: CatalogCategory }>({
+        open: false,
+    })
     const [confirm, setConfirm] = useState<ConfirmAction>(null)
 
     useEffect(() => {
@@ -129,11 +131,6 @@ export function CatalogCategoriesPage() {
                         icon={FolderPlusIcon}
                         title="Belum ada kategori"
                         description="Tambahkan kategori untuk mengelompokkan produk Anda."
-                        action={
-                            <Button type="button" onClick={() => setDialog({ open: true })}>
-                                <FolderPlusIcon aria-hidden="true" /> Tambah Kategori
-                            </Button>
-                        }
                     />
                 )
             ) : (

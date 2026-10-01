@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
 import { SearchXIcon, ShoppingBagIcon } from "lucide-react"
-import { Link } from "react-router"
 import { ErrorState } from "~/components/error-state"
 import { Button } from "~/components/ui/button"
 import { useDebouncedValue } from "~/hooks/use-debounced-value"
@@ -13,7 +12,6 @@ import { useCategories } from "../services/categories/category.queries"
 import { useReorderProducts } from "../services/products/product.mutations"
 import { useProducts, PRODUCT_MEDIA_REFRESH_INTERVAL } from "../services/products/product.queries"
 import { notifyError, notifySuccess } from "~/lib/notify"
-import { CATALOGS_PATHS } from "../utils/paths"
 import { readProductFilters, type ProductFilterValues } from "../utils/product-filters"
 import type { CatalogStatus, ProductIndexParams, ProductType } from "../types"
 
@@ -143,11 +141,11 @@ export function CatalogsPage() {
                         icon={ShoppingBagIcon}
                         title="Belum ada produk"
                         description="Tambahkan produk pertama Anda agar pelanggan dapat mulai memesan."
-                        action={
-                            <Button render={<Link to={CATALOGS_PATHS.new} />}>
-                                <ShoppingBagIcon aria-hidden="true" /> Tambah Produk
-                            </Button>
-                        }
+                        // action={
+                        //     <Button render={<Link to={CATALOGS_PATHS.new} />}>
+                        //         <ShoppingBagIcon aria-hidden="true" /> Tambah Produk
+                        //     </Button>
+                        // }
                     />
                 )
             ) : (

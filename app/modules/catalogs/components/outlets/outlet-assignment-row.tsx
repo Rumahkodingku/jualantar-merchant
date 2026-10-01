@@ -71,7 +71,13 @@ export function OutletAssignmentRow({
                     </Text>
                 </div>
                 <div className="flex items-center gap-2">
-                    <AvailabilityControl productId={productId} assignment={assignment} />
+                    <AvailabilityControl
+                        productId={productId}
+                        outletId={assignment.outlet_id}
+                        availabilityStatus={assignment.availability_status}
+                        disabled={assignment.status === "inactive"}
+                        outletLabel={name}
+                    />
                     <Button
                         type="button"
                         variant="ghost"

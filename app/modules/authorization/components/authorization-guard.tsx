@@ -25,6 +25,26 @@ export function RequireCapability({ capability, children }: { capability: Operat
 }
 
 /**
+ * Whole-route guard for the merchant owner. Owner-only surfaces (master
+ * catalog administration) are gated on the API by the `merchant.owner`
+ * middleware, so an unauthorized user is sent to `/403` rather than seeing a
+ * half-rendered page. The session is left intact.
+ */
+export function RequireOwner({ children }: { children: ReactNode }) {
+    const { isOwner, isLoading } = useAuthorization()
+
+    if (isLoading) {
+        return null
+    }
+
+    if (!isOwner) {
+        return <Navigate to="/403" replace />
+    }
+
+    return <>{children}</>
+}
+
+/**
  * Inline guard for outlet-scoped pages/sections. Renders a forbidden state in
  * place when the user lacks the capability for this outlet, so the surrounding
  * shell (header, navigation) stays usable.

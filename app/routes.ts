@@ -22,6 +22,10 @@ export default [
                 route("catalogs/new", "modules/catalogs/routes/new.tsx"),
                 route("catalogs/products/:productId", "modules/catalogs/routes/product-detail.tsx"),
                 route("catalogs/products/:productId/edit", "modules/catalogs/routes/product-edit.tsx"),
+                route(
+                    "catalogs/outlets/:outletId/products/:productId",
+                    "modules/catalogs/routes/outlet-product-detail.tsx"
+                ),
                 route("promotions", "modules/promotions/routes/index.tsx"),
                 route("promotions/new", "modules/promotions/routes/new.tsx"),
 

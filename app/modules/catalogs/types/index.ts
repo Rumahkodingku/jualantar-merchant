@@ -61,3 +61,14 @@ export type { VariantCreateInput, VariantIndexParams, VariantUpdateInput, Produc
 export type { EditForm, EditSnapshot } from "./product-edit.types"
 
 export type { GroupDraft, MediaDraft, ModifierDraft, VariantDraft } from "./product-draft.types"
+
+export type {
+    OutletCatalogAssignment,
+    OutletCatalogCategory,
+    OutletCatalogIndexParams,
+    OutletCatalogItem,
+    OutletCatalogProduct,
+    OutletCatalogReorderItem,
+    OutletCatalogSortField,
+    OutletCatalogVariant,
+} from "./outlet-catalog.types"

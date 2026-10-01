@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { invalidateProducts } from "../catalog.invalidation"
+import { invalidateOutletCatalog, invalidateProducts } from "../catalog.invalidation"
 import * as productOutletApi from "./product-outlet.api"
 import type { CatalogStatus, OutletAvailabilityInput } from "../../types"
 
@@ -14,7 +14,8 @@ import type { CatalogStatus, OutletAvailabilityInput } from "../../types"
  *
  * `invalidateProducts` also covers the product's assignments: the assignments key
  * is nested under the product's, so the summary count and the outlet tab both
- * come back fresh.
+ * come back fresh. `invalidateOutletCatalog` keeps the outlet-scoped view of the
+ * same assignment in sync, since the same endpoints serve owner and employee.
  */
 export function useSetOutletAssignmentStatus(productId: string, outletId: string) {
     const queryClient = useQueryClient()
@@ -24,7 +25,10 @@ export function useSetOutletAssignmentStatus(productId: string, outletId: string
             status === "active"
                 ? productOutletApi.activateProductOutlet(productId, outletId)
                 : productOutletApi.deactivateProductOutlet(productId, outletId),
-        onSuccess: () => invalidateProducts(queryClient, productId),
+        onSuccess: () => {
+            invalidateProducts(queryClient, productId)
+            invalidateOutletCatalog(queryClient, outletId, productId)
+        },
     })
 }
 
@@ -34,6 +38,9 @@ export function useSetOutletAvailability(productId: string, outletId: string) {
     return useMutation({
         mutationFn: (input: OutletAvailabilityInput) =>
             productOutletApi.updateProductOutletAvailability(productId, outletId, input),
-        onSuccess: () => invalidateProducts(queryClient, productId),
+        onSuccess: () => {
+            invalidateProducts(queryClient, productId)
+            invalidateOutletCatalog(queryClient, outletId, productId)
+        },
     })
 }

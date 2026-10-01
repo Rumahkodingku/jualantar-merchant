@@ -1,5 +1,11 @@
+import { RequireOwner } from "~/modules/authorization"
+
 import { ProductNewPage } from "../pages/product-new-page"
 
 export default function ProductNewRoute() {
-    return <ProductNewPage />
+    return (
+        <RequireOwner>
+            <ProductNewPage />
+        </RequireOwner>
+    )
 }

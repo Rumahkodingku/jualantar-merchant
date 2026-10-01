@@ -20,7 +20,7 @@ export function CatalogEmptyState({
                 <EmptyMedia variant="icon">
                     <Icon aria-hidden="true" />
                 </EmptyMedia>
-                <EmptyTitle>{title}</EmptyTitle>
+                <EmptyTitle className="text-md font-bold">{title}</EmptyTitle>
                 <EmptyDescription>{description}</EmptyDescription>
             </EmptyHeader>
             {action !== undefined ? <EmptyContent>{action}</EmptyContent> : null}

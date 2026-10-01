@@ -51,7 +51,7 @@ export function ProductActionsMenu({ product }: { product: Product }) {
                         className="cursor-pointer p-2 font-medium"
                         onClick={() => actions.request("status")}
                     >
-                        <PowerIcon /> {actions.nextStatus === "active" ? "Nonaktifkan Produk" : "Aktifkan Produk"}
+                        <PowerIcon /> {actions.nextStatus === "active" ? "Aktifkasn Produk" : "Nonaktifkan Produk"}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         className="cursor-pointer p-2 font-medium"

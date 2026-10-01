@@ -6,12 +6,13 @@ import type {
     OutletCatalogItem,
     OutletCatalogProduct,
     OutletCatalogVariant,
-    ProductModifierGroup,
+    OutletModifier,
+    OutletModifierGroup,
     ProductPrimaryMedia,
     ProductType,
 } from "../../types"
 import { normalizePrice, normalizeRequiredPrice } from "../../utils/normalize"
-import { toModifierGroup, type ProductModifierGroupWire } from "../catalog.mappers"
+import type { ProductModifierGroupWire, ProductModifierWire } from "../catalog.mappers"
 
 /**
  * Wire shapes mirroring `OutletCatalogItemResource`. Prices arrive as strings
@@ -41,7 +42,24 @@ export interface OutletCatalogVariantWire {
     sku: string | null
     price: string
     status: CatalogStatus
+    effective_status: CatalogStatus
+    is_overridden: boolean
     is_default: boolean
+}
+
+/**
+ * The outlet projection reuses the master customization resource shape and adds
+ * the two effective-status fields, so its wire type extends the master one.
+ */
+export type OutletModifierWire = ProductModifierWire & {
+    effective_status: CatalogStatus
+    is_overridden: boolean
+}
+
+export type OutletModifierGroupWire = ProductModifierGroupWire & {
+    effective_status: CatalogStatus
+    is_overridden: boolean
+    modifiers?: OutletModifierWire[]
 }
 
 export interface OutletCatalogAssignmentWire {
@@ -57,7 +75,7 @@ export interface OutletCatalogItemWire {
     category: OutletCatalogCategoryWire | null
     variants: OutletCatalogVariantWire[]
     primary_media: ProductPrimaryMedia | null
-    modifier_groups: ProductModifierGroupWire[]
+    modifier_groups: OutletModifierGroupWire[]
     assignment: OutletCatalogAssignmentWire | null
     is_sellable: boolean
 }
@@ -86,8 +104,43 @@ function toOutletCatalogAssignment(wire: OutletCatalogAssignmentWire | null): Ou
           }
 }
 
-function toModifierGroups(wires: ProductModifierGroupWire[] | undefined): ProductModifierGroup[] {
-    return (wires ?? []).map(toModifierGroup)
+function toOutletModifier(wire: OutletModifierWire): OutletModifier {
+    return {
+        id: wire.id,
+        name: wire.name,
+        description: wire.description,
+        price: normalizeRequiredPrice(wire.price),
+        is_default: wire.is_default,
+        status: wire.status,
+        effective_status: wire.effective_status,
+        is_overridden: wire.is_overridden,
+        display_order: wire.display_order,
+        created_at: wire.created_at,
+        updated_at: wire.updated_at,
+    }
+}
+
+function toOutletModifierGroup(wire: OutletModifierGroupWire): OutletModifierGroup {
+    return {
+        id: wire.id,
+        name: wire.name,
+        description: wire.description,
+        selection_type: wire.selection_type,
+        min_selection: wire.min_selection,
+        max_selection: wire.max_selection,
+        is_required: wire.is_required,
+        status: wire.status,
+        effective_status: wire.effective_status,
+        is_overridden: wire.is_overridden,
+        display_order: wire.display_order,
+        created_at: wire.created_at,
+        updated_at: wire.updated_at,
+        modifiers: (wire.modifiers ?? []).map(toOutletModifier),
+    }
+}
+
+function toModifierGroups(wires: OutletModifierGroupWire[] | undefined): OutletModifierGroup[] {
+    return (wires ?? []).map(toOutletModifierGroup)
 }
 
 export function toOutletCatalogItem(wire: OutletCatalogItemWire): OutletCatalogItem {

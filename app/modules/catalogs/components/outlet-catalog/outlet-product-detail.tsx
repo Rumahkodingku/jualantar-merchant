@@ -1,35 +1,37 @@
 import { Badge } from "~/components/ui/badge"
 import { Text } from "~/components/ui/text"
-
 import { MediaThumbnail } from "../common/media-thumbnail"
 import { StatusBadge } from "../common/status-badge"
-import { ProductCustomizationView } from "../product-detail/product-customization-view"
+import { OutletCustomizationView } from "./outlet-customization-view"
 import { OutletProductOutletState } from "./outlet-product-outlet-state"
 import { OutletVariantList } from "./outlet-variant-list"
 import { formatCurrency } from "../../utils/format-currency"
 import { PRODUCT_TYPE_LABEL } from "../../utils/labels"
 import type { OutletCatalogItem } from "../../types"
 
-/**
- * Presentation of a single product inside one outlet's catalog. Read-only
- * identity plus the outlet-scoped operations (availability, assignment status).
- * No master administration controls are rendered here.
- */
 export function OutletProductDetail({
     item,
     outletId,
     outletLabel,
     canUpdateAvailability,
     canUpdateAssignmentStatus,
+    canUpdateVariantStatus,
+    canUpdateCustomizationStatus,
 }: {
     item: OutletCatalogItem
     outletId: string
     outletLabel: string
     canUpdateAvailability: boolean
     canUpdateAssignmentStatus: boolean
+    canUpdateVariantStatus: boolean
+    canUpdateCustomizationStatus: boolean
 }) {
     const isVariable = item.product.product_type === "variable"
-    const activePrices = item.variants.filter((variant) => variant.status === "active").map((variant) => variant.price)
+    // The price shown must reflect what this outlet actually offers, so it reads
+    // the effective status rather than the master one.
+    const activePrices = item.variants
+        .filter((variant) => variant.effective_status === "active")
+        .map((variant) => variant.price)
     const priceLabel = isVariable
         ? activePrices.length > 0
             ? `Mulai dari ${formatCurrency(Math.min(...activePrices))}`
@@ -82,10 +84,18 @@ export function OutletProductDetail({
                     productType={item.product.product_type}
                     primaryMedia={item.primary_media}
                     productName={item.product.name}
+                    outletId={outletId}
+                    productId={item.product.id}
+                    canEditStatus={canUpdateVariantStatus}
                 />
             ) : null}
 
-            <ProductCustomizationView groups={item.modifier_groups} />
+            <OutletCustomizationView
+                groups={item.modifier_groups}
+                outletId={outletId}
+                productId={item.product.id}
+                canEditStatus={canUpdateCustomizationStatus}
+            />
         </div>
     )
 }

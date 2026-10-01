@@ -1,22 +1,12 @@
 import { StatusBadge as SharedStatusBadge } from "~/components/status-badge"
 import { cn } from "~/lib/utils"
-
 import { STATUS_LABEL, statusTone } from "../../utils/labels"
 import type { CatalogStatus } from "../../types"
 
-/**
- * The catalog's reading of a shared status on a label: a dot instead of an
- * emoji, and the red palette the catalog screens were designed against.
- *
- * The tone classes are passed through rather than folded into the shared badge
- * so the catalog keeps its exact colours while still reusing the shared
- * component's markup.
- */
 export function StatusBadge({ status, className }: { status: CatalogStatus; className?: string }) {
     return (
         <SharedStatusBadge
             tone={statusTone(status)}
-            indicator={<span className="size-1.5 rounded-full bg-current" />}
             className={cn(
                 "gap-1.5",
                 statusTone(status) === "positive"

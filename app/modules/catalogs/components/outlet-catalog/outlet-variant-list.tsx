@@ -4,26 +4,35 @@ import { Badge } from "~/components/ui/badge"
 import { Text } from "~/components/ui/text"
 
 import { CatalogEmptyState } from "../common/catalog-empty-state"
-import { StatusBadge } from "../common/status-badge"
 import { MediaThumbnail } from "../common/media-thumbnail"
+import { OutletItemStatusControl } from "./outlet-item-status-control"
 import { formatCurrency } from "../../utils/format-currency"
 import type { OutletCatalogItem, OutletCatalogVariant, ProductPrimaryMedia } from "../../types"
 
 /**
- * Read-only variant list for the outlet catalog. The outlet resource returns a
- * narrower variant shape than the master product, so it does not reuse
- * `ProductVariantList`; the presentation mirrors it.
+ * Variant list for the outlet catalog.
+ *
+ * The outlet resource returns a narrower variant shape than the master product,
+ * so it does not reuse `ProductVariantList`; the presentation mirrors it and adds
+ * the per-outlet status control, because this is the screen an outlet manager
+ * manages the variants from.
  */
 export function OutletVariantList({
     variants,
     productType,
     primaryMedia,
     productName,
+    outletId,
+    productId,
+    canEditStatus,
 }: {
     variants: OutletCatalogVariant[]
     productType: OutletCatalogItem["product"]["product_type"]
     primaryMedia: ProductPrimaryMedia | null
     productName: string
+    outletId: string
+    productId: string
+    canEditStatus: boolean
 }) {
     if (productType === "simple" || variants.length === 0) {
         return (
@@ -83,7 +92,16 @@ export function OutletVariantList({
                             ) : null}
                         </div>
 
-                        <StatusBadge status={variant.status} />
+                        <OutletItemStatusControl
+                            outletId={outletId}
+                            productId={productId}
+                            target={{ kind: "variant", itemId: variant.id }}
+                            effectiveStatus={variant.effective_status}
+                            masterStatus={variant.status}
+                            isOverridden={variant.is_overridden}
+                            canEdit={canEditStatus}
+                            itemLabel={variant.name}
+                        />
                     </li>
                 ))}
             </ul>

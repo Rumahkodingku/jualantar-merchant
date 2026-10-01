@@ -104,6 +104,8 @@ describe("catalog capabilities", () => {
         expect(canForOutlet(multiOutlet, "A", CAP.catalogAvailabilityUpdate)).toBe(true)
         expect(canForOutlet(multiOutlet, "A", CAP.catalogAssignmentStatusUpdate)).toBe(true)
         expect(canForOutlet(multiOutlet, "A", CAP.catalogOrderUpdate)).toBe(true)
+        expect(canForOutlet(multiOutlet, "A", CAP.catalogVariantStatusUpdate)).toBe(true)
+        expect(canForOutlet(multiOutlet, "A", CAP.catalogCustomizationStatusUpdate)).toBe(true)
     })
 
     it("grants only view + availability to the staff", () => {
@@ -111,6 +113,16 @@ describe("catalog capabilities", () => {
         expect(canForOutlet(multiOutlet, "B", CAP.catalogAvailabilityUpdate)).toBe(true)
         expect(canForOutlet(multiOutlet, "B", CAP.catalogAssignmentStatusUpdate)).toBe(false)
         expect(canForOutlet(multiOutlet, "B", CAP.catalogOrderUpdate)).toBe(false)
+    })
+
+    it("never lets staff change a variant or customization status", () => {
+        expect(canForOutlet(multiOutlet, "B", CAP.catalogVariantStatusUpdate)).toBe(false)
+        expect(canForOutlet(multiOutlet, "B", CAP.catalogCustomizationStatusUpdate)).toBe(false)
+    })
+
+    it("denies the new status capabilities on an outlet the user is not assigned to", () => {
+        expect(canForOutlet(multiOutlet, "C", CAP.catalogVariantStatusUpdate)).toBe(false)
+        expect(canForOutlet(multiOutlet, "C", CAP.catalogCustomizationStatusUpdate)).toBe(false)
     })
 
     it("lets the owner reach outlet catalog caps through global permissions", () => {
@@ -121,11 +133,15 @@ describe("catalog capabilities", () => {
                 CAP.catalogAvailabilityUpdate,
                 CAP.catalogAssignmentStatusUpdate,
                 CAP.catalogOrderUpdate,
+                CAP.catalogVariantStatusUpdate,
+                CAP.catalogCustomizationStatusUpdate,
             ],
         })
 
         expect(canForOutlet(catalogOwner, "any-outlet", CAP.catalogView)).toBe(true)
         expect(canForOutlet(catalogOwner, "any-outlet", CAP.catalogOrderUpdate)).toBe(true)
+        expect(canForOutlet(catalogOwner, "any-outlet", CAP.catalogVariantStatusUpdate)).toBe(true)
+        expect(canForOutlet(catalogOwner, "any-outlet", CAP.catalogCustomizationStatusUpdate)).toBe(true)
     })
 })
 

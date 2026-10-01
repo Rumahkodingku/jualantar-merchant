@@ -61,6 +61,8 @@ describe("toOutletCatalogItem", () => {
                         sku: null,
                         price: "20000",
                         status: "active",
+                        effective_status: "active",
+                        is_overridden: false,
                         is_default: true,
                     },
                 ],
@@ -69,6 +71,30 @@ describe("toOutletCatalogItem", () => {
 
         expect(item.variants).toHaveLength(1)
         expect(item.variants[0]?.price).toBe(20000)
+    })
+
+    it("keeps the effective status of a variant the outlet hid", () => {
+        const item = toOutletCatalogItem(
+            makeWire({
+                product: { ...makeWire().product, product_type: "variable", price: null },
+                variants: [
+                    {
+                        id: "v1",
+                        name: "Reguler",
+                        sku: null,
+                        price: "20000",
+                        status: "active",
+                        effective_status: "inactive",
+                        is_overridden: true,
+                        is_default: true,
+                    },
+                ],
+            })
+        )
+
+        expect(item.variants[0]?.status).toBe("active")
+        expect(item.variants[0]?.effective_status).toBe("inactive")
+        expect(item.variants[0]?.is_overridden).toBe(true)
     })
 
     it("maps modifier groups through the shared mapper", () => {
@@ -84,6 +110,8 @@ describe("toOutletCatalogItem", () => {
                         max_selection: 1,
                         is_required: true,
                         status: "active",
+                        effective_status: "active",
+                        is_overridden: false,
                         display_order: 0,
                         created_at: null,
                         updated_at: null,

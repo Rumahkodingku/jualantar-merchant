@@ -110,7 +110,7 @@ export function ProductDetailPage() {
                 </TabsContent>
 
                 <TabsContent value="customization">
-                    <ProductCustomizationView groups={product.modifier_groups ?? []} />
+                    <ProductCustomizationView groups={product.modifier_groups ?? []} productId={product.id} />
                 </TabsContent>
 
                 <TabsContent value="media">

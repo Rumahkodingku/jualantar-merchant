@@ -4,6 +4,7 @@ import { Text } from "~/components/ui/text"
 import { CatalogEmptyState } from "../common/catalog-empty-state"
 import { StatusBadge } from "../common/status-badge"
 import { MediaThumbnail } from "../common/media-thumbnail"
+import { OutletOverrideList } from "./outlet-override-list"
 import { formatCurrency } from "../../utils/format-currency"
 import { sortByDisplayOrder } from "../../utils/media-order"
 import type { ProductDetail } from "../../types"
@@ -69,6 +70,14 @@ export function ProductVariantList({ product }: { product: ProductDetail }) {
                                     </Text>
                                 ) : null}
                             </div>
+
+                            <OutletOverrideList
+                                productId={product.id}
+                                itemName={variant.name}
+                                itemLabel="Variant"
+                                overrides={variant.outlet_overrides}
+                                target={{ kind: "variant", itemId: variant.id }}
+                            />
                         </div>
 
                         <StatusBadge status={variant.status} />

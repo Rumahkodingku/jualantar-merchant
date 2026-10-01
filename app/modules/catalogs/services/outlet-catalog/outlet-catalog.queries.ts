@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query"
-
 import { catalogKeys } from "../catalog.keys"
 import * as outletCatalogApi from "./outlet-catalog.api"
 import type { OutletCatalogIndexParams } from "../../types"
@@ -13,8 +12,6 @@ export function useOutletProducts(
         queryKey: catalogKeys.outletProductList(outletId ?? "", params),
         queryFn: () => outletCatalogApi.fetchOutletProducts(outletId as string, params),
         enabled: outletId !== undefined && outletId.length > 0,
-        // No keepPreviousData: switching outlets must never show the previous
-        // outlet's products, even momentarily.
         refetchInterval: options.refetchInterval,
     })
 }

@@ -1,13 +1,12 @@
-import { InfoIcon, StoreIcon } from "lucide-react"
-
+import { CheckCircle2Icon, InfoIcon, StoreIcon, TriangleAlert } from "lucide-react"
 import { Text } from "~/components/ui/text"
 import { cn } from "~/lib/utils"
-
 import { CatalogEmptyState } from "../common/catalog-empty-state"
 import { AvailabilityBadge } from "../outlets/availability-badge"
 import { AvailabilityControl } from "../outlets/availability-control"
 import { OutletAssignmentStatusControl } from "./outlet-assignment-status-control"
 import type { OutletCatalogItem } from "../../types"
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 
 function OutletStateRow({
     label,
@@ -19,12 +18,12 @@ function OutletStateRow({
     children: React.ReactNode
 }) {
     return (
-        <div className="flex items-center justify-between gap-3 border-t p-4 first:border-t-0">
+        <div className="flex items-center justify-between pb-5">
             <div className="flex min-w-0 flex-col">
-                <Text variant="sm" weight="medium">
+                <Text variant="sm" weight="semibold">
                     {label}
                 </Text>
-                <Text variant="xs" className="text-muted-foreground">
+                <Text variant="xs" weight="normal" className="text-muted-foreground">
                     {description}
                 </Text>
             </div>
@@ -33,11 +32,6 @@ function OutletStateRow({
     )
 }
 
-/**
- * The outlet-scoped state of a product: availability and assignment status for
- * the outlet in scope only. Never lists other outlets' assignments — the
- * employee is already inside a single outlet's context.
- */
 export function OutletProductOutletState({
     item,
     productId,
@@ -72,7 +66,7 @@ export function OutletProductOutletState({
 
     return (
         <div className="mt-4 flex flex-col gap-3">
-            <div className="mb-3">
+            <div className="mb-2">
                 <div className="flex items-center gap-2">
                     <StoreIcon aria-hidden="true" className="size-4 text-muted-foreground" />
                     <Text as="h2" variant="base" weight="bold">
@@ -84,7 +78,7 @@ export function OutletProductOutletState({
                 </Text>
             </div>
 
-            <div className="overflow-hidden rounded-2xl border">
+            <div className="overflow-hidden">
                 <OutletStateRow label="Ketersediaan" description="Produk tersedia atau tidak di outlet ini">
                     {canUpdateAvailability ? (
                         <AvailabilityControl
@@ -124,13 +118,19 @@ export function OutletProductOutletState({
                 ) : null}
             </div>
 
-            <div className={cn("rounded-xl px-3 py-2.5", item.is_sellable ? "bg-emerald-500/10" : "bg-amber-500/10")}>
-                <Text variant="xs" weight="medium">
+            <Alert
+                className={cn("rounded-xl border-none p-4", item.is_sellable ? "bg-emerald-500/10" : "bg-amber-500/10")}
+            >
+                {item?.is_sellable ? <CheckCircle2Icon /> : <TriangleAlert />}
+                <AlertTitle className="font-bold">
+                    {item.is_sellable ? "Produk Tersedia" : "Produk Tidak Tersedia"}
+                </AlertTitle>
+                <AlertDescription className="w-full text-xs">
                     {item.is_sellable
-                        ? "Produk dapat dijual di outlet ini."
+                        ? "Produk dapat dijual di outlet ini, dan pelanggan dapat melakukan pemesanan."
                         : "Produk belum dapat dijual di outlet ini (periksa status produk, kategori, varian, dan penugasan)."}
-                </Text>
-            </div>
+                </AlertDescription>
+            </Alert>
         </div>
     )
 }

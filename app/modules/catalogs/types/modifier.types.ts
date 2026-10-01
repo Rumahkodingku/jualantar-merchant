@@ -1,4 +1,5 @@
 import type { CatalogStatus, SelectionType } from "./common.types"
+import type { OutletItemOverride } from "./outlet-override.types"
 
 export interface ProductModifier {
     id: string
@@ -10,6 +11,8 @@ export interface ProductModifier {
     display_order: number
     created_at: string | null
     updated_at: string | null
+    /** Present only on the master product detail, never on the list endpoints. */
+    outlet_overrides?: OutletItemOverride[]
 }
 
 export interface ProductModifierGroup {
@@ -24,6 +27,8 @@ export interface ProductModifierGroup {
     display_order: number
     created_at: string | null
     updated_at: string | null
+    /** Present only on the master product detail, never on the list endpoints. */
+    outlet_overrides?: OutletItemOverride[]
     modifiers: ProductModifier[]
 }
 

@@ -1,6 +1,5 @@
 import { ChevronLeftIcon, StoreIcon } from "lucide-react"
 import { useNavigate, useParams } from "react-router"
-
 import { ErrorState } from "~/components/error-state"
 import { ForbiddenState } from "~/components/forbidden-state"
 import { ListSkeleton } from "~/components/list-skeleton"
@@ -9,7 +8,6 @@ import { Skeleton } from "~/components/ui/skeleton"
 import { Text } from "~/components/ui/text"
 import { CAP, useOutletAuthorization } from "~/modules/authorization"
 import { useOperationalOutlet } from "~/modules/merchant-operations"
-
 import { CatalogEmptyState } from "../components/common/catalog-empty-state"
 import { OutletProductDetail } from "../components/outlet-catalog/outlet-product-detail"
 import { useOutletProductDetail } from "../services/outlet-catalog/outlet-catalog.queries"
@@ -123,6 +121,8 @@ export function OutletProductDetailPage() {
                 outletLabel={outletLabel}
                 canUpdateAvailability={outletAuth.can(CAP.catalogAvailabilityUpdate)}
                 canUpdateAssignmentStatus={outletAuth.can(CAP.catalogAssignmentStatusUpdate)}
+                canUpdateVariantStatus={outletAuth.can(CAP.catalogVariantStatusUpdate)}
+                canUpdateCustomizationStatus={outletAuth.can(CAP.catalogCustomizationStatusUpdate)}
             />
         </div>
     )

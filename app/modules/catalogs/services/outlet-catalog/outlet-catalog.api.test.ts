@@ -2,7 +2,13 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { api } from "~/lib/api"
 
-import { fetchOutletProduct, fetchOutletProducts, reorderOutletProducts } from "./outlet-catalog.api"
+import {
+    deactivateOutletItem,
+    fetchOutletProduct,
+    fetchOutletProducts,
+    reorderOutletProducts,
+    resetOutletItem,
+} from "./outlet-catalog.api"
 import type { OutletCatalogItemWire } from "./outlet-catalog.mappers"
 
 const ITEM_WIRE: OutletCatalogItemWire = {
@@ -74,5 +80,43 @@ describe("outlet catalog api", () => {
         expect(put).toHaveBeenCalledWith("/merchant/catalog/outlets/o1/products/order", {
             items: [{ product_id: "p1", display_order: 0 }],
         })
+    })
+
+    it("hides a variant through the outlet-scoped deactivate endpoint", async () => {
+        const post = vi.spyOn(api, "post").mockResolvedValue({ data: { data: null } })
+
+        await deactivateOutletItem("o1", "p1", { kind: "variant", itemId: "v1" })
+
+        expect(post).toHaveBeenCalledWith("/merchant/catalog/outlets/o1/products/p1/variants/v1/deactivate")
+    })
+
+    it("hides a customization group under the modifier-groups path", async () => {
+        const post = vi.spyOn(api, "post").mockResolvedValue({ data: { data: null } })
+
+        await deactivateOutletItem("o1", "p1", { kind: "modifier_group", itemId: "g1" })
+
+        expect(post).toHaveBeenCalledWith("/merchant/catalog/outlets/o1/products/p1/modifier-groups/g1/deactivate")
+    })
+
+    it("nests a customization option under its group", async () => {
+        const post = vi.spyOn(api, "post").mockResolvedValue({ data: { data: null } })
+
+        await deactivateOutletItem("o1", "p1", {
+            kind: "modifier",
+            groupId: "g1",
+            itemId: "m1",
+        })
+
+        expect(post).toHaveBeenCalledWith(
+            "/merchant/catalog/outlets/o1/products/p1/modifier-groups/g1/modifiers/m1/deactivate"
+        )
+    })
+
+    it("restores an item through the reset endpoint", async () => {
+        const post = vi.spyOn(api, "post").mockResolvedValue({ data: null })
+
+        await expect(resetOutletItem("o1", "p1", { kind: "variant", itemId: "v1" })).resolves.toBeUndefined()
+
+        expect(post).toHaveBeenCalledWith("/merchant/catalog/outlets/o1/products/p1/variants/v1/reset")
     })
 })

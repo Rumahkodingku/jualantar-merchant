@@ -21,6 +21,8 @@ export const CAP = {
     catalogAvailabilityUpdate: "merchant.operations.catalog.availability.update",
     catalogAssignmentStatusUpdate: "merchant.operations.catalog.assignment.status.update",
     catalogOrderUpdate: "merchant.operations.catalog.order.update",
+    catalogVariantStatusUpdate: "merchant.operations.catalog.variant.status.update",
+    catalogCustomizationStatusUpdate: "merchant.operations.catalog.customization.status.update",
 } as const
 
 export type OperationsCapability = (typeof CAP)[keyof typeof CAP]
@@ -44,6 +46,8 @@ export const OUTLET_ROLE_CAPABILITIES: Record<OutletUserRole, readonly Operation
         CAP.catalogAvailabilityUpdate,
         CAP.catalogAssignmentStatusUpdate,
         CAP.catalogOrderUpdate,
+        CAP.catalogVariantStatusUpdate,
+        CAP.catalogCustomizationStatusUpdate,
     ],
     outlet_staff: [
         CAP.view,

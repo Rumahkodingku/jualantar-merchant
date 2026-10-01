@@ -22,6 +22,8 @@ export type {
 
 export type { ProductOutletRow } from "./outlet.types"
 
+export type { OutletItemOverride, OutletScopedStatus } from "./outlet-override.types"
+
 export type { CategoryCreateInput, CategoryIndexParams, CategoryUpdateInput, CatalogCategory } from "./category.types"
 
 export type {
@@ -71,4 +73,6 @@ export type {
     OutletCatalogReorderItem,
     OutletCatalogSortField,
     OutletCatalogVariant,
+    OutletModifier,
+    OutletModifierGroup,
 } from "./outlet-catalog.types"

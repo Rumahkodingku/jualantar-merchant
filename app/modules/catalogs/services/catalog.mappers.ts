@@ -77,6 +77,8 @@ export function toProductVariant(wire: ProductVariantWire): ProductVariant {
         display_order: wire.display_order,
         created_at: wire.created_at,
         updated_at: wire.updated_at,
+        // Absent on the list endpoints; only the master detail sends it.
+        outlet_overrides: wire.outlet_overrides ?? undefined,
     }
 }
 
@@ -105,6 +107,8 @@ export function toProductModifier(wire: ProductModifierWire): ProductModifier {
         display_order: wire.display_order,
         created_at: wire.created_at,
         updated_at: wire.updated_at,
+        // Absent on the list endpoints; only the master detail sends it.
+        outlet_overrides: wire.outlet_overrides ?? undefined,
     }
 }
 
@@ -121,6 +125,8 @@ export function toModifierGroup(wire: ProductModifierGroupWire): ProductModifier
         display_order: wire.display_order,
         created_at: wire.created_at,
         updated_at: wire.updated_at,
+        // Absent on the list endpoints; only the master detail sends it.
+        outlet_overrides: wire.outlet_overrides ?? undefined,
         modifiers: (wire.modifiers ?? []).map(toProductModifier),
     }
 }

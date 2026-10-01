@@ -14,11 +14,18 @@ import type {
     ProductVariant,
 } from "../types"
 
-const { fetchProduct, fetchProductOutlets, useOperationalOutlets } = vi.hoisted(() => ({
+const { fetchProduct, fetchProductOutlets, clearOutletItemOverrides, useOperationalOutlets } = vi.hoisted(() => ({
     fetchProduct: vi.fn(),
     fetchProductOutlets: vi.fn(),
+    clearOutletItemOverrides: vi.fn(),
     useOperationalOutlets: vi.fn(),
 }))
+
+vi.mock("../services/outlet-overrides/outlet-override.api", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../services/outlet-overrides/outlet-override.api")>()
+
+    return { ...actual, clearOutletItemOverrides }
+})
 
 vi.mock("../services/products/product.api", async (importOriginal) => {
     const actual = await importOriginal<typeof import("../services/products/product.api")>()
@@ -227,7 +234,9 @@ function renderPage(initialEntries: string[] = ["/catalogs/products/prd-001"]) {
 beforeEach(() => {
     fetchProduct.mockReset()
     fetchProductOutlets.mockReset()
+    clearOutletItemOverrides.mockReset()
     useOperationalOutlets.mockReset()
+    clearOutletItemOverrides.mockResolvedValue(undefined)
 
     fetchProduct.mockResolvedValue(PRODUCT)
     fetchProductOutlets.mockResolvedValue(ASSIGNMENTS)
@@ -381,5 +390,104 @@ describe("ProductDetailPage", () => {
 
         await user.click(screen.getByRole("button", { name: "Close" }))
         await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument())
+    })
+
+    describe("outlet status overrides", () => {
+        const OVERRIDE = {
+            subject_type: "variant" as const,
+            item_id: "v1",
+            outlet_id: "out-001",
+            outlet_name: "Outlet Kemang",
+            status: "inactive" as const,
+            deactivated_at: "2026-09-30T02:00:00Z",
+            deactivated_by: { id: "usr-9", email: "manager@jualantar.test" },
+        }
+
+        function withOverrides(detail: ProductDetail): ProductDetail {
+            return {
+                ...detail,
+                variants: (detail.variants ?? []).map((variant) =>
+                    variant.id === "v1" ? { ...variant, outlet_overrides: [OVERRIDE] } : variant
+                ),
+                modifier_groups: (detail.modifier_groups ?? []).map((group) => ({
+                    ...group,
+                    outlet_overrides:
+                        group.id === "g1"
+                            ? [{ ...OVERRIDE, subject_type: "modifier_group" as const, item_id: group.id }]
+                            : undefined,
+                    modifiers: group.modifiers.map((modifier) =>
+                        modifier.id === "mo1"
+                            ? {
+                                  ...modifier,
+                                  outlet_overrides: [
+                                      { ...OVERRIDE, subject_type: "modifier" as const, item_id: modifier.id },
+                                  ],
+                              }
+                            : modifier
+                    ),
+                })),
+            }
+        }
+
+        it("shows nothing for items no outlet touched", async () => {
+            renderPage()
+
+            await screen.findByText("Informasi Produk")
+            await userEvent.click(screen.getByRole("tab", { name: /Variant/ }))
+
+            expect(await screen.findByText("Regular")).toBeInTheDocument()
+            expect(screen.queryByText(/Nonaktif di 1 outlet/)).not.toBeInTheDocument()
+        })
+
+        it("names the outlet and the manager that hid a variant", async () => {
+            fetchProduct.mockResolvedValue(withOverrides(PRODUCT))
+
+            renderPage()
+
+            await screen.findByText("Informasi Produk")
+            await userEvent.click(screen.getByRole("tab", { name: /Variant/ }))
+
+            expect(await screen.findByText("Nonaktif di 1 outlet")).toBeInTheDocument()
+            expect(screen.getByText("Outlet Kemang")).toBeInTheDocument()
+            expect(screen.getByText(/manager@jualantar.test/)).toBeInTheDocument()
+        })
+
+        it("clears every outlet override of one variant after confirmation", async () => {
+            fetchProduct.mockResolvedValue(withOverrides(PRODUCT))
+
+            renderPage()
+
+            await screen.findByText("Informasi Produk")
+            await userEvent.click(screen.getByRole("tab", { name: /Variant/ }))
+
+            await userEvent.click(await screen.findByRole("button", { name: /Kembalikan/ }))
+            await userEvent.click(await screen.findByRole("button", { name: "Kembalikan" }))
+
+            await waitFor(() => expect(clearOutletItemOverrides).toHaveBeenCalledTimes(1))
+            expect(clearOutletItemOverrides).toHaveBeenCalledWith("prd-001", {
+                kind: "variant",
+                itemId: "v1",
+            })
+        })
+
+        it("clears a customization option override under its group", async () => {
+            fetchProduct.mockResolvedValue(withOverrides(PRODUCT))
+
+            renderPage()
+
+            await screen.findByText("Informasi Produk")
+            await userEvent.click(screen.getByRole("tab", { name: /Customization/ }))
+
+            const buttons = await screen.findAllByRole("button", { name: /Kembalikan/ })
+            await userEvent.click(buttons[buttons.length - 1] as HTMLElement)
+            await userEvent.click(await screen.findByRole("button", { name: "Kembalikan" }))
+
+            await waitFor(() => expect(clearOutletItemOverrides).toHaveBeenCalledTimes(1))
+            expect(clearOutletItemOverrides).toHaveBeenCalledWith("prd-001", {
+                kind: "modifier",
+                groupId: "g1",
+                itemId: "mo1",
+            })
+        })
     })
 })
